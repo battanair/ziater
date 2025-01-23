@@ -1,0 +1,46 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+
+.linea {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 768px) {
+  .linea {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* PERSONA */
+.perlistaobra {
+  padding-left: 20px;
+}
+
+.perheadlist{
+  background-color: black !important;
+  color: white !important;
+  font-weight: bold !important;
+}
+
+.MuiAccordion-heading svg{
+  fill: white !important;
+}
+
+.MuiGrid-item{
+  padding-left: 0 !important;
+  padding: 10px !important;}
