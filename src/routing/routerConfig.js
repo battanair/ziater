@@ -16,6 +16,7 @@ export const routeConfig = [
     name: "Persona",
     path: "/persona/:id",
     page: <Persona />,
-  },
+  }
  
 ];
+

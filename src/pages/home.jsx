@@ -3,7 +3,7 @@ import { NavLink } from "react-router";
 const Home = () => {
     return (
         <>
-            <p>Bienvenide a Ziater.com jejeje</p>
+            <h2>Bienvenide a Ziater.com jejeje</h2>
             <NavLink to="/obra/1" style={{ marginRight: '10px', textDecoration: 'none', color: 'blue' }}>
                 OBRA
             </NavLink>
