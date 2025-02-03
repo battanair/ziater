@@ -16,3 +16,7 @@ const auth = getAuth(app); // Create the auth object
 
 export { auth }; // Export the auth object
 
+
+
+
+

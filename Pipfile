@@ -7,6 +7,10 @@ name = "pypi"
 sqlalchemy = "*"
 pymysql = "*"
 dataclasses = "*"
+firebase-admin = "*"
+pyrebase4 = "*"
+flask = "*"
+flask-cors = "*"
 
 [dev-packages]
 

@@ -7,8 +7,14 @@ const Home = () => {
             <NavLink to="/obra/1" style={{ marginRight: '10px', textDecoration: 'none', color: 'blue' }}>
                 OBRA
             </NavLink>
-            <NavLink to="/persona/1" style={{ textDecoration: 'none', color: 'blue' }}>
+            <NavLink to="/persona/1" style={{marginRight: '10px', textDecoration: 'none', color: 'blue' }}>
                 PERSONA
+            </NavLink>
+            <NavLink to="/login" style={{ marginRight: '10px', textDecoration: 'none', color: 'blue' }}>
+                LOGIN 
+            </NavLink>
+            <NavLink to="/Signup" style={{ marginRight: '10px', textDecoration: 'none', color: 'blue' }}>
+                REGISTRO
             </NavLink>
         </>
     );
