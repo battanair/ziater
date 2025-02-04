@@ -3,6 +3,7 @@ import Persona from "../pages/persona"
 import Obra2 from "../pages/Obra2";
 import Login from "../pages/Login";
 import Signup from "../pages/Signup";
+import Dashboard from "../pages/dashboard";
 
 
 export const routeConfig = [
@@ -26,6 +27,10 @@ export const routeConfig = [
     name: "Signup",
     path: "/Signup",
     page: <Signup />,
+  },{
+    name: "Dashboard",
+    path: "/dashboard",
+    page: <Dashboard />,
   }
  
 ];

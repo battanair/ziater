@@ -16,6 +16,9 @@ const Home = () => {
             <NavLink to="/Signup" style={{ marginRight: '10px', textDecoration: 'none', color: 'blue' }}>
                 REGISTRO
             </NavLink>
+            <NavLink to="/dashboard" style={{ marginRight: '10px', textDecoration: 'none', color: 'blue' }}>
+                DASHBOARD
+            </NavLink>
         </>
     );
 }
