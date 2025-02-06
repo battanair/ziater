@@ -37,5 +37,46 @@
   }
 }
 
+:root {
+  --mui-palette-primary-main: #000000;
+  --mui-palette-primary-dark: #000000;
+  --mui-palette-primary-light: #000000;
+  --mui-palette-primary-contrastText: #ffffff; /* Asegura que el texto siga siendo legible */
+}
+
+.MuiButton-root:hover,
+.MuiButton-root:active,
+.MuiButton-root.Mui-selected {
+  background-color: black !important;
+  color: white !important; /* Opcional, para mejor contraste */
+}
+
+.MuiIconButton-root:hover,
+.MuiIconButton-root:active,
+.Mui-selected {
+  color: black !important;
+}
+
+.MuiTabs-indicator {
+  background-color: black !important; /* Cambia la línea indicadora de tabs */
+}
+
+.MuiLink-root:hover {
+  color: black !important; /* Si tienes enlaces que cambian de color en hover */
+}
+
+
+.Mui-selected {
+  background-color: lightgrey !important; /* Si tienes enlaces que cambian de color en hover */
+}
+
+:root {
+  --mui-palette-primary-main: #000000 !important;
+  --mui-palette-primary-dark: #000000 !important;
+  --mui-palette-primary-light: #000000 !important;
+}
+
+
 
 .css-1d9cypr-MuiStack-root{display: none!important;}
+.css-3tkmg4{display: none!important;}

@@ -1,113 +1,118 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import React from 'react';
-import { Routes, Route } from "react-router";
+import React, { useEffect, useState } from 'react';
+import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
 import Container from '@mui/material/Container';
 import { routeConfig } from "./routing/routerConfig";
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import { NavLink } from 'react-router';
-import Buscador from './components/Buscador'
-import Grid from '@mui/material/Grid2';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import Grid from '@mui/material/Grid';
+import Buscador from './components/Buscador';
+import { AuthProvider } from "./components/AuthContext";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import Navbar from './components/Navbar';
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
 
 const App = () => {
-  const [auth, setAuth] = React.useState(true);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  
 
-  const handleChange = (event) => {
-    setAuth(event.target.checked);
-  };
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: "#000000", // Color principal negro
+        dark: "#000000",  // Sobrescribe el azul oscuro
+      light: "#000000",
+      },
+    },
+    components: {
+      MuiButton: {
+        styleOverrides: {
+          root: {
+            color: "#000000",
+            "&:hover": {
+              backgroundColor: "#333333", // Cambia el fondo en hover
+            },
+            "&:focus": {
+              backgroundColor: "#222222",
+            },
+            "&:active": {
+              backgroundColor: "#111111",
+            },
+          },
+        },
+      },
+      MuiAppBar: {
+        styleOverrides: {
+          root: {
+            backgroundColor: "#000000",
+          },
+        },
+      },
+      MuiTypography: {
+        styleOverrides: {
+          root: {
+            color: "#000000",
+          },
+        },
+      },
+      MuiLink: {
+        styleOverrides: {
+          root: {
+            color: "#000000",
+            "&:hover": {
+              color: "#333333",
+            },
+          },
+        },
+      },
+    },
+  });
 
-  const handleMenu = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
 
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
+  const [user, setUser] = useState(null);
+  const [anchorEl, setAnchorEl] = useState(null);
+  const auth = getAuth();
+
+  // Detectar cambios en la autenticación
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setUser(user); // Si hay usuario, lo guarda, si no, lo deja en null
+    });
+
+    return () => unsubscribe(); // Limpieza al desmontar
+  }, []);
+
+  const handleMenu = (event) => setAnchorEl(event.currentTarget);
+  const handleClose = () => setAnchorEl(null);
+
+  
 
   return (
-    <div className="app">
-      <Box sx={{ background: 'lightgrey', paddingBottom: '50px' }}>
-        <Box sx={{ flexGrow: 1 }}>
-          <AppBar position="static" sx={{
-            backgroundColor: 'white',
-            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
-            p: 1,
-            width: '100%'
-          }}>
-            <Toolbar variant="dense">
-              <Grid
-                container
-                direction="row"
-                sx={{
-                  justifyContent: "space-around",
-                  alignItems: "center",
-                  width: '100%'
-                }}
-              >
-                <Grid>
-                  <NavLink to="/"><img src="../logoziater.png" alt="Logo" style={{ height: "60px", marginLeft: "10px" }} /></NavLink>
-                </Grid>
-                <Grid>
-                  <Buscador />
-                </Grid>
+    <AuthProvider>
+      <Router>
+        <div className="app">
+          <Box sx={{ background: 'lightgrey', paddingBottom: '50px' }}>
+            <Box sx={{ flexGrow: 1 }}>
+             <Navbar />
+            </Box>
 
-                {auth && (
-                  <Grid>
-                    <IconButton
-                      size="large"
-                      aria-label="account of current user"
-                      aria-controls="menu-appbar"
-                      aria-haspopup="true"
-                      onClick={handleMenu}
-                      color="inherit"
-                    >
-                      <AccountCircle  sx={{color: 'black', fontSize: '3rem'}}/>
-                    </IconButton>
-                    <Menu
-                      id="menu-appbar"
-                      anchorEl={anchorEl}
-                      anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                      }}
-                      keepMounted
-                      transformOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
-                      }}
-                      open={Boolean(anchorEl)}
-                      onClose={handleClose}
-                    >
-                      <MenuItem onClick={handleClose}>
-                      <NavLink to="/dashboard" style={{ marginRight: '10px', textDecoration: 'none', color: 'black' }}>
-                          Mi Cuenta
-                      </NavLink>
-                      </MenuItem>
-                      <MenuItem onClick={handleClose}>My account</MenuItem>
-                    </Menu>
-                  </Grid>)}
-              </Grid>
-            </Toolbar>
-          </AppBar>
-        </Box>
-
-        <Container maxWidth="md" sx={{ background: 'white', marginTop: '50px', marginBottom: '50px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', paddingLeft: 3, paddingRight: 3 }}>
-          <Routes>
-            {routeConfig.map((item) => (
-              <Route key={item.path} path={item.path} element={item.page} />
-            ))}
-          </Routes>
-        </Container>
-      </Box>
-    </div>
+            <Container maxWidth="md" sx={{ background: 'white', marginTop: '50px', marginBottom: '50px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', paddingLeft: 3, paddingRight: 3 }}>
+              <Routes>
+                {routeConfig.map(({ path, page }, index) => (
+                  <Route key={index} path={path} element={page} />
+                ))}
+              </Routes>
+            </Container>
+          </Box>
+        </div>
+      </Router>
+    </AuthProvider>
   );
 };
 
