@@ -16,21 +16,19 @@ import Imagenesobra from '../components/imagenesobra';
 import Personaindex from '../components/personaindex';
 import { Premiosobra } from '../components/premiosobra';
 
-const Persona = () => {
-    const { id } = useParams(); // Capturamos el ID de la URL
-    const [personaData, setPersonaData] = useState(null);
-    const [elenco, setElenco] = useState([]);
 
-    useEffect(() => {
-        // Buscar la persona en la base de datos
-        const persona = personas_db.find((p) => p.id_persona === Number(id));
-        setPersonaData(persona);
-
-        if (persona) {
-            // Encontrar las relaciones asociadas con esta persona
-            const relaciones = relaciones_db.filter((rel) => rel.personaId === persona.id_persona);
-        }
-    }, [id]);
+    const Persona = () => {
+        const { id } = useParams(); // Capturamos el ID de la URL
+        const [personaData, setPersonaData] = useState(null);
+    
+        useEffect(() => {
+            // Realizar la petición a la API de Flask
+            fetch(`/api/persona/${id}`)
+                .then(response => response.json())
+                .then(data => setPersonaData(data))
+                .catch(error => console.error('Error:', error));
+        }, [id]);
+    
 
     if (!personaData) {
         return <p>Cargando datos de la persona...</p>;
@@ -43,7 +41,7 @@ const Persona = () => {
                 <Grid item xs={12} md={4}>
                     <Box sx={{ textAlign: 'center' }}>
                         <img
-                            src="https://picsum.photos/200/300"
+                            src="{personaData.foto} "
                             alt="Persona"
                             style={{ width: '100%', borderRadius: '8px' }}
                         />
@@ -54,7 +52,7 @@ const Persona = () => {
                 <Grid item xs={12} md={8}>
                     <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, marginBottom: 1 }}>
                         <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                            {personaData.nombre_persona} {personaData.apellido_persona}
+                        {personaData.nombre} 
                         </Typography>
                     </Box>
 

@@ -1,13 +1,9 @@
-from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 
-app = Flask(__name__)
+# Crear la instancia de SQLAlchemy
+db = SQLAlchemy()
 
-# 🔹 Configuración de la base de datos MySQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://if0_38033378:Cenudace1@sql101.infinityfree.com/if0_38033378_ziater'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-
-
+# Definir el modelo Persona
 class Persona(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(255), nullable=False)
@@ -15,6 +11,7 @@ class Persona(db.Model):
     fotos = db.Column(db.Text)
     rrss = db.Column(db.Text)
 
+# Definición de otros modelos...
 class Obra(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(255), nullable=False)
@@ -104,5 +101,4 @@ class ObraCategoria(db.Model):
 class Categoria(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
-if __name__ == '__main__':
-    db.create_all()
+
