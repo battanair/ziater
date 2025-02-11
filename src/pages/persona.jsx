@@ -1,191 +1,261 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
-import Stack from '@mui/material/Stack';
-import { NavLink } from 'react-router';
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { doc, getDoc, collection, getDocs, query, where } from "firebase/firestore";
+import { db } from "../firebaseConfig"; // Asegúrate de que db está bien exportado desde firebaseConfig
+import { Grid, Box, Typography, Accordion, AccordionSummary, AccordionDetails, Stack } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import Imagenesobra from "../components/imagenesobra";
+import Personaindex from "../components/personaindex";
+import { NavLink } from "react-router-dom";
+import { Premiosobra } from "../components/premiosobra";
+
+const Persona = () => {
+    const { id } = useParams();
+    const [persona, setPersona] = useState(null);
+    const [obrasRelacionadas, setObrasRelacionadas] = useState([]);
+    const [puestos, setPuestos] = useState([]);
+    const [premiosPersona, setPremiosPersona] = useState([]);
 
 
-import { obras_db, relaciones_db, personas_db } from '../components/database';
-import Imagenesobra from '../components/imagenesobra';
-import Personaindex from '../components/personaindex';
-import { Premiosobra } from '../components/premiosobra';
-
-
-    const Persona = () => {
-        const { id } = useParams(); // Capturamos el ID de la URL
-        const [personaData, setPersonaData] = useState(null);
+    useEffect(() => {
+        const fetchPersona = async () => {
+            if (!id) return;
     
-        useEffect(() => {
-            // Realizar la petición a la API de Flask
-            fetch(`/api/persona/${id}`)
-                .then(response => response.json())
-                .then(data => setPersonaData(data))
-                .catch(error => console.error('Error:', error));
-        }, [id]);
+            try {
+                const docRef = doc(db, "persona", id);
+                const docSnap = await getDoc(docRef);
+    
+                if (docSnap.exists()) {
+                    setPersona(docSnap.data());
+                } else {
+                    console.log("No se encontró ningún documento");
+                }
+            } catch (error) {
+                console.error("Error al obtener datos de la persona:", error);
+            }
+        };
+    
+        const fetchObrasRelacionadas = async () => {
+            if (!id) return;
+    
+            try {
+                const q = query(collection(db, "persona_obra"), where("id_persona", "==", id));
+                const querySnapshot = await getDocs(q);
+    
+                const puestosSet = new Set();
+    
+                const trabajos = await Promise.all(
+                    querySnapshot.docs.map(async (docTrabajo) => {
+                        const trabajoData = docTrabajo.data();
+    
+                        let obraTitulo = "Desconocido";
+                        let cartel = "https://via.placeholder.com/70";
+                        let categoria = "Desconocido";
+    
+                        puestosSet.add(trabajoData.puesto); // Guardamos los puestos únicos
+    
+                        if (trabajoData.id_obra) {
+                            const obraRef = doc(db, "obra", trabajoData.id_obra);
+                            const obraSnap = await getDoc(obraRef);
+    
+                            if (obraSnap.exists()) {
+                                const obraData = obraSnap.data();
+                                obraTitulo = obraData.titulo || "Desconocido";
+                                cartel = obraData.cartel || cartel;
+                                categoria = Array.isArray(obraData.categoria) ? obraData.categoria.join(", ") : obraData.categoria || categoria;
+                            }
+                        }
+    
+                        return {
+                            id: trabajoData.id_obra || docTrabajo.id,
+                            puesto: trabajoData.puesto,
+                            personaje: trabajoData.titulo,
+                            obraTitulo,
+                            cartel,
+                            anoinicio: trabajoData.fecha_inicio || null,
+                            anofin: trabajoData.fecha_fin || null,
+                            categoria
+                        };
+                    })
+                );
+    
+                setObrasRelacionadas(trabajos);
+                setPuestos([...puestosSet]);
+            } catch (error) {
+                console.error("Error al obtener trabajos relacionados:", error);
+            }
+        };
+    
+        const fetchPremiosPersona = async () => {
+            if (!id) return;
+    
+            try {
+                const q = query(collection(db, "premios_personas"), where("id_persona", "==", id));
+                const querySnapshot = await getDocs(q);
+    
+                const premios = await Promise.all(
+                    querySnapshot.docs.map(async (docPremio) => {
+                        const premioData = docPremio.data();
+                        let nombrePremio = "Desconocido";
+    
+                        if (premioData.id_premio) {
+                            const premioRef = doc(db, "premios", premioData.id_premio);
+                            const premioSnap = await getDoc(premioRef);
+    
+                            if (premioSnap.exists()) {
+                                nombrePremio = premioSnap.data().nombre_premio || "Desconocido";
+                            }
+                        }
+    
+                        return {
+                            nombre: nombrePremio,
+                            año: premioData.anio_premper,
+                            categoria: premioData.galardon_pers
+                        };
+                    })
+                );
+    
+                setPremiosPersona(premios);
+            } catch (error) {
+                console.error("Error al obtener los premios de la persona:", error);
+            }
+        };
+    
+        fetchPersona();
+        fetchObrasRelacionadas();
+        fetchPremiosPersona();
+    }, [id]);
     
 
-    if (!personaData) {
-        return <p>Cargando datos de la persona...</p>;
-    }
+    if (!persona) return <h1>Cargando datos...</h1>;
 
     return (
         <>
-            <Grid container spacing={4} sx={{ paddingTop: 4, paddingBottom: 4, paddingLeft: 4}}>
+            <Grid container spacing={4} sx={{ paddingTop: 4, paddingBottom: 4, paddingLeft: 4 }}>
                 {/* Columna 1: Imagen */}
                 <Grid item xs={12} md={4}>
-                    <Box sx={{ textAlign: 'center' }}>
+                    <Box sx={{ textAlign: "center" }}>
                         <img
-                            src="{personaData.foto} "
+                            src={persona.foto || "https://via.placeholder.com/300"} // Fallback si no hay foto
                             alt="Persona"
-                            style={{ width: '100%', borderRadius: '8px' }}
+                            style={{ width: "100%", borderRadius: "8px" }}
                         />
                     </Box>
                 </Grid>
 
                 {/* Columna 2: Texto */}
                 <Grid item xs={12} md={8}>
-                    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, marginBottom: 1 }}>
-                        <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-                        {personaData.nombre} 
+                    <Box sx={{ display: "flex", alignItems: "baseline", gap: 1, marginBottom: 1 }}>
+                        <Typography variant="h5" sx={{ fontWeight: "bold" }}>
+                            {persona.Nombre} {persona.Apellidos}
                         </Typography>
                     </Box>
 
-                    <Typography variant="body1" sx={{ fontWeight: 'bold', marginBottom: '8px' }}>
-                        Actor, directos y Don Cojones.
+                    <Typography variant="body1" sx={{ fontWeight: "bold", marginBottom: "8px" }}>
+                        {puestos.length > 0 ? puestos.join(" / ") : ""}
                     </Typography>
 
                     <Typography variant="body2" paragraph>
-                        {personaData.bio_persona}
+                        {persona.biografía || ""}
                     </Typography>
                 </Grid>
             </Grid>
-            <Imagenesobra imagen1="https://picsum.photos/400/300?random=1" imagen2="https://picsum.photos/400/300?random=2" imagen3="https://picsum.photos/400/300?random=3" imagen4="https://picsum.photos/400/300?random=4" imagen5="https://picsum.photos/400/300?random=5" />
 
-            <Grid
-                container
-                sx={{
-                    marginTop: 5,
-                    paddingBottom: 4,
-
-                    textAlign: 'center',
-                }}
-                direction={'column'}
-            >
-                <Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center" }}>
-                    OBRAS RELACIONADAS
-                </Typography>
-                <Grid
-                    container
-                    spacing={4}
-                    sx={{
-                        maxWidth: "100%", // Ancho máximo ajustado
-                        margin: '0 auto', // Asegura que el contenedor esté centrado
-                    }}
-                >
-                    <Grid item xs={6} sm={3} md={3}>
-                        <NavLink to="/obra/1" style={{ textDecoration: 'none' }} > <Personaindex nombrepersona="Obra 1" puestopersona="Personaje 1" />
-                        </NavLink> </Grid>
-                    <Grid item xs={6} sm={3} md={3}>
-                        <Personaindex nombrepersona="Obra 2" puestopersona="Dirección" />
-                    </Grid>
-                    <Grid item xs={6} sm={3} md={3}>
-                        <Personaindex nombrepersona="Obra con título mas largo" puestopersona="Personaje 3" />
-                    </Grid>
-                    <Grid item xs={6} sm={3} md={3}>
-                        <Personaindex nombrepersona="Bueno hay que poner más obritas" puestopersona="Personaje 4" />
-                    </Grid>
+            {/* OBRAS RELACIONADAS */}
+            
+            {obrasRelacionadas.length > 0 ? (
+    <>
+        <Typography
+            variant="h5"
+            component="h5"
+            sx={{ fontWeight: "bold", textAlign: "center", marginTop: 5, marginBottom: 3 }}
+        >
+            OBRAS DESTACADAS
+        </Typography>
+        <Grid container spacing={4} sx={{ maxWidth: "100%", margin: "0 auto" }}>
+            {obrasRelacionadas.slice(0, 4).map((obra, index) => ( // Limitamos a 4
+                <Grid item xs={6} sm={3} md={3} key={index}>
+                    <NavLink to={`/obra/${obra.id}`} style={{ textDecoration: 'none' }}>
+                        <Personaindex
+                            nombrepersona={obra.obraTitulo}
+                            puestopersona={obra.personaje}
+                            fotito={obra.cartel}
+                        />
+                    </NavLink>
                 </Grid>
-            </Grid>
+            ))}
+        </Grid> {/* 👈 Asegúrate de cerrar correctamente el Grid */}
+    </>
+) : (
+    <Typography>" "</Typography>
+)}
 
 
+
+            {/* ACORDEÓN DE ELENCO */}
             <Box sx={{ marginTop: 5, paddingBottom: 5 }}>
+                {puestos.length > 0 ? (
+                    puestos.map((puesto, index) => (
+                        <Accordion key={index}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls={`panel${index}-content`} id={`panel${index}-header`} sx={{background: "black", color: "white"}}>
+                                <h5>{puesto}</h5>
+                            </AccordionSummary>
+                            <AccordionDetails>
+                                {obrasRelacionadas
+                                    .filter(obra => obra.puesto === puesto)
+                                    .map((obra, idx) => {
+                                        const anioInicio = obra.anoinicio || "Año desconocido";
+                                        const anioFin = !obra.anofin || obra.anofin === 0 ? "Actualmente" : obra.anofin;
+                                        const anioTexto = anioInicio !== "Año desconocido" ? `(${anioInicio} - ${anioFin})` : "";
 
-                <Accordion defaultExpanded>
-                    <AccordionSummary className="perheadlist"
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls="panel1-content"
-                        id="panel1-header"
-                    >
-                        <h5>ELENCO</h5>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <Stack direction="horizontal" spacing={2} alignItems="center">
-                            <img
-                                src="https://picsum.photos/200/300"
-                                alt="Obra"
-                                style={{ width: '70px', borderRadius: '8px' }} />
-
-                            <Typography className="perlistaobra"
-                                variant="body1"
-                                sx={{
-                                    lineHeight: 1.2,
-                                    color: '#333',
-                                    fontSize: '1rem',
-                                }}
-                            ><b>MISERICORDIA</b> <br></br><>(2015)</> <br></br> Impro
-
-                            </Typography>
-
-                        </Stack>
-                    </AccordionDetails>
-                </Accordion>
-
-                <Accordion>
-                    <AccordionSummary className="perheadlist"
-                        expandIcon={<ExpandMoreIcon />}
-                        aria-controls="panel1-content"
-                        id="panel1-header"
-                    >
-                        <h5>ELENCO</h5>
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        <Stack direction="horizontal" spacing={2} alignItems="center">
-                            <img
-                                src="https://picsum.photos/200/300"
-                                alt="Obra"
-                                style={{ width: '70px', borderRadius: '8px' }} />
-
-                            <Typography className="perlistaobra"
-                                variant="body1"
-                                sx={{
-                                    lineHeight: 1.2,
-                                    color: '#333',
-                                    fontSize: '1rem',
-                                }}
-                            ><b>MISERICORDIA</b> <br></br><>(2015)</> <br></br> Impro
-
-                            </Typography>
-
-                        </Stack>
-                    </AccordionDetails>
-                </Accordion>
+                                        return (
+                                            <NavLink to={`/obra/${obra.id}`} style={{ textDecoration: 'none' }} >
+                                                <Stack key={idx} direction="row" spacing={2} alignItems="center">
+                                                    <img
+                                                        src={obra.cartel || "https://via.placeholder.com/70"}
+                                                        alt={obra.obraTitulo}
+                                                        style={{ width: "70px", borderRadius: "8px" }}
+                                                    />
+                                                    <Typography variant="body1" sx={{ lineHeight: 1.2, color: "#333", fontSize: "1rem" }}>
+                                                        <b>{obra.obraTitulo}</b> {anioTexto} <br /> {obra.personaje} <br /> {obra.categoria || ""}
+                                                    </Typography>
+                                                </Stack>
+                                            </NavLink>
+                                        );
+                                    })}
+                            </AccordionDetails>
+                        </Accordion>
+                    ))
+                ) : (
+                    <Typography>""</Typography>
+                )}
             </Box>
-            <Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center", marginTop: 5, marginBottom: 3 }}>
-                PPREMIOS          
-            </Typography>
 
-            <Stack
-                direction={{ xs: "column", sm: "row" }} // Columnas en pantallas pequeñas, filas en grandes
-                spacing={2}
-                sx={{
-                    justifyContent: { xs: "center", sm: "space-around" }, // Centrado en pequeñas
-                    alignItems: "center", // Alineación vertical uniforme
-                    width: "100%", // Asegura que ocupe todo el ancho disponible
-                    paddingX: 2, // Margen horizontal en pantallas pequeñas
-                    paddingBottom: 5
-                }}
-            >
-                <Premiosobra premio="Premios MAX" year="2023" condecoracion="Mejor interpretación" />
-                <Premiosobra premio="Premios MAX" year="2023" condecoracion="Mejor guapisimo" />
-                <Premiosobra premio="Premios MAX" year="2023" condecoracion="Mejor ole tu " />
-            </Stack>
+            {/* PREMIOS */}
+            {/* PREMIOS */}
+<Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center", marginTop: 5, marginBottom: 3 }}>
+    PREMIOS
+</Typography>
 
+<Stack
+    direction={{ xs: "column", sm: "row" }}
+    spacing={2}
+    sx={{
+        justifyContent: { xs: "center", sm: "space-around" },
+        alignItems: "center",
+        width: "100%",
+        paddingX: 2,
+        paddingBottom: 5,
+    }}
+>
+    {premiosPersona.length > 0 ? (
+        premiosPersona.map((premio, index) => (
+            <Premiosobra key={index} premio={premio.nombre} year={premio.año} condecoracion={premio.categoria} />
+        ))
+    ) : (
+        <Typography>No hay premios registrados.</Typography>
+    )}
+</Stack>
 
         </>
     );

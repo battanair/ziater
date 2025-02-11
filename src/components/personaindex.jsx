@@ -1,7 +1,7 @@
 import Grid from '@mui/material/Grid';
 import { Box, Typography, Paper } from '@mui/material';
 
-const Personaindex = ({nombrepersona, puestopersona}) => {
+const Personaindex = ({nombrepersona, puestopersona, fotito}) => {
   return (
    
       <Grid item>
@@ -20,7 +20,8 @@ const Personaindex = ({nombrepersona, puestopersona}) => {
           }}
         >
           <img
-            src="https://picsum.photos/150/200"
+          alt='foto de {nombrepersona}'
+            src={fotito}
             style={{
               borderRadius: '8px',
               marginBottom: '16px',
