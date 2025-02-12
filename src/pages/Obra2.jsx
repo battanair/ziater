@@ -1,24 +1,22 @@
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { db } from '../firebaseConfig';
+import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import { Typography } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import Rating from '@mui/material/Rating';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
-import React, { useState, useEffect } from 'react';
-import { styled } from '@mui/material/styles';
-import Stack from '@mui/material/Stack';
-import Switch from '@mui/material/Switch';
-import { useParams } from 'react-router';
-import { NavLink } from "react-router";
-
+import { NavLink } from 'react-router-dom';
+import Item from '../components/item';
 import Personaindex from '../components/personaindex';
+import { styled } from '@mui/material/styles';
+import Switch from '@mui/material/Switch';
 import Imagenesobra from '../components/imagenesobra';
 import { Premiosobra } from '../components/premiosobra';
 import { Obracriticas } from '../components/Obracriticas';
-import Item from '../components/item';
-
-
-import { obras_db, relaciones_db, personas_db } from '../components/database';
 
 const AntSwitch = styled(Switch)(({ theme }) => ({
   width: 28,
@@ -62,62 +60,143 @@ const AntSwitch = styled(Switch)(({ theme }) => ({
   },
 }));
 
+const style = {
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  width: { xs: '90%', md: '55%' },
+  bgcolor: 'background.paper',
+  border: '2px solid #000',
+  boxShadow: 24,
+  p: 4,
+};
+
+
+
+
 const Obra2 = () => {
-  const { id } = useParams(); // Capturamos el ID de la URL
-  const [open, setOpen] = React.useState(false);
-  const handleOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
-
-  const style = {
-    position: 'absolute',
-    top: '50%',
-    left: '50%',
-    transform: 'translate(-50%, -50%)',
-    width: { xs: '90%', md: '55%' },
-    bgcolor: 'background.paper',
-    border: '2px solid #000',
-    boxShadow: 24,
-    p: 4,
-  };
-
+  const { id } = useParams();
   const [obraData, setObraData] = useState(null);
   const [elenco, setElenco] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [productoras, setProductoras] = useState([]);
 
-  useEffect(() => {
-    // Buscamos la obra correspondiente usando el id que viene de useParams()
-    const obra = obras_db.find((obra) => obra.id_obra === Number(id));
-    setObraData(obra); // Asignamos la obra encontrada al estado
 
-    if (obra) {
-      // Encuentra las relaciones asociadas con esta obra
-      const relaciones = relaciones_db.filter((rel) => rel.obraId === obra.id_obra);
+  const [showCurrentActors, setShowCurrentActors] = useState(true); // Estado para el switch
 
-      // Genera el elenco con las personas asociadas
-      const elencoData = relaciones.map((rel) => {
-        const persona = personas_db.find((p) => p.id_persona === rel.personaId);
-        return { ...persona, rol: rel.rol, personaje: rel.personaje };
-      });
+  const handleSwitchChange = (event) => {
+    setShowCurrentActors(event.target.checked);
+  };
 
-      setElenco(elencoData);
+  // Filtramos el elenco para que solo muestre actores
+  const filteredElenco = elenco.filter((persona) => {
+    if (persona.rol !== "Actor") return false; // Solo actores
+
+    if (showCurrentActors) {
+      return persona.fecha_fin === 0; // Si el switch está activado, solo actores con fecha_fin: 0
+    } else {
+      return persona.fecha_inicio === obraData.anoinicio; // Si está desactivado, actores que empezaron el año de anoinicio de la obra
     }
-  }, [id]); // Se ejecuta cada vez que el id cambia
+  });
+
+
+
+
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  useEffect(() => {
+    const fetchObra = async () => {
+      try {
+        const obraRef = doc(db, 'obra', id);
+        const obraSnap = await getDoc(obraRef);
+
+        if (obraSnap.exists()) {
+          setObraData(obraSnap.data());
+        } else {
+          console.error('La obra no existe en Firestore.');
+        }
+      } catch (error) {
+        console.error('Error obteniendo la obra:', error);
+      }
+    };
+
+    const fetchProductoras = async () => {
+      try {
+        const querySnapshot = await getDocs(collection(db, "productoras"));
+        const productorasData = querySnapshot.docs.map((doc) => ({
+          id: doc.id,  // Agregamos el ID del documento
+          ...doc.data()
+        }));
+        setProductoras(productorasData);
+      } catch (error) {
+        console.error("Error obteniendo productoras:", error);
+      }
+    };
+
+    const fetchElenco = async () => {
+      try {
+        const relacionesQuery = query(collection(db, 'persona_obra'), where('id_obra', '==', id));
+        const relacionesSnap = await getDocs(relacionesQuery);
+
+        let elencoTemp = [];
+        for (const relDoc of relacionesSnap.docs) {
+          const relData = relDoc.data();
+          console.log("Relación encontrada:", relData);
+
+          const personaRef = doc(db, 'persona', relData.id_persona);
+          const personaSnap = await getDoc(personaRef);
+
+          if (personaSnap.exists()) {
+            const personaData = personaSnap.data();
+            console.log("Persona encontrada:", personaData);
+
+            elencoTemp.push({
+              id: personaSnap.id,
+              nombre: personaData.Nombre,
+              apellidos: personaData.Apellidos,
+              foto: personaData.foto,
+              instagram: personaData.instagram,
+              rol: relData.puesto,
+              personaje: relData.titulo,
+              fecha_inicio: relData.fecha_inicio, // Asegúrate de que estos campos existan en persona_obra
+              fecha_fin: relData.fecha_fin
+            });
+          }
+        }
+        console.log("Elenco final:", elencoTemp);
+        setElenco(elencoTemp);
+      } catch (error) {
+        console.error('Error obteniendo el elenco:', error);
+      }
+    };
+
+    if (id) {
+      fetchObra();
+      fetchElenco();
+      fetchProductoras(); // Agregamos la llamada aquí
+    }
+  }, [id]);
+
+
+
 
   if (!obraData) {
     return <p>Cargando datos de la obra...</p>;
   }
-
+  const director = elenco.find(persona => persona.rol === "Director");
+  const dramaturgo = elenco.find(persona => persona.rol === "Guion");
 
   return (
-
-    <><Grid container spacing={4} sx={{ paddingTop: 4, paddingLeft: 4}}>
+    <><Grid container spacing={4} sx={{ paddingTop: 4, paddingLeft: 4 }}>
 
       {/* Columna 1: Imagen */}
 
       <Grid item xs={12} md={4}>
         <Box sx={{ textAlign: 'center' }}>
           <img
-            src="https://picsum.photos/200/300"
-            alt="Obra"
+            src={obraData.cartel}
+            alt={obraData.titulo}
             style={{ width: '100%', borderRadius: '8px' }} />
         </Box>
       </Grid>
@@ -136,7 +215,7 @@ const Obra2 = () => {
               marginBottom: 2
             }}
           >
-            {obraData?.etiquetas_obra?.map((item, index) => (
+            {obraData.categoria?.map((item, index) => (
               <Item key={index}>{item}</Item>
             ))}
 
@@ -154,7 +233,7 @@ const Obra2 = () => {
                 fontWeight: "bold", // Opcional para destacar la nota
               }}
             >
-              {obraData.nota_obra}
+              {obraData.nota}
             </Item>
           </Stack>
         </div>
@@ -162,19 +241,31 @@ const Obra2 = () => {
         {/* Título con el año en la misma línea */}
         <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, marginBottom: 1 }}>
           <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            {obraData.nombre_obra}
+            {obraData.titulo}
           </Typography>
           <Typography variant="h6" color="textSecondary" sx={{ fontSize: '1rem' }}>
-            {obraData.anio_obra}
+            ({obraData.anoinicio} - {obraData.anofin === 0 ? "actualmente" : obraData.anofin})
           </Typography>
         </Box>
 
-        <Typography variant="body1" sx={{ fontWeight: 'bold', marginBottom: '8px' }}>
-          SHOWPRIME Y CENTRO DRAMÁTICO NACIONAL
+
+        <Typography variant="body1" sx={{ fontWeight: "bold", marginBottom: "8px" }}>
+          {productoras.length > 0
+            ? productoras.map((prod, index) => (
+              <NavLink
+                key={prod.id || index}
+                to={`/compania/${prod.id}`}
+                style={{ textDecoration: 'none', marginRight: '5px', color: 'black' }}
+              >
+                {prod.nombre_prod}
+              </NavLink>
+            ))
+            : "Sin productoras asociadas"}
         </Typography>
 
+
         <Typography variant="body2" paragraph>
-          {obraData.sinopsis_obra}
+          {obraData.sinopsis}
         </Typography>
 
         <Button variant="contained" sx={{ background: 'black', marginBottom: '40px' }} onClick={handleOpen}><h6><b>COMPRAR ENTRADAS</b></h6>
@@ -183,53 +274,59 @@ const Obra2 = () => {
     </Grid>
 
 
-      <><Box container sx={{ marginTop: 4, paddingLeft: 3 }}>
-        <h5><b>TEXTO Y DIRECCIÓN DE:</b></h5>
-        <Grid container spacing={2}>
-          {/* Columna 1: Personaindex alineado a la izquierda */}
-          <Grid item xs={12} md={6} container
-            direction="row"
-            sx={{
-              justifyContent: "flex-start",
-              alignItems: "center",
-            }}>
-            <Grid
-              container
-              direction="row"
-              alignItems="center"
-              sx={{ justifyContent: "flex-start" }} // Centra horizontalmente
-              spacing={2} // Espaciado entre elementos
-            >
-              <Personaindex nombrepersona={"Director Directorez"} puestopersona={"Director"} />
-            </Grid>
-          </Grid>
+    <><Box container sx={{ marginTop: 4, paddingLeft: 3 }}>
+  <Grid container spacing={2}>
+    {/* Columna 1: Dirección y Dramaturgia */}
+    <Grid item xs={12} md={6}>
+      <h5><b>{director && dramaturgo && director.id === dramaturgo.id ? "Dramaturgia y Dirección de:" : ""}</b></h5>
+      {director && dramaturgo && director.id === dramaturgo.id && <Personaindex nombrepersona={director.nombre} puestopersona={"Director y Dramaturgo"} />}
 
-          {/* Columna 2: Video con iframe */}
-          <Grid item xs={12} md={6}>
-            <Box sx={{
-              position: 'relative',
-              paddingTop: '56.25%', // Mantener proporción 16:9
-              overflow: 'hidden',
-              borderRadius: '8px',
-            }}>
-              <iframe
-                src="https://www.youtube.com/embed/iwyiAHxZs7M?si=mq-U2bFnXzCVe72D"
-                title="YouTube video player"
-                frameBorder="0"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                referrerPolicy="strict-origin-when-cross-origin"
-                allowFullScreen
-                style={{
-                  position: 'absolute',
-                  top: 0,
-                  left: 0,
-                  width: '100%',
-                  height: '100%',
-                }} />
-            </Box>
-          </Grid>
-        </Grid>
-      </Box><Grid
+      {director && (!dramaturgo || director.id !== dramaturgo.id) && (
+        <>
+          <h5><b>Dirigido por:</b></h5>
+          <Personaindex nombrepersona={director.nombre} puestopersona={"Director"} />
+        </>
+      )}
+
+      {dramaturgo && (!director || director.id !== dramaturgo.id) && (
+        <>
+          <h5><b>Dramaturgia:</b></h5>
+          <Personaindex nombrepersona={dramaturgo.nombre} puestopersona={"Dramaturgo"} />
+        </>
+      )}
+    </Grid>
+
+    {/* Columna 2: Video con iframe */}
+    <Grid item xs={12} md={6}>
+      <Box sx={{
+        position: 'relative',
+        paddingTop: '56.25%', // Mantener proporción 16:9
+        overflow: 'hidden',
+        borderRadius: '8px',
+      }}>
+        <iframe
+          src={obraData.trailer}
+          title="YouTube video player"
+          frameBorder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerPolicy="strict-origin-when-cross-origin"
+          allowFullScreen
+          style={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+          }}
+        />
+      </Box>
+    </Grid>
+  </Grid>
+</Box>
+
+      
+      
+      <Grid
         container
         sx={{
           paddingTop: 4,
@@ -238,147 +335,142 @@ const Obra2 = () => {
         }}
         direction={'column'}
       >
-          <Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center" }}>
-            ELENCO
-          </Typography>
+        <Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center" }}>
+          ELENCO
+        </Typography>
 
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
-            <Typography>Original</Typography>
-            <AntSwitch defaultChecked inputProps={{ 'aria-label': 'ant design' }} />
+        <Stack
+          direction="row"
+          spacing={1}
+          sx={{
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
+          <Typography>Original</Typography>
+          <AntSwitch checked={showCurrentActors} onChange={handleSwitchChange} inputProps={{ 'aria-label': 'ant design' }} />
+          <Typography>Actual</Typography>
+        </Stack>
 
-            <Typography>Actual</Typography>
-          </Stack>
-
-          <Grid
-            container
-            spacing={4}
-            sx={{
-              maxWidth: "100%", // Ancho máximo ajustado
-              margin: '0 auto', // Asegura que el contenedor esté centrado
-              marginTop: 3,
-            }}
-          >
-            <Grid item xs={6} sm={3} md={3}>
-            <NavLink to="/persona/1" style={{ textDecoration: 'none'}} > <Personaindex nombrepersona="Actriz Actrizer" puestopersona="Personaje 1" />
-            </NavLink> </Grid>
-            <Grid item xs={6} sm={3} md={3}>
-              <Personaindex nombrepersona="Actor Actorez" puestopersona="Personaje 2" />
-            </Grid>
-            <Grid item xs={6} sm={3} md={3}>
-              <Personaindex nombrepersona="Actriz Actrizer" puestopersona="Personaje 3" />
-            </Grid>
-            <Grid item xs={6} sm={3} md={3}>
-              <Personaindex nombrepersona="Actor Actorez" puestopersona="Personaje 4" />
-            </Grid>
-          </Grid>
-
-          <Grid
-
-            container
-            direction="row"
-            sx={{
-              justifyContent: 'space-around',
-              alignItems: 'flex-start',
-              marginTop: 3,
-            }}
-          >
-            <Button
-              variant="contained"
-              size="large"
-              sx={{ background: 'black' }}
-            >
-              <h5>
-                <b>TODO EL EQUIPO</b>
-              </h5>
-            </Button>
-          </Grid>
-        </Grid><Imagenesobra imagen1="https://picsum.photos/400/300?random=1" imagen2="https://picsum.photos/400/300?random=2" imagen3="https://picsum.photos/400/300?random=3" imagen4="https://picsum.photos/400/300?random=4" imagen5="https://picsum.photos/400/300?random=5" /><Stack
-          direction="column"
+        <Grid
+          container
           spacing={4}
           sx={{
-            justifyContent: "flex-start",
-            alignItems: "center",
-            paddingTop: 5,
-            paddingBottom: 5,
+            maxWidth: "100%",
+            margin: '0 auto',
+            marginTop: 3,
           }}
         >
-          <Typography variant="h5" component="h5" sx={{ fontWeight: "bold" }}>
-            PREMIOS
-          </Typography>
+          {filteredElenco.map((persona, index) => (
+            <Grid item xs={6} sm={3} key={index}>
+              <NavLink to={`/persona/${persona.id}`} style={{ textDecoration: 'none' }}>
+                <Personaindex nombrepersona={persona.nombre} puestopersona={persona.personaje} fotito={persona.foto} />
+              </NavLink>
+            </Grid>
+          ))}
+        </Grid>
+        <Grid
 
-          <Stack
-            direction={{ xs: "column", sm: "row" }} // Columnas en pantallas pequeñas, filas en grandes
-            spacing={2}
-            sx={{
-              justifyContent: { xs: "center", sm: "space-around" }, // Centrado en pequeñas
-              alignItems: "center", // Alineación vertical uniforme
-              width: "100%", // Asegura que ocupe todo el ancho disponible
-              paddingX: 2, // Margen horizontal en pantallas pequeñas
-            }}
-          >
-            <Premiosobra premio="Premios MAX" year="2023" condecoracion="Mejor autoría" />
-            <Premiosobra premio="Premios MAX" year="2023" condecoracion="Mejor autoría" />
-            <Premiosobra premio="Premios MAX" year="2023" condecoracion="Mejor autoría" />
-          </Stack>
-        </Stack><Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center" }}>
-          CRÍTICAS
-        </Typography><Stack
-          direction={{ xs: 'column', sm: 'row' }} // Por defecto columna, en pantallas más grandes fila
-          spacing={2}
+          container
+          direction="row"
           sx={{
-            width: "100%",
-            padding: 2,
-            flexWrap: "wrap", // Permite que se envuelvan las críticas en dispositivos grandes
+            justifyContent: 'space-around',
+            alignItems: 'flex-start',
+            marginTop: 3,
           }}
         >
-          {/* Critica 1 */}
-          <Obracriticas
-            medio="La Gacetilla"
-            texto="Esta es la crítica del primer medio. Darío Duarte, hijo de uruguayos, es un dramaturgo que a sus 45 años se enfrenta a su primer estreno en la Sala Grande del Teatro María Guerrero..."
-            nota="9,5" />
-
-          {/* Critica 2 */}
-          <Obracriticas
-            medio="Otro medio"
-            texto="Darío Duarte, hijo de uruguayos, es un dramaturgo que a sus 45 años se enfrenta a su primer estreno en la Sala Grande del Teatro María Guerrero..."
-            nota="8" />
-        </Stack></>
-
-      {/* Botón para ver todas las críticas */}
-      <><Grid
-        container
-        direction="row"
+          <Button
+            variant="contained"
+            size="large"
+            sx={{ background: 'black' }}
+          >
+            <h5>
+              <b>TODO EL EQUIPO</b>
+            </h5>
+          </Button>
+        </Grid>
+      </Grid>
+      <Imagenesobra imagenes={obraData.fotos_obra || []} />
+      <Stack
+        direction="column"
+        spacing={4}
         sx={{
-          justifyContent: "space-around",
-          alignItems: "flex-start",
-          marginTop: 3,
+          justifyContent: "flex-start",
+          alignItems: "center",
+          paddingTop: 5,
+          paddingBottom: 5,
         }}
       >
-        <Button variant="contained" size="large" sx={{ background: 'black', marginBottom: '40px' }}>
-          <h5><b>TODAS LAS CRÍTICAS</b></h5>
-        </Button>
-      </Grid><Modal
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="modal-modal-title"
-        aria-describedby="modal-modal-description"
+        <Typography variant="h5" component="h5" sx={{ fontWeight: "bold" }}>
+          PREMIOS
+        </Typography>
+
+        <Stack
+          direction={{ xs: "column", sm: "row" }} // Columnas en pantallas pequeñas, filas en grandes
+          spacing={2}
+          sx={{
+            justifyContent: { xs: "center", sm: "space-around" }, // Centrado en pequeñas
+            alignItems: "center", // Alineación vertical uniforme
+            width: "100%", // Asegura que ocupe todo el ancho disponible
+            paddingX: 2, // Margen horizontal en pantallas pequeñas
+          }}
+        >
+          <Premiosobra premio="Premios MAX" year="2023" condecoracion="Mejor autoría" />
+          <Premiosobra premio="Premios MAX" year="2023" condecoracion="Mejor autoría" />
+          <Premiosobra premio="Premios MAX" year="2023" condecoracion="Mejor autoría" />
+        </Stack>
+      </Stack><Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center" }}>
+        CRÍTICAS
+      </Typography><Stack
+        direction={{ xs: 'column', sm: 'row' }} // Por defecto columna, en pantallas más grandes fila
+        spacing={2}
+        sx={{
+          width: "100%",
+          padding: 2,
+          flexWrap: "wrap", // Permite que se envuelvan las críticas en dispositivos grandes
+        }}
       >
-          <Box sx={style}>
-            <Typography id="modal-modal-title" variant="h6" component="h2">
-              Comprar entradas
-            </Typography>
-            <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-              Aquí irá una dara grid jeje
-            </Typography>
-          </Box>
-        </Modal></></>
+        {/* Critica 1 */}
+        <Obracriticas
+          medio="La Gacetilla"
+          texto="Esta es la crítica del primer medio. Darío Duarte, hijo de uruguayos, es un dramaturgo que a sus 45 años se enfrenta a su primer estreno en la Sala Grande del Teatro María Guerrero..."
+          nota="9,5" />
+
+        {/* Critica 2 */}
+        <Obracriticas
+          medio="Otro medio"
+          texto="Darío Duarte, hijo de uruguayos, es un dramaturgo que a sus 45 años se enfrenta a su primer estreno en la Sala Grande del Teatro María Guerrero..."
+          nota="8" />
+      </Stack></>
+
+      {/* Botón para ver todas las críticas */ }
+  <><Grid
+    container
+    direction="row"
+    sx={{
+      justifyContent: "space-around",
+      alignItems: "flex-start",
+      marginTop: 3,
+    }}
+  >
+    <Button variant="contained" size="large" sx={{ background: 'black', marginBottom: '40px' }}>
+      <h5><b>TODAS LAS CRÍTICAS</b></h5>
+    </Button>
+  </Grid><Modal
+    open={open}
+    onClose={handleClose}
+    aria-labelledby="modal-modal-title"
+    aria-describedby="modal-modal-description"
+  >
+      <Box sx={style}>
+        <Typography id="modal-modal-title" variant="h6" component="h2">
+          Comprar entradas
+        </Typography>
+        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+          Aquí irá una dara grid jeje
+        </Typography>
+      </Box>
+    </Modal></></>
   )
 }
 

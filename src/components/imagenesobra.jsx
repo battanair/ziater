@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Slider from "react-slick";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
@@ -9,24 +9,21 @@ import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const Imagenesobra = ({imagen1, imagen2, imagen3, imagen4, imagen5}) => {
-  const [open, setOpen] = useState(false); // Estado para el modal
-  const [currentIndex, setCurrentIndex] = useState(0); // Índice de la imagen actual
+const ImagenesObra = ({ imagenes = [] }) => {
+  const [open, setOpen] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const sliderRef = useRef(null);
 
-  const images = [
-    `${imagen1}`,
-    `${imagen2}`,
-    `${imagen3}`,
-    `${imagen4}`,
-    `${imagen5}`,
-  ];
+  // Filtrar imágenes no válidas
+  const validImages = imagenes.filter((img) => img);
 
   const settings = {
     infinite: true,
     speed: 500,
-    slidesToShow: 2,
+    slidesToShow: Math.min(2, validImages.length),
     slidesToScroll: 1,
-    centerMode: true,
+    centerMode: validImages.length > 1,
+    arrows: false, // Desactivar flechas por defecto de slick-carousel
     responsive: [
       {
         breakpoint: 768,
@@ -43,50 +40,90 @@ const Imagenesobra = ({imagen1, imagen2, imagen3, imagen4, imagen5}) => {
     ],
   };
 
-  // Abre el modal y establece el índice de la imagen seleccionada
   const handleOpen = (index) => {
     setCurrentIndex(index);
     setOpen(true);
   };
 
-  // Cierra el modal
   const handleClose = () => {
     setOpen(false);
   };
 
-  // Mueve a la imagen anterior
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    if (sliderRef.current) {
+      sliderRef.current.slickPrev();
+    }
   };
 
-  // Mueve a la siguiente imagen
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    if (sliderRef.current) {
+      sliderRef.current.slickNext();
+    }
   };
 
   return (
-    <div style={{ maxWidth: "100%", margin: "0", padding: "0" }}>
-      {/* Slider */}
-      <Slider {...settings}>
-        {images.map((src, index) => (
-          <div key={index} style={{ padding: "0" }}>
-            <img
-              src={src}
-              alt={`Slide ${index}`}
-              style={{
-                height: "200px",
-                width: "100%",
-                objectFit: "cover",
-                display: "block",
-                cursor: "pointer", // Cursor de puntero para indicar clic
-              }}
-              onClick={() => handleOpen(index)} // Abre la imagen al hacer clic
-            />
-          </div>
-        ))}
-      </Slider>
+    <div style={{ maxWidth: "100%", margin: "0", padding: "0", position: "relative" }}>
+      {validImages.length > 0 ? (
+        <div style={{ position: "relative" }}>
+          <Slider ref={sliderRef} {...settings}>
+            {validImages.map((src, index) => (
+              <div key={index} style={{ padding: "0" }}>
+                <img
+                  src={src}
+                  alt={`Slide ${index}`}
+                  style={{
+                    height: "200px",
+                    width: "100%",
+                    objectFit: "cover",
+                    display: "block",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => handleOpen(index)}
+                />
+              </div>
+            ))}
+          </Slider>
 
-      {/* Modal para mostrar la imagen ampliada */}
+          {validImages.length > 1 && (
+            <>
+              <IconButton
+                onClick={handlePrev}
+                sx={{
+                  position: "absolute",
+                  left: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  zIndex: 2,
+                  color: "white",
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  '&:hover': { backgroundColor: "rgba(0, 0, 0, 0.7)" }
+                }}
+              >
+                <ArrowBackIosNewIcon />
+              </IconButton>
+              <IconButton
+                onClick={handleNext}
+                sx={{
+                  position: "absolute",
+                  right: 10,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  zIndex: 2,
+                  color: "white",
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  '&:hover': { backgroundColor: "rgba(0, 0, 0, 0.7)" }
+                }}
+              >
+                <ArrowForwardIosIcon />
+              </IconButton>
+            </>
+          )}
+        </div>
+      ) : (
+        <p>No hay imágenes disponibles</p>
+      )}
+
+      {/* Modal */}
       <Modal open={open} onClose={handleClose}>
         <Box
           sx={{
@@ -97,9 +134,8 @@ const Imagenesobra = ({imagen1, imagen2, imagen3, imagen4, imagen5}) => {
             backgroundColor: "rgba(0, 0, 0, 0.8)",
             position: "relative",
           }}
-          onClick={handleClose} // Cierra al hacer clic fuera
+          onClick={handleClose}
         >
-          {/* Detener propagación del clic dentro del modal */}
           <Box
             onClick={(e) => e.stopPropagation()}
             sx={{
@@ -109,7 +145,6 @@ const Imagenesobra = ({imagen1, imagen2, imagen3, imagen4, imagen5}) => {
               position: "relative",
             }}
           >
-            {/* Botón cerrar */}
             <IconButton
               onClick={handleClose}
               sx={{
@@ -122,21 +157,21 @@ const Imagenesobra = ({imagen1, imagen2, imagen3, imagen4, imagen5}) => {
               <CloseIcon />
             </IconButton>
 
-            {/* Botón anterior */}
-            <IconButton
-              onClick={handlePrev}
-              sx={{
-                position: "absolute",
-                left: "16px",
-                color: "white",
-              }}
-            >
-              <ArrowBackIosNewIcon />
-            </IconButton>
+            {validImages.length > 1 && (
+              <IconButton
+                onClick={handlePrev}
+                sx={{
+                  position: "absolute",
+                  left: "16px",
+                  color: "white",
+                }}
+              >
+                <ArrowBackIosNewIcon />
+              </IconButton>
+            )}
 
-            {/* Imagen ampliada */}
             <img
-              src={images[currentIndex]}
+              src={validImages[currentIndex]}
               alt={`Ampliada ${currentIndex}`}
               style={{
                 maxHeight: "90%",
@@ -145,17 +180,18 @@ const Imagenesobra = ({imagen1, imagen2, imagen3, imagen4, imagen5}) => {
               }}
             />
 
-            {/* Botón siguiente */}
-            <IconButton
-              onClick={handleNext}
-              sx={{
-                position: "absolute",
-                right: "16px",
-                color: "white",
-              }}
-            >
-              <ArrowForwardIosIcon />
-            </IconButton>
+            {validImages.length > 1 && (
+              <IconButton
+                onClick={handleNext}
+                sx={{
+                  position: "absolute",
+                  right: "16px",
+                  color: "white",
+                }}
+              >
+                <ArrowForwardIosIcon />
+              </IconButton>
+            )}
           </Box>
         </Box>
       </Modal>
@@ -163,4 +199,4 @@ const Imagenesobra = ({imagen1, imagen2, imagen3, imagen4, imagen5}) => {
   );
 };
 
-export default Imagenesobra;
+export default ImagenesObra;

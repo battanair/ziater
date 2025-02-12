@@ -20,7 +20,7 @@ const Personaindex = ({nombrepersona, puestopersona, fotito}) => {
           }}
         >
           <img
-          alt='foto de {nombrepersona}'
+          alt={`Foto de ${nombrepersona}`} 
             src={fotito}
             style={{
               borderRadius: '8px',

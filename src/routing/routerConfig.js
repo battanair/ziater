@@ -6,11 +6,14 @@ import Signup from "../pages/Signup";
 import Dashboard from "../pages/dashboard";
 import PrivateRoute from "../components/PrivateRoute";
 import PublicRoute from "../components/PublicRoute";
+import Compania from "../pages/Compania";
 
 export const routeConfig = [
   { path: "/", page: <Home /> },
   { path: "/obra/:id", page: <Obra2 /> },
   { path: "/persona/:id", page: <Persona /> },
+  { path: "/compania/:id", page: <Compania /> },
+
 
   // Solo si NO está logueado
   { path: "/login", page: <PublicRoute><Login /></PublicRoute> },
