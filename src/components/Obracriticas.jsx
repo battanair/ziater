@@ -1,7 +1,7 @@
 import { Typography } from "@mui/material";
 import Paper from "@mui/material/Paper";
 
-export const Obracriticas = ({ medio, texto, nota }) => {
+export const Obracriticas = ({ titulo, texto, nota }) => {
     return (
         <Paper
             elevation={3}
@@ -24,7 +24,7 @@ export const Obracriticas = ({ medio, texto, nota }) => {
                 }}
             >
                 <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-                    {medio}
+                    {titulo}
                 </Typography>
                 <div
                     style={{
@@ -45,10 +45,7 @@ export const Obracriticas = ({ medio, texto, nota }) => {
 
             {/* Texto de la crítica */}
             <Typography variant="body2">
-                {texto}{" "}
-                <a href="#" style={{ textDecoration: "underline", color: "inherit" }}>
-                    (más)
-                </a>
+                {texto}
             </Typography>
         </Paper>
     );

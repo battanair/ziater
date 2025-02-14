@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { db } from '../firebaseConfig';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -17,6 +17,7 @@ import Switch from '@mui/material/Switch';
 import Imagenesobra from '../components/imagenesobra';
 import { Premiosobra } from '../components/premiosobra';
 import { Obracriticas } from '../components/Obracriticas';
+import EntradasObra from '../components/EntradasObra';
 
 const AntSwitch = styled(Switch)(({ theme }) => ({
   width: 28,
@@ -72,8 +73,11 @@ const style = {
   p: 4,
 };
 
-
-
+const extractVideoId = (url) => {
+  const regex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+  const matches = url.match(regex);
+  return matches ? matches[1] : null;
+};
 
 const Obra2 = () => {
   const { id } = useParams();
@@ -81,6 +85,9 @@ const Obra2 = () => {
   const [elenco, setElenco] = useState([]);
   const [open, setOpen] = useState(false);
   const [productoras, setProductoras] = useState([]);
+  const [premios, setPremios] = useState([]);
+  const [criticas, setCriticas] = useState([]);
+
 
 
   const [showCurrentActors, setShowCurrentActors] = useState(true); // Estado para el switch
@@ -110,7 +117,7 @@ const Obra2 = () => {
       try {
         const obraRef = doc(db, 'obra', id);
         const obraSnap = await getDoc(obraRef);
-
+  
         if (obraSnap.exists()) {
           setObraData(obraSnap.data());
         } else {
@@ -120,12 +127,12 @@ const Obra2 = () => {
         console.error('Error obteniendo la obra:', error);
       }
     };
-
+  
     const fetchProductoras = async () => {
       try {
         const querySnapshot = await getDocs(collection(db, "productoras"));
         const productorasData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,  // Agregamos el ID del documento
+          id: doc.id,
           ...doc.data()
         }));
         setProductoras(productorasData);
@@ -133,24 +140,24 @@ const Obra2 = () => {
         console.error("Error obteniendo productoras:", error);
       }
     };
-
+  
     const fetchElenco = async () => {
       try {
         const relacionesQuery = query(collection(db, 'persona_obra'), where('id_obra', '==', id));
         const relacionesSnap = await getDocs(relacionesQuery);
-
+  
         let elencoTemp = [];
         for (const relDoc of relacionesSnap.docs) {
           const relData = relDoc.data();
           console.log("Relación encontrada:", relData);
-
+  
           const personaRef = doc(db, 'persona', relData.id_persona);
           const personaSnap = await getDoc(personaRef);
-
+  
           if (personaSnap.exists()) {
             const personaData = personaSnap.data();
             console.log("Persona encontrada:", personaData);
-
+  
             elencoTemp.push({
               id: personaSnap.id,
               nombre: personaData.Nombre,
@@ -159,7 +166,7 @@ const Obra2 = () => {
               instagram: personaData.instagram,
               rol: relData.puesto,
               personaje: relData.titulo,
-              fecha_inicio: relData.fecha_inicio, // Asegúrate de que estos campos existan en persona_obra
+              fecha_inicio: relData.fecha_inicio,
               fecha_fin: relData.fecha_fin
             });
           }
@@ -170,14 +177,78 @@ const Obra2 = () => {
         console.error('Error obteniendo el elenco:', error);
       }
     };
+  
+    const fetchCriticas = async () => {
+      try {
+        console.log("Buscando críticas para la obra con id:", id);
+        const criticasQuery = query(
+          collection(db, 'criticas'),
+          where('id_obra', '==', id),
+          limit(2) // Si necesitas solo 2 críticas
+        );
+    
+        const querySnapshot = await getDocs(criticasQuery);
+        console.log("Número de críticas encontradas:", querySnapshot.size);
+    
+        const criticasData = querySnapshot.docs.map(doc => ({
+          id: doc.id,
+          ...doc.data()
+        }));
+    
+        console.log("Críticas obtenidas:", criticasData);
+        setCriticas(criticasData);
+      } catch (error) {
+        console.error("Error obteniendo críticas:", error);
+      }
+    };
+    
 
+    
+    const fetchPremios = async () => {
+      try {
+        const premiosQuery = query(collection(db, "premios_obras"), where("id_obra", "==", id));
+        const premiosSnap = await getDocs(premiosQuery);
+    
+        let premiosTemp = [];
+    
+        for (const premioDoc of premiosSnap.docs) {
+          const premioData = premioDoc.data();
+    
+          // Obtener el nombre del premio desde la colección "premios"
+          const premioRef = doc(db, "premios", premioData.id_premio);
+          const premioSnap = await getDoc(premioRef);
+    
+          if (premioSnap.exists()) {
+            const nombrePremio = premioSnap.data().nombre_premio;
+    
+            premiosTemp.push({
+              id: premioDoc.id,
+              id_premio: premioData.id_premio || "sin-id",
+              nombre: nombrePremio,  // <--- Aquí guardas el nombre del premio
+              año: premioData.anio_premio || "Año desconocido",
+              categoria: premioData.galardon || "Categoría desconocida",
+            }
+            );
+          }
+        }
+    
+        console.log("Premios obtenidos:", premiosTemp);
+        setPremios(premiosTemp);
+      } catch (error) {
+        console.error("Error obteniendo los premios:", error);
+      }
+    };
+    
+  
     if (id) {
       fetchObra();
       fetchElenco();
-      fetchProductoras(); // Agregamos la llamada aquí
+      fetchProductoras();
+      fetchPremios();
+      fetchCriticas(); // Llamada para obtener los premios
     }
   }, [id]);
-
+  
 
 
 
@@ -260,7 +331,7 @@ const Obra2 = () => {
                 {prod.nombre_prod}
               </NavLink>
             ))
-            : "Sin productoras asociadas"}
+            : ""}
         </Typography>
 
 
@@ -303,10 +374,12 @@ const Obra2 = () => {
         paddingTop: '56.25%', // Mantener proporción 16:9
         overflow: 'hidden',
         borderRadius: '8px',
+        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Añadir sombra
+
       }}>
         <iframe
-          src={obraData.trailer}
-          title="YouTube video player"
+    src={`https://www.youtube.com/embed/${extractVideoId(obraData.trailer)}`}
+    title="YouTube video player"
           frameBorder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           referrerPolicy="strict-origin-when-cross-origin"
@@ -379,6 +452,7 @@ const Obra2 = () => {
             marginTop: 3,
           }}
         >
+          <NavLink to={`/Todoelequipo/${id}`} style={{ textDecoration: 'none' }}>
           <Button
             variant="contained"
             size="large"
@@ -388,6 +462,7 @@ const Obra2 = () => {
               <b>TODO EL EQUIPO</b>
             </h5>
           </Button>
+          </NavLink>
         </Grid>
       </Grid>
       <Imagenesobra imagenes={obraData.fotos_obra || []} />
@@ -401,74 +476,97 @@ const Obra2 = () => {
           paddingBottom: 5,
         }}
       >
-        <Typography variant="h5" component="h5" sx={{ fontWeight: "bold" }}>
-          PREMIOS
-        </Typography>
 
-        <Stack
-          direction={{ xs: "column", sm: "row" }} // Columnas en pantallas pequeñas, filas en grandes
-          spacing={2}
-          sx={{
-            justifyContent: { xs: "center", sm: "space-around" }, // Centrado en pequeñas
-            alignItems: "center", // Alineación vertical uniforme
-            width: "100%", // Asegura que ocupe todo el ancho disponible
-            paddingX: 2, // Margen horizontal en pantallas pequeñas
-          }}
+
+{premios.length > 0 && (
+  <>
+    <Typography variant="h5" component="h5" sx={{ fontWeight: "bold" }}>
+      PREMIOS
+    </Typography>
+
+    <Stack
+      direction={{ xs: "column", sm: "row" }}
+      spacing={2}
+      sx={{
+        justifyContent: { xs: "center", sm: "space-around" },
+        alignItems: "center",
+        width: "100%",
+        paddingX: 2,
+      }}
+    >
+      {premios.map((premio) => (
+        <NavLink
+          key={premio.id}
+          to={`/premios/${premio.id_premio}`}
+          style={{ textDecoration: "none" }}
         >
-          <Premiosobra premio="Premios MAX" year="2023" condecoracion="Mejor autoría" />
-          <Premiosobra premio="Premios MAX" year="2023" condecoracion="Mejor autoría" />
-          <Premiosobra premio="Premios MAX" year="2023" condecoracion="Mejor autoría" />
-        </Stack>
-      </Stack><Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center" }}>
-        CRÍTICAS
-      </Typography><Stack
-        direction={{ xs: 'column', sm: 'row' }} // Por defecto columna, en pantallas más grandes fila
-        spacing={2}
-        sx={{
-          width: "100%",
-          padding: 2,
-          flexWrap: "wrap", // Permite que se envuelvan las críticas en dispositivos grandes
-        }}
-      >
-        {/* Critica 1 */}
-        <Obracriticas
-          medio="La Gacetilla"
-          texto="Esta es la crítica del primer medio. Darío Duarte, hijo de uruguayos, es un dramaturgo que a sus 45 años se enfrenta a su primer estreno en la Sala Grande del Teatro María Guerrero..."
-          nota="9,5" />
+          <Premiosobra
+            premio={premio.nombre}       // Corregido: antes era premio.premio
+            year={premio.año}            // Corregido: antes era premio.year
+            condecoracion={premio.categoria} // Corregido: antes era premio.condecoracion
+          />
+        </NavLink>
+      ))}
+    </Stack>
+  </>
+)}
+</Stack>
+      
+      
+      
+      <Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center" }}>
+  CRÍTICAS
+</Typography>
 
-        {/* Critica 2 */}
-        <Obracriticas
-          medio="Otro medio"
-          texto="Darío Duarte, hijo de uruguayos, es un dramaturgo que a sus 45 años se enfrenta a su primer estreno en la Sala Grande del Teatro María Guerrero..."
-          nota="8" />
-      </Stack></>
+<Stack
+  direction={criticas.length === 1 ? "column" : { xs: 'column', sm: 'row' }} 
+  spacing={2}
+  sx={{
+    width: "100%",
+    padding: 2,
+    flexWrap: "wrap"
+  }}
+>
+  {criticas.map(critica => (
+    <Obracriticas
+      key={critica.id}
+      titulo={critica.titulo_critica}
+      texto={critica.cuerpo}
+      nota={critica.nota}
+      sx={{ width: criticas.length === 1 ? "100%" : "48%" }} // Si solo hay una, usa ancho completo
+    />
+  ))}
+</Stack>
 
-      {/* Botón para ver todas las críticas */ }
-  <><Grid
-    container
-    direction="row"
-    sx={{
-      justifyContent: "space-around",
-      alignItems: "flex-start",
-      marginTop: 3,
-    }}
-  >
+{/* Botón para ver todas las críticas */}
+<Grid
+  container
+  direction="row"
+  sx={{
+    justifyContent: "space-around",
+    alignItems: "flex-start",
+    marginTop: 3,
+  }}
+>
+  <NavLink to={`/criticas/${id}`} style={{ textDecoration: 'none' }}>
     <Button variant="contained" size="large" sx={{ background: 'black', marginBottom: '40px' }}>
       <h5><b>TODAS LAS CRÍTICAS</b></h5>
     </Button>
-  </Grid><Modal
+  </NavLink>
+</Grid>
+
+  
+  
+  
+  <Modal
     open={open}
     onClose={handleClose}
     aria-labelledby="modal-modal-title"
     aria-describedby="modal-modal-description"
   >
       <Box sx={style}>
-        <Typography id="modal-modal-title" variant="h6" component="h2">
-          Comprar entradas
-        </Typography>
-        <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-          Aquí irá una dara grid jeje
-        </Typography>
+        <EntradasObra obraId="ikM3L2joKaLLq6fVfCKb" />
+
       </Box>
     </Modal></></>
   )

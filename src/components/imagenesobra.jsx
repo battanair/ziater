@@ -50,13 +50,17 @@ const ImagenesObra = ({ imagenes = [] }) => {
   };
 
   const handlePrev = () => {
-    if (sliderRef.current) {
+    if (open) {
+      setCurrentIndex((prev) => (prev === 0 ? validImages.length - 1 : prev - 1));
+    } else if (sliderRef.current) {
       sliderRef.current.slickPrev();
     }
   };
 
   const handleNext = () => {
-    if (sliderRef.current) {
+    if (open) {
+      setCurrentIndex((prev) => (prev === validImages.length - 1 ? 0 : prev + 1));
+    } else if (sliderRef.current) {
       sliderRef.current.slickNext();
     }
   };
