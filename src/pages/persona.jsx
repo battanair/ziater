@@ -146,7 +146,7 @@ const Persona = () => {
                         {puestos.length > 0 ? puestos.join(" / ") : ""}
                     </Typography>
                     <Typography variant="body2" paragraph>
-                        {persona.biografía || ""}
+                        {persona.biografia || ""}
                     </Typography>
                 </Grid>
             </Grid>
@@ -162,7 +162,7 @@ const Persona = () => {
                                 <NavLink to={`/obra/${obra.id}`} style={{ textDecoration: 'none' }}>
                                     <Personaindex
                                         nombrepersona={obra.obraTitulo}
-                                        puestopersona={obra.anoinicio}
+                                        puestopersona={obra.personaje}
                                         fotito={obra.cartel}
                                     />
                                 </NavLink>
@@ -226,7 +226,7 @@ const Persona = () => {
             >
                 {premiosPersona.length > 0 ? (
                     premiosPersona.map((premio, index) => (
-                        <NavLink key={index} to={`/premio/${premio.id_premio}`} style={{ textDecoration: 'none' }}>
+                        <NavLink key={index} to={`/premios/${premio.id_premio}`} style={{ textDecoration: 'none' }}>
                             <Premiosobra premio={premio.nombre} year={premio.año} condecoracion={premio.categoria} />
                         </NavLink>
                     ))

@@ -14,6 +14,7 @@ import { useDemoRouter } from '@toolpad/core/internal';
 // Importa los componentes de cada sección
 import Cuenta from '../components/Cuenta';
 import NuevaObra from '../components/NuevaObra';
+import NewUserProfile from '../components/NewUserProfile';
 
 
 const NAVIGATION = [
@@ -36,6 +37,7 @@ const NAVIGATION = [
 const COMPONENT_MAP = {
   cuenta: <Cuenta />, 
   'nueva-obra': <NuevaObra />, 
+  'nueva-persona': <NewUserProfile />,
   
 };
 
@@ -69,7 +71,7 @@ function Dashboard(props) {
   // Extraer el último segmento de la ruta
   const segments = router.pathname.split('/');
   const currentSegment = segments.length > 2 ? segments.pop() : 'cuenta';
-  
+
   const demoWindow = window !== undefined ? window() : undefined;
 
   return (

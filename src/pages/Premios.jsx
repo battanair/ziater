@@ -100,11 +100,7 @@ const Premios = () => {
         <Typography variant="body1" sx={{ marginBottom: 2 }}>
           {premio.bio_premio}
         </Typography>
-        <Typography variant="body2" color="textSecondary">
-          Instagram: <a href={`https://instagram.com/${premio.insta_premio}`} target="_blank" rel="noopener noreferrer">
-            @{premio.insta_premio}
-          </a>
-        </Typography>
+        
       </Grid>
       <Grid item xs={12}>
         <Typography variant="h5" sx={{ marginTop: 3, marginBottom: 2 }}>Todos los premios</Typography>
