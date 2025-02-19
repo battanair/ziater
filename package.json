@@ -4,6 +4,8 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@cloudinary/react": "^1.13.1",
+    "@cloudinary/url-gen": "^1.21.0",
     "@emotion/react": "^11.13.5",
     "@emotion/styled": "^11.13.5",
     "@mui/icons-material": "^6.1.8",
@@ -15,6 +17,7 @@
     "@testing-library/user-event": "^13.5.0",
     "@toolpad/core": "^0.10.0",
     "bootstrap": "^5.3.3",
+    "cloudinary-core": "^2.13.1",
     "firebase": "^11.3.0",
     "gapi-script": "^1.2.0",
     "lodash": "^4.17.21",
