@@ -205,35 +205,36 @@ const Persona = () => {
                         </Accordion>
                     ))
                 ) : (
-                    <Typography>Sin registros</Typography>
+                    <Typography></Typography>
                 )}
             </Box>
+            {premiosPersona.length > 0 ? (
+    <>
+        <Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center", marginTop: 5, marginBottom: 3 }}>
+            PREMIOS
+        </Typography>
+        <Stack
+            direction={{ xs: "column", sm: "row" }}
+            spacing={2}
+            sx={{
+                justifyContent: { xs: "center", sm: "space-around" },
+                alignItems: "center",
+                width: "100%",
+                paddingX: 2,
+                paddingBottom: 5,
+            }}
+        >
+            {premiosPersona.map((premio, index) => (
+                <NavLink key={index} to={`/premios/${premio.id_premio}`} style={{ textDecoration: 'none' }}>
+                    <Premiosobra premio={premio.nombre} year={premio.año} condecoracion={premio.categoria} />
+                </NavLink>
+            ))}
+        </Stack>
+    </>
+) : (
+    <Typography></Typography>
+)}
 
-            <Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center", marginTop: 5, marginBottom: 3 }}>
-                PREMIOS
-            </Typography>
-
-            <Stack
-                direction={{ xs: "column", sm: "row" }}
-                spacing={2}
-                sx={{
-                    justifyContent: { xs: "center", sm: "space-around" },
-                    alignItems: "center",
-                    width: "100%",
-                    paddingX: 2,
-                    paddingBottom: 5,
-                }}
-            >
-                {premiosPersona.length > 0 ? (
-                    premiosPersona.map((premio, index) => (
-                        <NavLink key={index} to={`/premios/${premio.id_premio}`} style={{ textDecoration: 'none' }}>
-                            <Premiosobra premio={premio.nombre} year={premio.año} condecoracion={premio.categoria} />
-                        </NavLink>
-                    ))
-                ) : (
-                    <Typography>No hay premios registrados.</Typography>
-                )}
-            </Stack>
         </>
     );
 };

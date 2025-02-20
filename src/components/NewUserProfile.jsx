@@ -101,7 +101,18 @@ function NewUserProfile() {
 
   const handleTrabajoChange = (index, field, value) => {
     const newTrabajos = [...trabajos];
-    newTrabajos[index][field] = value;
+
+    if (field === 'idObra') {
+      if (typeof value === 'string' && value.startsWith('http')) {
+        const id = value.split('/').pop(); // Extrae solo la ID de la URL
+        newTrabajos[index][field] = id;
+      } else if (typeof value === 'string' && obras.some(obra => obra.id === value)) {
+        newTrabajos[index][field] = value; // Solo guarda el ID si ya existe en la lista de obras
+      }
+    } else {
+      newTrabajos[index][field] = value;
+    }
+
     setTrabajos(newTrabajos);
   };
 
@@ -113,9 +124,21 @@ function NewUserProfile() {
 
   const handlePremioChange = (index, field, value) => {
     const newPremiosPersona = [...premiosPersona];
-    newPremiosPersona[index] = { ...newPremiosPersona[index], [field]: value };
+  
+    if (field === 'idPremio') {
+      if (typeof value === 'string' && value.startsWith('http')) {
+        const id = value.split('/').pop(); // Extrae la ID de la URL
+        newPremiosPersona[index][field] = id;
+      } else if (typeof value === 'string' && premios.some(premio => premio.id === value)) {
+        newPremiosPersona[index][field] = value; // Solo guarda si el ID ya existe en la lista de premios
+      } 
+    } else {
+      newPremiosPersona[index][field] = value;
+    }
+  
     setPremiosPersona(newPremiosPersona);
   };
+  
 
   const handleAddPremio = () => {
     setPremiosPersona([...premiosPersona, { idPremio: '', anioPremio: '', galardonPers: '' }]);
@@ -169,7 +192,7 @@ function NewUserProfile() {
           });
         }
 
-        alert("Perfil creado exitosamente");
+        setActiveStep(3); // Set active step to 3 instead of showing an alert
       } catch (error) {
         console.error("Error al guardar la información:", error);
       }
@@ -233,6 +256,7 @@ function NewUserProfile() {
         <Step><StepLabel>Datos</StepLabel></Step>
         <Step><StepLabel>Trabajos</StepLabel></Step>
         <Step><StepLabel>Premios</StepLabel></Step>
+        <Step><StepLabel>Finalizar</StepLabel></Step>
       </Stepper>
       {activeStep === 0 && (
         <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 5 }}>
@@ -300,10 +324,30 @@ function NewUserProfile() {
               </Box>
               <Autocomplete
                 options={obras}
-                getOptionLabel={(option) => option.titulo}
-                onChange={(event, newValue) => handleTrabajoChange(index, 'idObra', newValue ? newValue.id : '')}
-                renderInput={(params) => <TextField {...params} label="Obra" fullWidth sx={{ mb: 2 }} />}
+                getOptionLabel={(option) => (option?.titulo ? option.titulo : '')}
+                value={obras.find((obra) => obra.id === trabajos[index].idObra) || null}
+                onChange={(event, newValue) => {
+                  if (newValue && typeof newValue === 'object') {
+                    handleTrabajoChange(index, 'idObra', newValue.id); // Guarda el ID de la obra seleccionada
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Obra"
+                    fullWidth
+                    onBlur={(e) => {
+                      const value = e.target.value.trim();
+
+                      if (value.startsWith('http')) {
+                        const id = value.split('/').pop(); // Extrae la ID de la URL
+                        handleTrabajoChange(index, 'idObra', id);
+                      }
+                    }}
+                  />
+                )}
               />
+
               <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel>Departamento</InputLabel>
                 <Select
@@ -366,10 +410,30 @@ function NewUserProfile() {
               </Box>
               <Autocomplete
                 options={premios}
-                getOptionLabel={(option) => option.nombre_premio}
-                onChange={(event, newValue) => handlePremioChange(index, 'idPremio', newValue ? newValue.id : '')}
-                renderInput={(params) => <TextField {...params} label="Premio" fullWidth />}
+                getOptionLabel={(option) => (option?.nombre_premio ? option.nombre_premio : '')}
+                value={premios.find((premio) => premio.id === premiosPersona[index].idPremio) || null}
+                onChange={(event, newValue) => {
+                  if (newValue && typeof newValue === 'object') {
+                    handlePremioChange(index, 'idPremio', newValue.id); // Guarda el ID del premio
+                  }
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    label="Premio"
+                    fullWidth
+                    onBlur={(e) => {
+                      const value = e.target.value.trim();
+
+                      if (value.startsWith('http')) {
+                        const id = value.split('/').pop(); // Extrae la ID de la URL
+                        handlePremioChange(index, 'idPremio', id);
+                      }
+                    }}
+                  />
+                )}
               />
+
 
               <TextField
                 label="Año del Premio"
@@ -395,6 +459,18 @@ function NewUserProfile() {
             <Button onClick={() => setActiveStep(1)}>Atrás</Button>
             <Button onClick={handleFinalSubmit} variant="contained">Finalizar</Button>
           </Box>
+        </Box>
+      )}
+      {activeStep === 3 && (
+        <Box>
+          <Container maxWidth="sm" sx={{ py: 4, textAlign: 'center' }}>
+            <Typography variant="h5" sx={{ mb: 2 }}>¡Perfil Creado!</Typography>
+            <Typography variant="body1" sx={{ mb: 4 }}>
+              Este perfil ha sido guardado exitosamente.
+            </Typography>
+            <Box />
+            <Button variant="contained" href="/">Ir al inicio</Button>
+          </Container>
         </Box>
       )}
     </Container>

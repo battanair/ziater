@@ -255,8 +255,8 @@ const Obra2 = () => {
   if (!obraData) {
     return <p>Cargando datos de la obra...</p>;
   }
-  const director = elenco.find(persona => persona.rol === "Director");
-  const dramaturgo = elenco.find(persona => persona.rol === "Guion");
+  const director = elenco.find(persona => persona.rol === "Dirección");
+  const dramaturgo = elenco.find(persona => persona.rol === "Dramaturgia");
 
   return (
     <><Grid container spacing={4} sx={{ paddingTop: 4, paddingLeft: 4 }}>
@@ -346,26 +346,44 @@ const Obra2 = () => {
 
 
     <><Box container sx={{ marginTop: 4, paddingLeft: 3 }}>
-  <Grid container spacing={2}>
+  <Grid container spacing={2} direction="row" sx={{
+    justifyContent: "space-around",
+    alignItems: "center",
+  }}>
     {/* Columna 1: Dirección y Dramaturgia */}
     <Grid item xs={12} md={6}>
-      <h5><b>{director && dramaturgo && director.id === dramaturgo.id ? "Dramaturgia y Dirección de:" : ""}</b></h5>
-      {director && dramaturgo && director.id === dramaturgo.id && <Personaindex nombrepersona={director.nombre} puestopersona={"Director y Dramaturgo"} />}
-
-      {director && (!dramaturgo || director.id !== dramaturgo.id) && (
-        <>
-          <h5><b>Dirigido por:</b></h5>
-          <Personaindex nombrepersona={director.nombre} puestopersona={"Director"} />
-        </>
+  {/* Si la misma persona es director y dramaturgo */}
+  {director && dramaturgo && director.id === dramaturgo.id ? (
+    <>
+      <h5><b>Dramaturgia y Dirección de:</b></h5>
+      <Personaindex nombrepersona={director.nombre} puestopersona={"Dramaturgia y Dirección"} />
+    </>
+  ) : (
+    <Grid container spacing={2}>
+      {/* Si hay director, pero no es el mismo que el dramaturgo */}
+      {director && (
+        <Grid item xs={6} sm={6}>
+          <h5><b>Dirección de:</b></h5>
+          <NavLink to={`/persona/${director.id}`} style={{ textDecoration: 'none' }}>
+            <Personaindex nombrepersona={director.nombre} puestopersona={"Dirección"} fotito={director.foto}/>
+          </NavLink>
+        </Grid>
       )}
 
-      {dramaturgo && (!director || director.id !== dramaturgo.id) && (
-        <>
-          <h5><b>Dramaturgia:</b></h5>
-          <Personaindex nombrepersona={dramaturgo.nombre} puestopersona={"Dramaturgo"} />
-        </>
+      {/* Si hay dramaturgo, pero no es el mismo que el director */}
+      {dramaturgo && (
+        <Grid item xs={6} sm={6}>
+          <h5><b>Dramaturgia de:</b></h5>
+          <NavLink to={`/persona/${dramaturgo.id}`} style={{ textDecoration: 'none' }}>
+            <Personaindex nombrepersona={dramaturgo.nombre} puestopersona={"Dramaturgia"} fotito={dramaturgo.foto} />
+          </NavLink>
+        </Grid>
       )}
     </Grid>
+  )}
+</Grid>
+
+
 
     {/* Columna 2: Video con iframe */}
     <Grid item xs={12} md={6}>

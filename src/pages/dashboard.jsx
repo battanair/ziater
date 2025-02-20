@@ -15,6 +15,7 @@ import { useDemoRouter } from '@toolpad/core/internal';
 import Cuenta from '../components/Cuenta';
 import NuevaObra from '../components/NuevaObra';
 import NewUserProfile from '../components/NewUserProfile';
+import NewCompanyProfile from '../components/NewCompanyProfile';
 
 
 const NAVIGATION = [
@@ -38,6 +39,7 @@ const COMPONENT_MAP = {
   cuenta: <Cuenta />, 
   'nueva-obra': <NuevaObra />, 
   'nueva-persona': <NewUserProfile />,
+  'nueva-company' : <NewCompanyProfile />,
   
 };
 
