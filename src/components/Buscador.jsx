@@ -20,7 +20,8 @@ export default function Asynchronous() {
       { name: 'obra', label: 'titulo', image: 'cartel', path: 'obra' },
       { name: 'persona', label: 'Nombre', extraLabel: 'Apellidos', image: 'foto', path: 'persona' },
       { name: 'productoras', label: 'nombre_prod', image: 'foto_prod', path: 'compania' },
-      { name: 'premios', label: 'nombre_premio', image: 'foto_premio', path: 'premios' }
+      { name: 'premios', label: 'nombre_premio', image: 'foto_premio', path: 'premios' },
+      { name: 'teatro', label: 'nombre_teatro', image: 'foto', path: 'teatro' } // Añadido para teatros
     ];
 
     for (let col of collections) {

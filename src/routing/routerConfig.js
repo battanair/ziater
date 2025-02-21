@@ -11,6 +11,8 @@ import Criticas from "../pages/Criticas";
 import UserProfile from "../pages/UserProfile";
 import Todoelequipo from "../pages/Todoelequipo";
 import Premios from "../pages/Premios";
+import Teatro from "../pages/teatro";
+
 
 export const routeConfig = [
   { path: "/", page: <Home /> },
@@ -21,6 +23,8 @@ export const routeConfig = [
   { path: "/UserProfile", page: <UserProfile /> },
   { path: "/Todoelequipo/:id_obra", page: <Todoelequipo /> },
   { path: "/Premios/:id", page: <Premios /> },
+  { path: "/teatro/:id", page: <Teatro /> },
+
 
 
 

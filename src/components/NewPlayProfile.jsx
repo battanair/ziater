@@ -28,6 +28,7 @@ function NewPlayProfile() {
   const [currentTrabajoIndex, setCurrentTrabajoIndex] = useState(null);
   const [artistas, setArtistas] = useState([]);
   const [obraId, setObraId] = useState(null); // Nueva variable de estado para guardar el ID de la obra
+  const [currentPremioIndex, setCurrentPremioIndex] = useState(null);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -131,6 +132,49 @@ function NewPlayProfile() {
     }
   };
 
+  const handleMultipleImageUpload = async (event, index) => {
+    const file = event.target.files[0];
+    if (!file) {
+      setImageError("Por favor, selecciona una imagen.");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      setImageError("El archivo seleccionado no es una imagen.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) { // 5MB
+      setImageError("La imagen es demasiado grande. El tamaño máximo es de 5MB.");
+      return;
+    }
+    setImageError("");
+    setImageLoading(true);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'obrafotos'); // Reemplaza 'obrafotos' con tu upload preset de Cloudinary
+
+    try {
+      const response = await fetch("https://api.cloudinary.com/v1_1/dk0vvcpyn/image/upload", {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (response.ok) {
+        const newFotosObra = [...fotosObra];
+        newFotosObra[index] = data.secure_url;
+        setFotosObra(newFotosObra);
+      } else {
+        console.error("Error al subir la imagen:", data);
+        setImageError("Error al subir la imagen. Por favor, inténtalo de nuevo.");
+      }
+    } catch (error) {
+      console.error("Error al subir la imagen:", error);
+      setImageError("Error al subir la imagen. Por favor, inténtalo de nuevo.");
+    } finally {
+      setImageLoading(false);
+    }
+  };
+
   const handleCategoriaChange = (event) => {
     const value = event.target.value;
     setCategoria((prev) => {
@@ -158,21 +202,55 @@ function NewPlayProfile() {
     const newTrabajos = [...trabajos];
     newTrabajos.splice(index, 1);
     setTrabajos(newTrabajos);
+    setCurrentTrabajoIndex(null);
   };
 
-  const handleAddPremio = () => {
-    setPremiosPersona([...premiosPersona, { idPremio: '', anioPremio: '', galardonPers: '' }]);
+  const handleSaveTrabajo = () => {
+    const trabajo = trabajos[currentTrabajoIndex];
+    if (!trabajo.idPersona || !trabajo.departamento || !trabajo.trabajo || !trabajo.fechaInicio) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        trabajos: true,
+      }));
+      return;
+    }
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      trabajos: false,
+    }));
+    setOpenDialog(false);
   };
 
-  const handlePremioChange = (index, field, value) => {
-    const newPremiosPersona = [...premiosPersona];
-    newPremiosPersona[index][field] = value;
-    setPremiosPersona(newPremiosPersona);
+  const handleSavePremio = () => {
+    const premio = premiosPersona[currentPremioIndex];
+    if (!premio.idPremio || !premio.anioPremio || !premio.galardonPers) {
+      setErrors((prevErrors) => ({
+        ...prevErrors,
+        premiosPersona: true,
+      }));
+      return;
+    }
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      premiosPersona: false,
+    }));
+    setOpenDialog(false);
   };
 
   const handleRemovePremio = (index) => {
     const newPremiosPersona = [...premiosPersona];
     newPremiosPersona.splice(index, 1);
+    setPremiosPersona(newPremiosPersona);
+  };
+
+  const handleAddPremio = () => {
+    setPremiosPersona([...premiosPersona, { idPremio: '', anioPremio: '', galardonPers: '' }]);
+    setCurrentPremioIndex(premiosPersona.length);
+  };
+
+  const handlePremioChange = (index, field, value) => {
+    const newPremiosPersona = [...premiosPersona];
+    newPremiosPersona[index][field] = value;
     setPremiosPersona(newPremiosPersona);
   };
 
@@ -286,7 +364,8 @@ function NewPlayProfile() {
             />
             <Button variant="outlined" onClick={() => setAnofin(0)}>Actualmente</Button>
           </Box>
-          <Box display="flex" alignItems="center" gap={2}>
+          <Box display="flex" flexDirection="column" gap={1}>
+            <Typography variant="body1">CARTEL:</Typography>
             <input
               type="file"
               accept="image/*"
@@ -295,6 +374,18 @@ function NewPlayProfile() {
             />
             {imageLoading && <CircularProgress size={24} />}
           </Box>
+          <Typography variant="body1" sx={{ mt: 2 }}>IMÁGENES DE LA OBRA:</Typography>
+          {[0, 1, 2, 3].map((index) => (
+            <Box key={index} display="flex" alignItems="center" gap={2}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(e) => handleMultipleImageUpload(e, index)}
+                style={{ marginTop: '16px' }}
+              />
+              {imageLoading && <CircularProgress size={24} />}
+            </Box>
+          ))}
           {imageError && (
             <Typography color="error" variant="body2">{imageError}</Typography>
           )}
@@ -303,6 +394,11 @@ function NewPlayProfile() {
               <img src={cartel} alt="Uploaded" style={{ width: '100%', maxHeight: '300px', objectFit: 'cover' }} />
             </Box>
           )}
+          {fotosObra.map((foto, index) => (
+            <Box key={index} mt={2}>
+              <img src={foto} alt={`Uploaded ${index}`} style={{ width: '100%', maxHeight: '300px', objectFit: 'cover' }} />
+            </Box>
+          ))}
           <FormControl component="fieldset">
             <FormLabel component="legend">Categoría</FormLabel>
             <FormGroup sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
@@ -378,6 +474,9 @@ function NewPlayProfile() {
                   />
                 )}
               />
+              <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                Si no encuentras el premio que buscas, pega la URL de su página.
+              </Typography>
               <TextField
                 sx={{ mb: 2 }}
                 label="Año del Premio"
@@ -447,6 +546,9 @@ function NewPlayProfile() {
                   />
                 )}
               />
+              <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                Si no encuentras la persona que buscas, pega la URL de su página.
+              </Typography>
               <FormControl fullWidth sx={{ mb: 2 }}>
                 <InputLabel>Departamento</InputLabel>
                 <Select
@@ -502,7 +604,7 @@ function NewPlayProfile() {
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
-          <Button onClick={() => setOpenDialog(false)} variant="contained">Guardar</Button>
+          <Button onClick={handleSaveTrabajo} variant="contained">Guardar</Button>
         </DialogActions>
       </Dialog>
     </Container>

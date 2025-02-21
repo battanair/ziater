@@ -24,6 +24,7 @@ import NewCompanyProfile from '../components/NewCompanyProfile';
 import handleLogout from '../components/logout';
 import NewAwardProfile from '../components/NewAwardProfile';
 import NewPlayProfile from '../components/NewPlayProfile';
+import NewTeatroProfile from '../components/NewTeatroProfile';
 
 const COMPONENT_MAP = {
   cuenta: <Cuenta />, 
@@ -31,6 +32,7 @@ const COMPONENT_MAP = {
   'nueva-persona': <NewUserProfile />,
   'nueva-company': <NewCompanyProfile />,
   'nuevo-premios': <NewAwardProfile />,
+  'nuevo-teatro': <NewTeatroProfile />,
 };
 
 function DemoPageContent({ pathname }) {
@@ -102,6 +104,7 @@ function Dashboard(props) {
         { segment: 'nueva-persona', title: 'Persona', icon: <DescriptionIcon /> },
         { segment: 'nueva-company', title: 'Compañía', icon: <DescriptionIcon /> },
         { segment: 'nuevo-premios', title: 'Premios', icon: <DescriptionIcon /> },
+        { segment: 'nuevo-teatro', title: 'Teatro/Sala', icon: <DescriptionIcon /> },
       ],
     },
     { segment: 'logout', title: renderLogoutButton(), icon: null }, // Renderiza el botón aquí

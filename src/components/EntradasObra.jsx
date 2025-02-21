@@ -59,6 +59,7 @@ const EntradasObra = ({ obraId }) => {
               enlace_entradas: data.enlace_entradas,
               nombre_teatro: teatroDetails?.nombre_teatro || "Desconocido",
               ciudad: teatroDetails?.ciudad || "Desconocida",
+              id_sala: data.id_sala,
             } : null;
           })
         );
@@ -105,10 +106,12 @@ const EntradasObra = ({ obraId }) => {
               <TableRow key={entrada.id}>
                 <TableCell align="center">{entrada.fecha ? entrada.fecha.toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" }) : "Fecha no disponible"}</TableCell>
                 <TableCell align="center">{entrada.fecha ? entrada.fecha.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }) : "Hora no disponible"}</TableCell>
-                
                 <TableCell align="center">{entrada.ciudad}</TableCell>
-                <TableCell align="center">{entrada.nombre_teatro}</TableCell>
-
+                <TableCell align="center">
+                  <a href={`/teatro/${entrada.id_sala}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    {entrada.nombre_teatro}
+                  </a>
+                </TableCell>
                 <TableCell align="center">{entrada.precio}€</TableCell>
                 <TableCell align="center">
                   <a href={entrada.enlace_entradas} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>

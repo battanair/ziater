@@ -41,7 +41,7 @@ const Premios = () => {
         const premiosPers = premiosPersSnap.docs.map(doc => ({ ...doc.data(), tipo: 'persona' }));
 
         const premiosAgrupados = [...premiosObras, ...premiosPers].reduce((acc, premio) => {
-          const anio = premio.anio_premio || premio.anio_premper;
+          const anio = premio.anio_premio || premio.anio_premper || premio.anio_premobr;
           if (!acc[anio]) acc[anio] = [];
           acc[anio].push(premio);
           return acc;
@@ -108,7 +108,7 @@ const Premios = () => {
             <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: 2 }}>{anio}</Typography>
             {premiosPorAnio[anio].map((p, index) => (
               <Box key={index} sx={{ padding: 2, borderBottom: '1px solid #ccc' }}>
-                <Typography variant="h6">{p.galardon || p.galardon_pers}</Typography>
+                <Typography variant="h6">{p.galardon || p.galardon_pers || p.galardon_obra}</Typography>
                 <Typography variant="body2" sx={{ color: 'black', textDecoration: 'none' }}>
                   {p.tipo === 'obra' ? (
                     <Link to={`/obra/${p.id_obra}`} style={{ color: 'black', textDecoration: 'none' }}>{nombresObras[p.id_obra] || 'Ver obra'}</Link>

@@ -87,9 +87,6 @@ const Obra2 = () => {
   const [productoras, setProductoras] = useState([]);
   const [premios, setPremios] = useState([]);
   const [criticas, setCriticas] = useState([]);
-
-
-
   const [showCurrentActors, setShowCurrentActors] = useState(true); // Estado para el switch
 
   const handleSwitchChange = (event) => {
@@ -107,11 +104,9 @@ const Obra2 = () => {
     }
   });
 
-
-
-
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+
   useEffect(() => {
     const fetchObra = async () => {
       try {
@@ -202,8 +197,6 @@ const Obra2 = () => {
       }
     };
     
-
-    
     const fetchPremios = async () => {
       try {
         const premiosQuery = query(collection(db, "premios_obras"), where("id_obra", "==", id));
@@ -239,24 +232,31 @@ const Obra2 = () => {
       }
     };
     
-  
     if (id) {
       fetchObra();
       fetchElenco();
       fetchProductoras();
       fetchPremios();
-      fetchCriticas(); // Llamada para obtener los premios
+      fetchCriticas(); // Llamada para obtener las críticas
     }
   }, [id]);
-  
-
-
 
   if (!obraData) {
     return <p>Cargando datos de la obra...</p>;
   }
+
   const director = elenco.find(persona => persona.rol === "Dirección");
   const dramaturgo = elenco.find(persona => persona.rol === "Dramaturgia");
+
+  // Calcular la media de las notas de las críticas
+  const mediaNotas = criticas.length > 0
+    ? (criticas.reduce((sum, critica) => sum + critica.nota, 0) / criticas.length)
+    : null;
+
+  // Formatear la media para que no muestre decimales si es un número entero
+  const formattedMediaNotas = mediaNotas !== null 
+    ? (Number.isInteger(mediaNotas) ? mediaNotas.toString() : mediaNotas.toFixed(1))
+    : "N/A";
 
   return (
     <><Grid container spacing={4} sx={{ paddingTop: 4, paddingLeft: 4 }}>
@@ -276,7 +276,6 @@ const Obra2 = () => {
       <Grid item xs={12} md={8}>
         {/* Componente Categoriaobra agregado encima del título con separación */}
         <div className="linea">
-          <Rating name="half-rating" defaultValue={2} precision={1} />
           <Stack
             direction="row"
             spacing={1}
@@ -290,22 +289,23 @@ const Obra2 = () => {
               <Item key={index}>{item}</Item>
             ))}
 
-
-            <Item
-              sx={{
-                width: 40, // Ajusta el tamaño del círculo
-                height: 40,
-                borderRadius: "50%", // Hace el objeto redondo
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                backgroundColor: "lightgrey", // Fondo opcional
-                color: "black", // Color del texto opcional
-                fontWeight: "bold", // Opcional para destacar la nota
-              }}
-            >
-              {obraData.nota}
-            </Item>
+            {formattedMediaNotas !== null && (
+              <Item
+                sx={{
+                  width: 40, // Ajusta el tamaño del círculo
+                  height: 40,
+                  borderRadius: "50%", // Hace el objeto redondo
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "lightgrey", // Fondo opcional
+                  color: "black", // Color del texto opcional
+                  fontWeight: "bold", // Opcional para destacar la nota
+                }}
+              >
+                {formattedMediaNotas}
+              </Item>
+            )}
           </Stack>
         </div>
 
@@ -318,7 +318,6 @@ const Obra2 = () => {
             ({obraData.anoinicio} - {obraData.anofin === 0 ? "actualmente" : obraData.anofin})
           </Typography>
         </Box>
-
 
         <Typography variant="body1" sx={{ fontWeight: "bold", marginBottom: "8px" }}>
           {productoras.length > 0
@@ -334,7 +333,6 @@ const Obra2 = () => {
             : ""}
         </Typography>
 
-
         <Typography variant="body2" paragraph>
           {obraData.sinopsis}
         </Typography>
@@ -343,7 +341,6 @@ const Obra2 = () => {
         </Button>
       </Grid>
     </Grid>
-
 
     <><Box container sx={{ marginTop: 4, paddingLeft: 3 }}>
   <Grid container spacing={2} direction="row" sx={{
@@ -383,8 +380,6 @@ const Obra2 = () => {
   )}
 </Grid>
 
-
-
     {/* Columna 2: Video con iframe */}
     {obraData.trailer && (
   <Grid item xs={12} md={6}>
@@ -416,8 +411,6 @@ const Obra2 = () => {
   </Grid>
 </Box>
 
-      
-      
       {elenco.length > 0 && (
   <Grid
     container
@@ -497,7 +490,6 @@ const Obra2 = () => {
         }}
       >
 
-
 {premios.length > 0 && (
   <>
     <Typography variant="h5" component="h5" sx={{ fontWeight: "bold" }}>
@@ -533,10 +525,7 @@ const Obra2 = () => {
 </Stack>
       
       
-      
-      <Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center" }}>
-  CRÍTICAS
-</Typography>
+
 
 <Stack
   direction={criticas.length === 1 ? "column" : { xs: 'column', sm: 'row' }} 
@@ -570,7 +559,7 @@ const Obra2 = () => {
 >
   <NavLink to={`/criticas/${id}`} style={{ textDecoration: 'none' }}>
     <Button variant="contained" size="large" sx={{ background: 'black', marginBottom: '40px' }}>
-      <h5><b>TODAS LAS CRÍTICAS</b></h5>
+      <h5><b>CRÍTICAS</b></h5>
     </Button>
   </NavLink>
 </Grid>
