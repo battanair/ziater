@@ -322,7 +322,7 @@ function NewUserProfile() {
                 <Typography variant="h6" gutterBottom>Trabajo {index + 1}</Typography>
                 <IconButton onClick={() => handleRemoveTrabajo(index)}><DeleteIcon /></IconButton>
               </Box>
-              <Autocomplete
+              <Autocomplete sx={{ mb: 2 }}
                 options={obras}
                 getOptionLabel={(option) => (option?.titulo ? option.titulo : '')}
                 value={obras.find((obra) => obra.id === trabajos[index].idObra) || null}
@@ -359,6 +359,15 @@ function NewUserProfile() {
                   <MenuItem value="Dramaturgia">Dramaturgia</MenuItem>
                   <MenuItem value="Iluminación">Iluminación</MenuItem>
                   <MenuItem value="Dirección">Dirección</MenuItem>
+                  <MenuItem value="Escenografía">Escenografía</MenuItem>
+                  <MenuItem value="Espacio Sonoro">Espacio Sonoro</MenuItem>
+                  <MenuItem value="Vestuario">Vestuario</MenuItem>
+                  <MenuItem value="Asesoría">Asesoría</MenuItem>
+                  <MenuItem value="Fotografía">Audiovisual</MenuItem>
+                  <MenuItem value="Diseño">Diseño</MenuItem>
+                  <MenuItem value="Comunicación">Comunicación</MenuItem>
+
+
                 </Select>
                 {errors.trabajos && <Typography color="error">Campo requerido</Typography>}
               </FormControl>
@@ -408,7 +417,7 @@ function NewUserProfile() {
                 <Typography variant="h6" gutterBottom>Premio {index + 1}</Typography>
                 <IconButton onClick={() => handleRemovePremio(index)}><DeleteIcon /></IconButton>
               </Box>
-              <Autocomplete
+              <Autocomplete sx={{ mb: 2 }}
                 options={premios}
                 getOptionLabel={(option) => (option?.nombre_premio ? option.nombre_premio : '')}
                 value={premios.find((premio) => premio.id === premiosPersona[index].idPremio) || null}
@@ -435,7 +444,7 @@ function NewUserProfile() {
               />
 
 
-              <TextField
+              <TextField sx={{ mb: 2 }}
                 label="Año del Premio"
                 type="number"
                 value={premio.anioPremio}
@@ -444,7 +453,7 @@ function NewUserProfile() {
                 error={errors.premiosPersona}
                 helperText={errors.premiosPersona && "Campo requerido"}
               />
-              <TextField
+              <TextField sx={{ mb: 2 }}
                 label="Galardón de la Persona"
                 value={premio.galardonPers}
                 onChange={(e) => handlePremioChange(index, 'galardonPers', e.target.value)}

@@ -124,7 +124,7 @@ const ImagenesObra = ({ imagenes = [] }) => {
           )}
         </div>
       ) : (
-        <p>No hay imágenes disponibles</p>
+        <p></p>
       )}
 
       {/* Modal */}

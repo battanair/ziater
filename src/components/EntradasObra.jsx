@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { doc, collection, getDocs } from "firebase/firestore";
+import { doc, collection, getDocs, getDoc, query, where } from "firebase/firestore";
 import { db } from "../firebaseConfig"; // Importa tu configuración de Firebase
 import {
   Table,
@@ -18,6 +18,17 @@ const EntradasObra = ({ obraId }) => {
   const [entradas, setEntradas] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const fetchTeatroDetails = async (idSala) => {
+    const salaRef = doc(db, "teatro", idSala);
+    const salaDoc = await getDoc(salaRef);
+    if (salaDoc.exists()) {
+      return salaDoc.data();
+    } else {
+      console.error("No se encontró el teatro con id:", idSala);
+      return null;
+    }
+  };
+
   useEffect(() => {
     const fetchEntradas = async () => {
       if (!obraId) return;
@@ -25,9 +36,9 @@ const EntradasObra = ({ obraId }) => {
       try {
         console.log("Consultando Firestore para obraId:", obraId);
 
-        const obraRef = doc(db, "obra", obraId);
-        const entradasRef = collection(obraRef, "entradas");
-        const querySnapshot = await getDocs(entradasRef);
+        const entradasRef = collection(db, "entradas");
+        const q = query(entradasRef, where("id_obra", "==", obraId));
+        const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
           console.log("No hay entradas registradas en Firestore.");
@@ -35,21 +46,31 @@ const EntradasObra = ({ obraId }) => {
           return;
         }
 
-        const fetchedEntradas = querySnapshot.docs.flatMap((doc) => {
-          const data = doc.data();
-          console.log("Entrada encontrada:", data);
-          return data.fechas_entradas?.map((timestamp) => ({
-            id: doc.id,
-            fecha: timestamp?.seconds ? new Date(timestamp.seconds * 1000) : null,
-            precio: data.precio,
-            enlace_entradas: data.enlace_entradas,
-          })) || [];
-        });
+        const fetchedEntradas = await Promise.all(
+          querySnapshot.docs.map(async (doc) => {
+            const data = doc.data();
+            console.log("Entrada encontrada:", data);
+            const teatroDetails = await fetchTeatroDetails(data.id_sala);
+            console.log("Detalles del teatro:", teatroDetails);
+            return data.fecha ? {
+              id: doc.id,
+              fecha: data.fecha.toDate(),
+              precio: data.precio,
+              enlace_entradas: data.enlace_entradas,
+              nombre_teatro: teatroDetails?.nombre_teatro || "Desconocido",
+              ciudad: teatroDetails?.ciudad || "Desconocida",
+            } : null;
+          })
+        );
+
+        const validEntradas = fetchedEntradas.filter(entrada => entrada !== null);
+
+        console.log("Entradas obtenidas:", validEntradas);
 
         // Ordenar las entradas por fecha
-        fetchedEntradas.sort((a, b) => (a.fecha && b.fecha ? a.fecha - b.fecha : 0));
+        validEntradas.sort((a, b) => (a.fecha && b.fecha ? a.fecha - b.fecha : 0));
 
-        setEntradas(fetchedEntradas);
+        setEntradas(validEntradas);
       } catch (error) {
         console.error("Error cargando entradas:", error);
       } finally {
@@ -73,6 +94,8 @@ const EntradasObra = ({ obraId }) => {
             <TableRow>
               <TableCell align="center"><b>Fecha</b></TableCell>
               <TableCell align="center"><b>Hora</b></TableCell>
+              <TableCell align="center"><b>Ciudad</b></TableCell>
+              <TableCell align="center"><b>Teatro</b></TableCell>
               <TableCell align="center"><b>Precio</b></TableCell>
               <TableCell align="center"><b>Enlace</b></TableCell>
             </TableRow>
@@ -82,6 +105,10 @@ const EntradasObra = ({ obraId }) => {
               <TableRow key={entrada.id}>
                 <TableCell align="center">{entrada.fecha ? entrada.fecha.toLocaleDateString("es-ES", { day: "2-digit", month: "long", year: "numeric" }) : "Fecha no disponible"}</TableCell>
                 <TableCell align="center">{entrada.fecha ? entrada.fecha.toLocaleTimeString("es-ES", { hour: "2-digit", minute: "2-digit" }) : "Hora no disponible"}</TableCell>
+                
+                <TableCell align="center">{entrada.ciudad}</TableCell>
+                <TableCell align="center">{entrada.nombre_teatro}</TableCell>
+
                 <TableCell align="center">{entrada.precio}€</TableCell>
                 <TableCell align="center">
                   <a href={entrada.enlace_entradas} target="_blank" rel="noopener noreferrer" style={{ textDecoration: 'none' }}>
@@ -90,6 +117,7 @@ const EntradasObra = ({ obraId }) => {
                     </Button>
                   </a>
                 </TableCell>
+                
               </TableRow>
             ))}
           </TableBody>

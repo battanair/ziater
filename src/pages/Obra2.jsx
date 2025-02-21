@@ -386,103 +386,105 @@ const Obra2 = () => {
 
 
     {/* Columna 2: Video con iframe */}
-    <Grid item xs={12} md={6}>
-      <Box sx={{
-        position: 'relative',
-        paddingTop: '56.25%', // Mantener proporción 16:9
-        overflow: 'hidden',
-        borderRadius: '8px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Añadir sombra
-
-      }}>
-        <iframe
-    src={`https://www.youtube.com/embed/${extractVideoId(obraData.trailer)}`}
-    title="YouTube video player"
-          frameBorder="0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          referrerPolicy="strict-origin-when-cross-origin"
-          allowFullScreen
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-          }}
-        />
-      </Box>
-    </Grid>
+    {obraData.trailer && (
+  <Grid item xs={12} md={6}>
+    <Box sx={{
+      position: 'relative',
+      paddingTop: '56.25%', // Mantener proporción 16:9
+      overflow: 'hidden',
+      borderRadius: '8px',
+      boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', // Añadir sombra
+    }}>
+      <iframe
+        src={`https://www.youtube.com/embed/${extractVideoId(obraData.trailer)}`}
+        title="YouTube video player"
+        frameBorder="0"
+        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+        referrerPolicy="strict-origin-when-cross-origin"
+        allowFullScreen
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+        }}
+      />
+    </Box>
+  </Grid>
+)}
   </Grid>
 </Box>
 
       
       
-      <Grid
-        container
-        sx={{
-          paddingTop: 4,
-          paddingBottom: 8,
-          textAlign: 'center',
-        }}
-        direction={'column'}
-      >
-        <Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center" }}>
-          ELENCO
-        </Typography>
+      {elenco.length > 0 && (
+  <Grid
+    container
+    sx={{
+      paddingTop: 4,
+      paddingBottom: 8,
+      textAlign: 'center',
+    }}
+    direction={'column'}
+  >
+    <Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center" }}>
+      ELENCO
+    </Typography>
 
-        <Stack
-          direction="row"
-          spacing={1}
-          sx={{
-            justifyContent: 'center',
-            alignItems: 'center',
-          }}
-        >
-          <Typography>Original</Typography>
-          <AntSwitch checked={showCurrentActors} onChange={handleSwitchChange} inputProps={{ 'aria-label': 'ant design' }} />
-          <Typography>Actual</Typography>
-        </Stack>
+    <Stack
+      direction="row"
+      spacing={1}
+      sx={{
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
+    >
+      <Typography>Original</Typography>
+      <AntSwitch checked={showCurrentActors} onChange={handleSwitchChange} inputProps={{ 'aria-label': 'ant design' }} />
+      <Typography>Actual</Typography>
+    </Stack>
 
-        <Grid
-          container
-          spacing={4}
-          sx={{
-            maxWidth: "100%",
-            margin: '0 auto',
-            marginTop: 3,
-          }}
-        >
-          {filteredElenco.map((persona, index) => (
-            <Grid item xs={6} sm={3} key={index}>
-              <NavLink to={`/persona/${persona.id}`} style={{ textDecoration: 'none' }}>
-                <Personaindex nombrepersona={persona.nombre} puestopersona={persona.personaje} fotito={persona.foto} />
-              </NavLink>
-            </Grid>
-          ))}
-        </Grid>
-        <Grid
-
-          container
-          direction="row"
-          sx={{
-            justifyContent: 'space-around',
-            alignItems: 'flex-start',
-            marginTop: 3,
-          }}
-        >
-          <NavLink to={`/Todoelequipo/${id}`} style={{ textDecoration: 'none' }}>
-          <Button
-            variant="contained"
-            size="large"
-            sx={{ background: 'black' }}
-          >
-            <h5>
-              <b>TODO EL EQUIPO</b>
-            </h5>
-          </Button>
+    <Grid
+      container
+      spacing={4}
+      sx={{
+        maxWidth: "100%",
+        margin: '0 auto',
+        marginTop: 3,
+      }}
+    >
+      {filteredElenco.map((persona, index) => (
+        <Grid item xs={6} sm={3} key={index}>
+          <NavLink to={`/persona/${persona.id}`} style={{ textDecoration: 'none' }}>
+            <Personaindex nombrepersona={persona.nombre} puestopersona={persona.personaje} fotito={persona.foto} />
           </NavLink>
         </Grid>
-      </Grid>
+      ))}
+    </Grid>
+    <Grid
+      container
+      direction="row"
+      sx={{
+        justifyContent: 'space-around',
+        alignItems: 'flex-start',
+        marginTop: 3,
+      }}
+    >
+      <NavLink to={`/Todoelequipo/${id}`} style={{ textDecoration: 'none' }}>
+        <Button
+          variant="contained"
+          size="large"
+          sx={{ background: 'black' }}
+        >
+          <h5>
+            <b>TODO EL EQUIPO</b>
+          </h5>
+        </Button>
+      </NavLink>
+    </Grid>
+  </Grid>
+)}
       <Imagenesobra imagenes={obraData.fotos_obra || []} />
       <Stack
         direction="column"
@@ -583,7 +585,7 @@ const Obra2 = () => {
     aria-describedby="modal-modal-description"
   >
       <Box sx={style}>
-        <EntradasObra obraId="ikM3L2joKaLLq6fVfCKb" />
+        <EntradasObra obraId={id} /> {/* Pasar el id de la obra como prop */}
 
       </Box>
     </Modal></></>

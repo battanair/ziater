@@ -103,7 +103,6 @@ const Premios = () => {
         
       </Grid>
       <Grid item xs={12}>
-        <Typography variant="h5" sx={{ marginTop: 3, marginBottom: 2 }}>Todos los premios</Typography>
         {Object.keys(premiosPorAnio).sort((a, b) => b - a).map(anio => (
           <Box key={anio} sx={{ marginBottom: 3 }}>
             <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: 2 }}>{anio}</Typography>

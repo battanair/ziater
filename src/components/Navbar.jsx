@@ -15,6 +15,8 @@ import Grid from '@mui/material/Grid';
 import Buscador from '../components/Buscador';
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import handleLogout from './logout'; // Asegúrate de que esto está bien exportado
+import { Button } from "@mui/material";
+import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -68,34 +70,25 @@ export default function Navbar() {
           {/* Si el usuario está logueado, mostramos el menú */}
           {user && (
             <Grid>
-              <IconButton
-                size="large"
-                aria-label="account of current user"
-                aria-controls="menu-appbar"
-                aria-haspopup="true"
-                onClick={handleMenu}
-                color="inherit"
-              >
-                <AccountCircle sx={{ color: 'black', fontSize: '3rem' }} />
-              </IconButton>
-              <Menu
-                id="menu-appbar"
-                anchorEl={anchorEl}
-                anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-                keepMounted
-                transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-              >
-                <MenuItem onClick={handleClose}>
-                  <NavLink to="/dashboard" style={{ textDecoration: 'none', color: 'black' }}>
-                    Dashboard
-                  </NavLink>
-                </MenuItem>
-                <MenuItem onClick={logout}>
-                  Cerrar sesión
-                </MenuItem>
-              </Menu>
+              
+              <NavLink to="/dashboard" style={{ textDecoration: "none" }}>
+      <Button
+        variant="contained"
+        sx={{
+          backgroundColor: "black",
+          color: "white",
+          "&:hover": { backgroundColor: "#333" },
+          textTransform: "none",
+          display: "flex",
+          alignItems: "center",
+          gap: 1,
+        }}
+      >
+        <AccountCircleIcon />
+        Tu cuenta
+      </Button>
+    </NavLink>
+                
             </Grid>
           )}
         </Grid>
