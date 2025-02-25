@@ -1,17 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, NavLink } from 'react-router-dom';
-import { Grid, Box, Typography } from '@mui/material';
-import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
-import { db } from '../firebaseConfig';
+import { Grid, Box, Typography, Stack } from '@mui/material';
+import { doc, getDoc, collection, query, where, getDocs, updateDoc, arrayRemove, arrayUnion } from 'firebase/firestore';
+import { db, auth } from '../firebaseConfig';
 import Personaindex from '../components/personaindex'; // Asegúrate de que esté bien importado
 import InstagramIcon from '@mui/icons-material/Instagram';
+import { onAuthStateChanged } from 'firebase/auth';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+
 
 const Compania = () => {
   const { id } = useParams();
   const [compania, setCompania] = useState(null);
   const [obrasRelacionadas, setObrasRelacionadas] = useState([]);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+
+    const fetchUser = () => {
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          setUser(user);
+          const userRef = doc(db, 'users', user.uid);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+            const userData = userSnap.data();
+            setIsFavorite(userData.favoritos_compania?.includes(id));
+          }
+        } else {
+          setUser(null);
+        }
+      });
+    };
+
+
+
     const fetchCompania = async () => {
       try {
         const companiaRef = doc(db, 'productoras', id);
@@ -40,9 +64,30 @@ const Compania = () => {
         console.error('Error obteniendo la compañía:', error);
       }
     };
-
+    fetchUser();
     fetchCompania();
   }, [id]);
+
+  const handleFavoriteClick = async () => {
+    if (!user) return; // Si el usuario no está autenticado, no hacer nada
+
+    const userRef = doc(db, "users", user.uid);
+    try {
+        if (isFavorite) {
+            await updateDoc(userRef, {
+                favoritos_compania: arrayRemove(id),
+            });
+            setIsFavorite(false);
+        } else {
+            await updateDoc(userRef, {
+                favoritos_compania: arrayUnion(id),
+            });
+            setIsFavorite(true);
+        }
+    } catch (error) {
+        console.error("Error al actualizar favoritos:", error);
+    }
+};
 
   if (!compania) {
     return <p>Cargando datos de la compañía...</p>;
@@ -63,6 +108,34 @@ const Compania = () => {
 
       {/* Columna 2: Texto */}
       <Grid item xs={12} md={8}>
+      <Stack 
+  direction="row" 
+  spacing={2} 
+  sx={{ marginBottom: 2, justifyContent: 'flex-end' }} // Alinea los iconos a la derecha
+>
+  
+  <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 30,
+      height: 30,
+      borderRadius: '50%',
+      backgroundColor: isFavorite ? 'black' : 'white',
+      color: isFavorite ? 'white' : 'black',
+      cursor: 'pointer',
+      border: '1px solid black', // Agrega un borde
+      '&:hover': {
+        backgroundColor: 'black',
+        color: 'white',
+      },
+    }}
+    onClick={handleFavoriteClick}
+  >
+    <FavoriteIcon />
+  </Box>
+</Stack>
         <Box sx={{ display: "flex", alignItems: "baseline", gap: 1, marginBottom: 1 }}>
           <Typography variant="h5" sx={{ fontWeight: "bold" }}>
             {compania.nombre_prod}

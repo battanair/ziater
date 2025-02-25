@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { db } from '../firebaseConfig';
-import { doc, getDoc, collection, query, where, orderBy, limit, getDocs } from 'firebase/firestore';
+import { db, auth } from '../firebaseConfig';
+import { doc, getDoc, collection, query, where, orderBy, limit, getDocs, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
@@ -19,7 +19,9 @@ import { Premiosobra } from '../components/premiosobra';
 import { Obracriticas } from '../components/Obracriticas';
 import EntradasObra from '../components/EntradasObra';
 import InstagramIcon from '@mui/icons-material/Instagram';
-
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import { onAuthStateChanged } from 'firebase/auth';
 
 const AntSwitch = styled(Switch)(({ theme }) => ({
   width: 28,
@@ -90,6 +92,9 @@ const Obra2 = () => {
   const [premios, setPremios] = useState([]);
   const [criticas, setCriticas] = useState([]);
   const [showCurrentActors, setShowCurrentActors] = useState(true); // Estado para el switch
+  const [user, setUser] = useState(null);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isViewed, setIsViewed] = useState(false);
 
   const handleSwitchChange = (event) => {
     setShowCurrentActors(event.target.checked);
@@ -238,14 +243,66 @@ const Obra2 = () => {
         console.error("Error obteniendo los premios:", error);
       }
     };
+
+    const fetchUser = () => {
+      onAuthStateChanged(auth, async (user) => {
+        if (user) {
+          setUser(user);
+          const userRef = doc(db, 'users', user.uid);
+          const userSnap = await getDoc(userRef);
+          if (userSnap.exists()) {
+            const userData = userSnap.data();
+            setIsFavorite(userData.favoritos_obra?.includes(id));
+            setIsViewed(userData.vistas?.includes(id));
+          }
+        } else {
+          setUser(null);
+        }
+      });
+    };
     
     if (id) {
       fetchObra();
       fetchElenco();
       fetchPremios();
       fetchCriticas(); // Llamada para obtener las críticas
+      fetchUser();
     }
   }, [id]);
+
+  const handleViewClick = async () => {
+    if (user) {
+      const userRef = doc(db, 'users', user.uid);
+      if (isViewed) {
+        await updateDoc(userRef, {
+          vistas: arrayRemove(id)
+        });
+        setIsViewed(false);
+      } else {
+        await updateDoc(userRef, {
+          vistas: arrayUnion(id)
+        });
+        setIsViewed(true);
+      }
+    }
+  };
+
+  const handleFavoriteClick = async () => {
+    if (user) {
+      const userRef = doc(db, 'users', user.uid);
+      if (isFavorite) {
+        await updateDoc(userRef, {
+          favoritos_obra: arrayRemove(id)
+        });
+        setIsFavorite(false);
+      } else {
+        await updateDoc(userRef, {
+          favoritos_obra: arrayUnion(id)
+        });
+        setIsFavorite(true);
+      }
+    }
+  };
 
   if (!obraData) {
     return <p>Cargando datos de la obra...</p>;
@@ -280,6 +337,59 @@ const Obra2 = () => {
 
       {/* Columna 2: Texto */}
       <Grid item xs={12} md={8}>
+
+
+       <Stack 
+  direction="row" 
+  spacing={2} 
+  sx={{ marginBottom: 2, justifyContent: 'flex-end' }} // Alinea los iconos a la derecha
+>
+  <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 30,
+      height: 30,
+      borderRadius: '50%',
+      backgroundColor: isViewed ? 'black' : 'white',
+      color: isViewed ? 'white' : 'black',
+      cursor: 'pointer',
+      border: '1px solid black', // Agrega un borde
+      '&:hover': {
+        backgroundColor: 'black',
+        color: 'white',
+      },
+    }}
+    onClick={handleViewClick}
+  >
+    <VisibilityIcon />
+  </Box>
+  <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 30,
+      height: 30,
+      borderRadius: '50%',
+      backgroundColor: isFavorite ? 'black' : 'white',
+      color: isFavorite ? 'white' : 'black',
+      cursor: 'pointer',
+      border: '1px solid black', // Agrega un borde
+      '&:hover': {
+        backgroundColor: 'black',
+        color: 'white',
+      },
+    }}
+    onClick={handleFavoriteClick}
+  >
+    <FavoriteIcon />
+  </Box>
+</Stack>
+
+
+
         {/* Componente Categoriaobra agregado encima del título con separación */}
         <div className="linea">
           <Stack
@@ -314,6 +424,8 @@ const Obra2 = () => {
             )}
           </Stack>
         </div>
+
+        
 
         {/* Título con el año en la misma línea */}
         <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, marginBottom: 1 }}>

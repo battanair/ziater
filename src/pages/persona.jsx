@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { doc, getDoc, collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../firebaseConfig";
+import { doc, getDoc, collection, getDocs, query, where, updateDoc, arrayRemove, arrayUnion } from "firebase/firestore";
+import { db,  auth } from "../firebaseConfig";
 import { Grid, Box, Typography, Accordion, AccordionSummary, AccordionDetails, Stack } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Imagenesobra from "../components/imagenesobra";
@@ -9,6 +9,10 @@ import Personaindex from "../components/personaindex";
 import { NavLink } from "react-router-dom";
 import { Premiosobra } from "../components/premiosobra";
 import InstagramIcon from '@mui/icons-material/Instagram';
+import { onAuthStateChanged } from 'firebase/auth';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+
+
 
 const Persona = () => {
     const { id } = useParams();
@@ -16,6 +20,9 @@ const Persona = () => {
     const [obrasRelacionadas, setObrasRelacionadas] = useState([]);
     const [puestos, setPuestos] = useState([]);
     const [premiosPersona, setPremiosPersona] = useState([]);
+    const [isFavorite, setIsFavorite] = useState(false);
+    const [user, setUser] = useState(null);
+
 
     useEffect(() => {
         const fetchPersona = async () => {
@@ -32,6 +39,8 @@ const Persona = () => {
                 console.error("Error al obtener datos de la persona:", error);
             }
         };
+
+        
 
         const fetchObrasRelacionadas = async () => {
             if (!id) return;
@@ -82,6 +91,26 @@ const Persona = () => {
             }
         };
 
+
+        const fetchUser = () => {
+            onAuthStateChanged(auth, async (user) => {
+              if (user) {
+                setUser(user);
+                const userRef = doc(db, 'users', user.uid);
+                const userSnap = await getDoc(userRef);
+                if (userSnap.exists()) {
+                  const userData = userSnap.data();
+                  setIsFavorite(userData.favoritos_persona?.includes(id));
+                }
+              } else {
+                setUser(null);
+              }
+            });
+          };
+
+
+          
+
         const fetchPremiosPersona = async () => {
             if (!id) return;
             try {
@@ -122,7 +151,30 @@ const Persona = () => {
         fetchPersona();
         fetchObrasRelacionadas();
         fetchPremiosPersona();
+        fetchUser();
     }, [id]);
+
+    const handleFavoriteClick = async () => {
+        if (!user) return; // Si el usuario no está autenticado, no hacer nada
+
+        const userRef = doc(db, "users", user.uid);
+        try {
+            if (isFavorite) {
+                await updateDoc(userRef, {
+                    favoritos_persona: arrayRemove(id),
+                });
+                setIsFavorite(false);
+            } else {
+                await updateDoc(userRef, {
+                    favoritos_persona: arrayUnion(id),
+                });
+                setIsFavorite(true);
+            }
+        } catch (error) {
+            console.error("Error al actualizar favoritos:", error);
+        }
+    };
+    
 
     if (!persona) return <h1>Cargando datos...</h1>;
 
@@ -140,6 +192,34 @@ const Persona = () => {
                 </Grid>
 
                 <Grid item xs={12} md={8}>
+                <Stack 
+  direction="row" 
+  spacing={2} 
+  sx={{ marginBottom: 2, justifyContent: 'flex-end' }} // Alinea los iconos a la derecha
+>
+  
+  <Box
+    sx={{
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      width: 30,
+      height: 30,
+      borderRadius: '50%',
+      backgroundColor: isFavorite ? 'black' : 'white',
+      color: isFavorite ? 'white' : 'black',
+      cursor: 'pointer',
+      border: '1px solid black', // Agrega un borde
+      '&:hover': {
+        backgroundColor: 'black',
+        color: 'white',
+      },
+    }}
+    onClick={handleFavoriteClick}
+  >
+    <FavoriteIcon />
+  </Box>
+</Stack>
                     <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                         {persona.Nombre} {persona.Apellidos}
                     </Typography>
