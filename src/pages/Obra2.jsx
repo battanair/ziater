@@ -18,6 +18,8 @@ import Imagenesobra from '../components/imagenesobra';
 import { Premiosobra } from '../components/premiosobra';
 import { Obracriticas } from '../components/Obracriticas';
 import EntradasObra from '../components/EntradasObra';
+import InstagramIcon from '@mui/icons-material/Instagram';
+
 
 const AntSwitch = styled(Switch)(({ theme }) => ({
   width: 28,
@@ -115,24 +117,29 @@ const Obra2 = () => {
   
         if (obraSnap.exists()) {
           setObraData(obraSnap.data());
+
+          // Obtener las productoras
+          const productorasIds = obraSnap.data().productoras || [];
+          const productorasTemp = [];
+  
+          for (const prodId of productorasIds) {
+            const prodRef = doc(db, 'productoras', prodId);
+            const prodSnap = await getDoc(prodRef);
+  
+            if (prodSnap.exists()) {
+              productorasTemp.push({
+                id: prodSnap.id,
+                nombre_prod: prodSnap.data().nombre_prod,
+              });
+            }
+          }
+  
+          setProductoras(productorasTemp);
         } else {
           console.error('La obra no existe en Firestore.');
         }
       } catch (error) {
         console.error('Error obteniendo la obra:', error);
-      }
-    };
-  
-    const fetchProductoras = async () => {
-      try {
-        const querySnapshot = await getDocs(collection(db, "productoras"));
-        const productorasData = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        setProductoras(productorasData);
-      } catch (error) {
-        console.error("Error obteniendo productoras:", error);
       }
     };
   
@@ -235,7 +242,6 @@ const Obra2 = () => {
     if (id) {
       fetchObra();
       fetchElenco();
-      fetchProductoras();
       fetchPremios();
       fetchCriticas(); // Llamada para obtener las críticas
     }
@@ -336,6 +342,14 @@ const Obra2 = () => {
         <Typography variant="body2" paragraph>
           {obraData.sinopsis}
         </Typography>
+        
+        {obraData.instagram && (
+                        <Box sx={{ textAlign: "left", marginTop: 2 }}>
+                            <a href={`https://www.instagram.com/${obraData.instagram}`} target="_blank" rel="noopener noreferrer">
+                                <InstagramIcon sx={{ fontSize: 30, color: "black", marginBottom: 2 }} />
+                            </a>
+                        </Box>
+                    )}
 
         <Button variant="contained" sx={{ background: 'black', marginBottom: '40px' }} onClick={handleOpen}><h6><b>COMPRAR ENTRADAS</b></h6>
         </Button>

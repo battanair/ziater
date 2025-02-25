@@ -4,6 +4,7 @@ import { Grid, Box, Typography, Button, Table, TableBody, TableCell, TableContai
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import Personaindex from '../components/personaindex'; // Asegúrate de que esté bien importado
+import InstagramIcon from '@mui/icons-material/Instagram';
 
 const Teatro = () => {
   const { id } = useParams();
@@ -97,6 +98,13 @@ const Teatro = () => {
         <Typography variant="body1" sx={{ marginBottom: "8px" }}>
           <b>País:</b> {teatro.pais}
         </Typography>
+        {teatro.instagram && (
+                        <Box sx={{ textAlign: "left", marginTop: 2 }}>
+                            <a href={`https://www.instagram.com/${teatro.instagram}`} target="_blank" rel="noopener noreferrer">
+                                <InstagramIcon sx={{ fontSize: 30, color: "black", marginBottom: 2 }} />
+                            </a>
+                        </Box>
+                    )}
       </Grid>
 
       {/* Sección de Entradas */}

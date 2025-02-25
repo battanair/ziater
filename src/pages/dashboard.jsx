@@ -18,21 +18,26 @@ import { useNavigate } from 'react-router-dom';
 
 // Importa los componentes de cada sección
 import Cuenta from '../components/Cuenta';
-import NuevaObra from '../components/NuevaObra';
 import NewUserProfile from '../components/NewUserProfile';
 import NewCompanyProfile from '../components/NewCompanyProfile';
 import handleLogout from '../components/logout';
 import NewAwardProfile from '../components/NewAwardProfile';
 import NewPlayProfile from '../components/NewPlayProfile';
 import NewTeatroProfile from '../components/NewTeatroProfile';
+import NewTicketProfile from '../components/NewTicketProfile';
+import Favorites from '../components/Favorites';
+import Seen from '../components/Seen';
 
 const COMPONENT_MAP = {
-  cuenta: <Cuenta />, 
+  'cuenta': <Cuenta />, 
+  'favorites': <Favorites />,
+  'vistos': <Seen />,
   'nueva-obra': <NewPlayProfile />, 
   'nueva-persona': <NewUserProfile />,
   'nueva-company': <NewCompanyProfile />,
   'nuevo-premios': <NewAwardProfile />,
   'nuevo-teatro': <NewTeatroProfile />,
+  'nueva-entrada': <NewTicketProfile />,
 };
 
 function DemoPageContent({ pathname }) {
@@ -49,7 +54,7 @@ function DemoPageContent({ pathname }) {
         flexGrow: 1,
       }}
     >
-      {COMPONENT_MAP[pathname] || <Typography>Página no encontrada</Typography>}
+      {COMPONENT_MAP[pathname] || <Cuenta />}
     </Box>
   );
 }
@@ -74,7 +79,6 @@ function Dashboard(props) {
     <Button
       onClick={handleLogoutClick}
       sx={{
-        
         backgroundColor: 'white',
         color: 'black',
         textTransform: 'none',
@@ -94,7 +98,7 @@ function Dashboard(props) {
     { segment: 'cuenta', title: 'Tu Cuenta', icon: <DashboardIcon /> },
     { segment: 'vistos', title: 'Vistos', icon: <VisibilityIcon /> },
     { segment: 'favorites', title: 'Favoritos', icon: <FavoriteIcon /> },
-    { segment: 'editar', title: 'Editar', icon: < EditIcon/> },
+    { segment: 'editar', title: 'Editar', icon: <EditIcon /> },
     {
       segment: 'addnadir',
       title: 'Añadir',
@@ -104,22 +108,23 @@ function Dashboard(props) {
         { segment: 'nueva-persona', title: 'Persona', icon: <DescriptionIcon /> },
         { segment: 'nueva-company', title: 'Compañía', icon: <DescriptionIcon /> },
         { segment: 'nuevo-premios', title: 'Premios', icon: <DescriptionIcon /> },
-        { segment: 'nuevo-teatro', title: 'Teatro/Sala', icon: <DescriptionIcon /> },
+        { segment: 'nuevo-teatro', title: 'Espacio', icon: <DescriptionIcon /> },
+        { segment: 'nueva-entrada', title: 'Entradas', icon: <DescriptionIcon /> },
       ],
     },
-    { segment: 'logout', title: renderLogoutButton(), icon: null }, // Renderiza el botón aquí
+    { segment: 'logout', title: renderLogoutButton(), icon: null },
   ];
 
   // Extraer el último segmento de la ruta
   const segments = router.pathname.split('/');
-  const currentSegment = segments.length > 2 ? segments.pop() : 'cuenta';
+  const currentSegment = segments.length > 1 ? segments.pop() : 'cuenta'; // Página por defecto es 'cuenta'
 
   const demoWindow = window !== undefined ? window() : undefined;
 
   return (
     <AppProvider navigation={NAVIGATION} router={router} window={demoWindow}>
       <DashboardLayout disableNavigation disableCollapsibleSidebar sx={{ width: '100%', flexGrow: 1 }}>
-        <DemoPageContent pathname={currentSegment} />
+        <DemoPageContent pathname={currentSegment || 'cuenta'} />
       </DashboardLayout>
     </AppProvider>
   );

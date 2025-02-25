@@ -4,6 +4,7 @@ import { Grid, Box, Typography } from '@mui/material';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
 import Personaindex from '../components/personaindex'; // Asegúrate de que esté bien importado
+import InstagramIcon from '@mui/icons-material/Instagram';
 
 const Compania = () => {
   const { id } = useParams();
@@ -18,19 +19,20 @@ const Compania = () => {
 
         if (companiaSnap.exists()) {
           const companiaData = companiaSnap.data();
+          console.log('Datos de la compañía:', companiaData); // Log para verificar los datos de la compañía
           setCompania(companiaData);
 
-          if (companiaData.obras_prod && companiaData.obras_prod.length > 0) {
-            const obrasQuery = query(collection(db, 'obra'), where('__name__', 'in', companiaData.obras_prod));
-            const obrasSnap = await getDocs(obrasQuery);
-            const obrasData = obrasSnap.docs.map(doc => ({
-              id: doc.id,
-              titulo: doc.data().titulo, // Nombre de la obra
-              anoinicio: doc.data().anoinicio, // Año de inicio
-              cartel: doc.data().cartel // Imagen/cartel de la obra
-            }));
-            setObrasRelacionadas(obrasData);
-          }
+          // Consulta para obtener las obras relacionadas
+          const obrasQuery = query(collection(db, 'obra'), where('productoras', 'array-contains', id));
+          const obrasSnap = await getDocs(obrasQuery);
+          const obrasData = obrasSnap.docs.map(doc => ({
+            id: doc.id,
+            titulo: doc.data().titulo, // Nombre de la obra
+            anoinicio: doc.data().anoinicio, // Año de inicio
+            cartel: doc.data().cartel // Imagen/cartel de la obra
+          }));
+          console.log('Datos de las obras relacionadas:', obrasData); // Log para verificar los datos de las obras
+          setObrasRelacionadas(obrasData);
         } else {
           console.error('La compañía no existe en Firestore.');
         }
@@ -70,6 +72,13 @@ const Compania = () => {
         <Typography variant="body1" sx={{ marginBottom: "8px" }}>
           {compania.descripcion}
         </Typography>
+        {compania.instagram && (
+                        <Box sx={{ textAlign: "left", marginTop: 2 }}>
+                            <a href={`https://www.instagram.com/${compania.instagram}`} target="_blank" rel="noopener noreferrer">
+                                <InstagramIcon sx={{ fontSize: 30, color: "black", marginBottom: 2 }} />
+                            </a>
+                        </Box>
+                    )}
       </Grid>
 
       {/* Sección de Obras Relacionadas */}

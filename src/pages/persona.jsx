@@ -8,6 +8,7 @@ import Imagenesobra from "../components/imagenesobra";
 import Personaindex from "../components/personaindex";
 import { NavLink } from "react-router-dom";
 import { Premiosobra } from "../components/premiosobra";
+import InstagramIcon from '@mui/icons-material/Instagram';
 
 const Persona = () => {
     const { id } = useParams();
@@ -148,6 +149,13 @@ const Persona = () => {
                     <Typography variant="body2" paragraph>
                         {persona.biografia || ""}
                     </Typography>
+                    {persona.instagram && (
+                        <Box sx={{ textAlign: "left", marginTop: 2 }}>
+                            <a href={`https://www.instagram.com/${persona.instagram}`} target="_blank" rel="noopener noreferrer">
+                                <InstagramIcon sx={{ fontSize: 30, color: "black" }} />
+                            </a>
+                        </Box>
+                    )}
                 </Grid>
             </Grid>
 

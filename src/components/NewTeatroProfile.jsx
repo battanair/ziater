@@ -11,6 +11,7 @@ function NewTeatroProfile() {
   const [ciudad, setCiudad] = useState('');
   const [direccion, setDireccion] = useState('');
   const [pais, setPais] = useState('');
+  const [instagram, setInstagram] = useState('');
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
@@ -27,13 +28,14 @@ function NewTeatroProfile() {
   }, []);
 
   const handleSaveTeatro = async () => {
-    if (!nombreTeatro || !descripcion || !ciudad || !direccion || !pais) {
+    if (!nombreTeatro || !descripcion || !ciudad || !direccion || !pais || !instagram) {
       setErrors({
         nombreTeatro: !nombreTeatro,
         descripcion: !descripcion,
         ciudad: !ciudad,
         direccion: !direccion,
         pais: !pais,
+        instagram: !instagram,
       });
       return;
     }
@@ -47,6 +49,7 @@ function NewTeatroProfile() {
           ciudad,
           direccion,
           pais,
+          instagram,
           creacion: user.uid,
           foto: imageUrl || "https://picsum.photos/200/300",
         });
@@ -57,6 +60,7 @@ function NewTeatroProfile() {
           ciudad,
           direccion,
           pais,
+          instagram,
           creacion: user.uid,
           foto: imageUrl || "https://picsum.photos/200/300",
         });
@@ -120,6 +124,7 @@ function NewTeatroProfile() {
     setCiudad('');
     setDireccion('');
     setPais('');
+    setInstagram('');
     setImageUrl('');
     setImageError('');
     setErrors({});
@@ -185,6 +190,14 @@ function NewTeatroProfile() {
             fullWidth
             error={errors.pais}
             helperText={errors.pais && "Campo requerido"}
+          />
+          <TextField
+            label="Instagram"
+            value={instagram}
+            onChange={(e) => setInstagram(e.target.value)}
+            fullWidth
+            error={errors.instagram}
+            helperText={errors.instagram && "Campo requerido"}
           />
           <Box display="flex" alignItems="center" gap={2}>
             <input

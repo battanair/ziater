@@ -3,6 +3,8 @@ import { useParams, Link } from 'react-router-dom';
 import { Grid, Box, Typography } from '@mui/material';
 import { doc, getDoc, collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../firebaseConfig';
+import InstagramIcon from '@mui/icons-material/Instagram';
+
 
 const Premios = () => {
   const { id } = useParams();
@@ -100,6 +102,13 @@ const Premios = () => {
         <Typography variant="body1" sx={{ marginBottom: 2 }}>
           {premio.bio_premio}
         </Typography>
+        {premio.insta_premio && (
+                        <Box sx={{ textAlign: "left", marginTop: 2 }}>
+                            <a href={`https://www.instagram.com/${premio.insta_premio}`} target="_blank" rel="noopener noreferrer">
+                                <InstagramIcon sx={{ fontSize: 30, color: "black", marginBottom: 2 }} />
+                            </a>
+                        </Box>
+                    )}
         
       </Grid>
       <Grid item xs={12}>
