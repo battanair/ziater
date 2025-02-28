@@ -1,5 +1,8 @@
 {
   "projects": {
-    "default": "ziater2"
-  }
+    "default": "ziater2",
+    "firestori": "ziater2"
+  },
+  "targets": {},
+  "etags": {}
 }

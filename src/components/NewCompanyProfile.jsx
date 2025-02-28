@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { onAuthStateChanged } from "firebase/auth";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirestore, collection, doc, getDoc, setDoc, addDoc } from "firebase/firestore";
 import { auth, db } from '../firebaseConfig';
 import { Container, TextField, Button, Stepper, Step, StepLabel, Box, CircularProgress, Typography } from '@mui/material';
 
 function NewCompanyProfile() {
+  const { id } = useParams(); // Obtener el id de los parámetros de la URL
   const [activeStep, setActiveStep] = useState(0);
   const [nombreProd, setNombreProd] = useState('');
   const [descripcion, setDescripcion] = useState('');
-  const [instagram, setInstagram] = useState(''); // Nuevo campo de Instagram
+  const [instagram, setInstagram] = useState('');
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
@@ -17,12 +19,30 @@ function NewCompanyProfile() {
   const [imageLoading, setImageLoading] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
       setLoading(false);
     });
     return unsubscribe;
   }, []);
+
+  useEffect(() => {
+    const fetchCompanyData = async () => {
+      if (id) {
+        const docRef = doc(db, 'productoras', id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setNombreProd(data.nombre_prod);
+          setDescripcion(data.descripcion);
+          setInstagram(data.instagram);
+          setImageUrl(data.foto_prod);
+        }
+      }
+    };
+
+    fetchCompanyData();
+  }, [id]);
 
   const handleSaveCompany = async (imageUrl) => {
     if (!nombreProd || !descripcion || !instagram) {
@@ -36,13 +56,19 @@ function NewCompanyProfile() {
 
     if (user) {
       try {
-        await addDoc(collection(db, "productoras"), {
+        const companyData = {
           nombre_prod: nombreProd,
           descripcion,
           instagram, // Guardar Instagram
           creacion: user.uid,
           foto_prod: imageUrl || "https://picsum.photos/300/300",
-        });
+        };
+
+        if (id) {
+          await setDoc(doc(db, 'productoras', id), companyData);
+        } else {
+          await addDoc(collection(db, "productoras"), companyData);
+        }
 
         setActiveStep(1);
       } catch (error) {
@@ -98,7 +124,6 @@ function NewCompanyProfile() {
       setImageLoading(false);
     }
   };
-  
 
   const handleResetForm = () => {
     setNombreProd('');
@@ -112,7 +137,7 @@ function NewCompanyProfile() {
 
   if (loading) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh" bgcolor="black">
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh" bgcolor="black !important">
         <CircularProgress sx={{ color: 'white' }} />
       </Box>
     );
@@ -121,8 +146,12 @@ function NewCompanyProfile() {
   return (
     <Container maxWidth="sm" sx={{ py: 4 }}>
       <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
-        <Step><StepLabel>Datos de la Compañía</StepLabel></Step>
-        <Step><StepLabel>Finalizar</StepLabel></Step>
+        <Step>
+          <StepLabel StepIconProps={{ sx: { color: 'black !important' } }}>Datos de la Compañía</StepLabel>
+        </Step>
+        <Step>
+          <StepLabel StepIconProps={{ sx: { color: 'black !important' } }}>Finalizar</StepLabel>
+        </Step>
       </Stepper>
 
       {activeStep === 0 && (
@@ -169,14 +198,14 @@ function NewCompanyProfile() {
             </Box>
           )}
 
-          <Button onClick={() => handleSaveCompany(imageUrl)} variant="contained" sx={{ mt: 2 }}>Siguiente</Button>
+          <Button onClick={() => handleSaveCompany(imageUrl)} variant="contained" sx={{ mt: 2, backgroundColor: 'black', color: 'white' }}>{id ? 'Actualizar' : 'Crear'}</Button>
         </Box>
       )}
 
       {activeStep === 1 && (
         <Box textAlign="center">
-          <Typography variant="h5" gutterBottom>¡Compañía registrada con éxito!</Typography>
-          <Button variant="contained" onClick={handleResetForm}>Registrar otra</Button>
+          <Typography variant="h5" gutterBottom>¡Compañía {id ? 'actualizada' : 'registrada'} con éxito!</Typography>
+          <Button variant="contained" onClick={handleResetForm} sx={{ backgroundColor: 'black', color: 'white' }}>Registrar otra</Button>
         </Box>
       )}
     </Container>

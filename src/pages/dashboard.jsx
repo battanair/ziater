@@ -27,11 +27,13 @@ import NewTeatroProfile from '../components/NewTeatroProfile';
 import NewTicketProfile from '../components/NewTicketProfile';
 import Favorites from '../components/Favorites';
 import Seen from '../components/Seen';
+import Edit from '../components/Editiar';
 
 const COMPONENT_MAP = {
   'cuenta': <Cuenta />, 
   'favorites': <Favorites />,
   'vistos': <Seen />,
+  'editar': <Edit />,
   'nueva-obra': <NewPlayProfile />, 
   'nueva-persona': <NewUserProfile />,
   'nueva-company': <NewCompanyProfile />,

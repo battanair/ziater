@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import { onAuthStateChanged } from "firebase/auth";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirestore, collection, doc, getDoc, setDoc, addDoc } from "firebase/firestore";
 import { auth, db } from '../firebaseConfig';
 import { Container, TextField, Button, Stepper, Step, StepLabel, Box, CircularProgress, Typography } from '@mui/material';
 
 function NewAwardProfile() {
+  const { id } = useParams(); // Obtener el id de los parámetros de la URL
   const [activeStep, setActiveStep] = useState(0);
   const [nombrePremio, setNombrePremio] = useState('');
   const [bioPremio, setBioPremio] = useState('');
@@ -24,6 +26,24 @@ function NewAwardProfile() {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    const fetchAwardData = async () => {
+      if (id) {
+        const docRef = doc(db, 'premios', id);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          setNombrePremio(data.nombre_premio);
+          setBioPremio(data.bio_premio);
+          setInstaPremio(data.insta_premio);
+          setImageUrl(data.foto_premio);
+        }
+      }
+    };
+
+    fetchAwardData();
+  }, [id]);
+
   const handleSaveAward = async (imageUrl) => {
     let newErrors = {};
     if (!nombrePremio) newErrors.nombrePremio = "Campo obligatorio";
@@ -36,13 +56,19 @@ function NewAwardProfile() {
 
     if (user) {
       try {
-        await addDoc(collection(db, "premios"), {
+        const awardData = {
           nombre_premio: nombrePremio,
           bio_premio: bioPremio,
           insta_premio: instaPremio || "", // No obligatorio
           creacion: user.uid,
           foto_premio: imageUrl || "https://picsum.photos/200/300",
-        });
+        };
+
+        if (id) {
+          await setDoc(doc(db, 'premios', id), awardData);
+        } else {
+          await addDoc(collection(db, "premios"), awardData);
+        }
 
         setActiveStep(1);
       } catch (error) {
@@ -115,8 +141,12 @@ function NewAwardProfile() {
   return (
     <Container maxWidth="sm" sx={{ py: 4 }}>
       <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
-        <Step><StepLabel>Datos del Premio</StepLabel></Step>
-        <Step><StepLabel>Finalizar</StepLabel></Step>
+        <Step>
+          <StepLabel StepIconProps={{ sx: { color: 'black !important' } }}>Datos de los Premios</StepLabel>
+        </Step>
+        <Step>
+          <StepLabel StepIconProps={{ sx: { color: 'black' } }}>Finalizar</StepLabel>
+        </Step>
       </Stepper>
 
       {activeStep === 0 && (
@@ -163,14 +193,14 @@ function NewAwardProfile() {
             </Box>
           )}
 
-          <Button onClick={() => handleSaveAward(imageUrl)} variant="contained" sx={{ mt: 2 }}>Siguiente</Button>
+          <Button onClick={() => handleSaveAward(imageUrl)} variant="contained" sx={{ mt: 2, backgroundColor: 'black', color: 'white' }}>{id ? 'Actualizar' : 'Crear'}</Button>
         </Box>
       )}
 
       {activeStep === 1 && (
         <Box textAlign="center">
-          <Typography variant="h5" gutterBottom>¡Premio registrado con éxito!</Typography>
-          <Button variant="contained" onClick={handleResetForm}>Registrar otro</Button>
+          <Typography variant="h5" gutterBottom>¡Premio {id ? 'actualizado' : 'registrado'} con éxito!</Typography>
+          <Button variant="contained" onClick={handleResetForm} sx={{ backgroundColor: 'black', color: 'white' }}>Registrar otro</Button>
         </Box>
       )}
     </Container>

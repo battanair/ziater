@@ -5,7 +5,6 @@ import { doc, getDoc, collection, query, where, orderBy, limit, getDocs, updateD
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import Rating from '@mui/material/Rating';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';

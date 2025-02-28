@@ -19,4 +19,3 @@ const db = getFirestore(app);
 
 
 export { auth, db }; // Export the auth object
-

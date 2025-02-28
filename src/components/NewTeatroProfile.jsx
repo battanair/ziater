@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import { onAuthStateChanged } from "firebase/auth";
-import { getFirestore, collection, addDoc } from "firebase/firestore";
+import { getFirestore, collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from '../firebaseConfig';
 import { Container, TextField, Button, Stepper, Step, StepLabel, Box, CircularProgress, Typography } from '@mui/material';
 
 function NewTeatroProfile() {
+  const { id } = useParams();
+  const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(0);
   const [nombreTeatro, setNombreTeatro] = useState('');
   const [descripcion, setDescripcion] = useState('');
@@ -27,6 +30,34 @@ function NewTeatroProfile() {
     return unsubscribe;
   }, []);
 
+  useEffect(() => {
+    const fetchTeatro = async () => {
+      if (id) {
+        try {
+          const teatroRef = doc(db, 'teatro', id);
+          const teatroSnap = await getDoc(teatroRef);
+
+          if (teatroSnap.exists()) {
+            const teatroData = teatroSnap.data();
+            setNombreTeatro(teatroData.nombre_teatro);
+            setDescripcion(teatroData.descripcion);
+            setCiudad(teatroData.ciudad);
+            setDireccion(teatroData.direccion);
+            setPais(teatroData.pais);
+            setInstagram(teatroData.instagram);
+            setImageUrl(teatroData.foto);
+          } else {
+            console.error('El teatro no existe en Firestore.');
+          }
+        } catch (error) {
+          console.error('Error obteniendo el teatro:', error);
+        }
+      }
+    };
+
+    fetchTeatro();
+  }, [id]);
+
   const handleSaveTeatro = async () => {
     if (!nombreTeatro || !descripcion || !ciudad || !direccion || !pais || !instagram) {
       setErrors({
@@ -42,8 +73,7 @@ function NewTeatroProfile() {
 
     if (user) {
       try {
-        console.log("Guardando teatro en Firestore...");
-        console.log("Datos del teatro:", {
+        const teatroData = {
           nombre_teatro: nombreTeatro,
           descripcion,
           ciudad,
@@ -52,20 +82,17 @@ function NewTeatroProfile() {
           instagram,
           creacion: user.uid,
           foto: imageUrl || "https://picsum.photos/200/300",
-        });
+        };
 
-        await addDoc(collection(db, "teatro"), {
-          nombre_teatro: nombreTeatro,
-          descripcion,
-          ciudad,
-          direccion,
-          pais,
-          instagram,
-          creacion: user.uid,
-          foto: imageUrl || "https://picsum.photos/200/300",
-        });
+        if (id) {
+          const teatroRef = doc(db, 'teatro', id);
+          await updateDoc(teatroRef, teatroData);
+          console.log("Teatro actualizado con éxito.");
+        } else {
+          await addDoc(collection(db, "teatro"), teatroData);
+          console.log("Teatro guardado con éxito.");
+        }
 
-        console.log("Teatro guardado con éxito.");
         setActiveStep(1);
       } catch (error) {
         console.error("Error al guardar la información del teatro:", error);
@@ -223,7 +250,7 @@ function NewTeatroProfile() {
 
       {activeStep === 1 && (
         <Box textAlign="center">
-          <Typography variant="h5" gutterBottom>¡Teatro registrado con éxito!</Typography>
+          <Typography variant="h5" gutterBottom>¡Teatro {id ? 'actualizado' : 'registrado'} con éxito!</Typography>
           <Button variant="contained" onClick={handleResetForm}>Registrar otro</Button>
         </Box>
       )}
