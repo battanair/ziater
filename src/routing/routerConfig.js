@@ -22,6 +22,9 @@ import NewEditUser2 from "../components/NewEditUser2";
 import NewEditUser3 from "../components/NewEditUser3";
 import EditarPremios from "../components/editarpremios";
 import EditarPremio2 from "../components/editarpremio2";
+import EditPlay from "../components/EditPlay";
+import EditPlayWork from "../components/EditPlayWork";
+import EditPlayWork2 from "../components/EditPlayWork2";
 
 
 
@@ -48,7 +51,7 @@ export const routeConfig = [
   {path: "/edit", page: <PrivateRoute><Edit /></PrivateRoute> },
   { path: "/edit-award/:id", page: <PrivateRoute><NewAwardProfile /></PrivateRoute> },
   { path: "/edit-company/:id", page: <PrivateRoute><NewCompanyProfile /></PrivateRoute> },
-  { path: "/edit-play/:id", page: <PrivateRoute><NewPlayProfile /></PrivateRoute> },
+  { path: "/edit-play/:id", page: <PrivateRoute><EditPlay /></PrivateRoute> },
   { path: "/edit-sala/:id", page: <PrivateRoute><NewTeatroProfile /></PrivateRoute> },
   { path: "/edit-persona/:id", page: <PrivateRoute><NewEditUser /></PrivateRoute> },
   { path: "/newedituser2/:id", page: <PrivateRoute><NewEditUser2 /></PrivateRoute> },
@@ -57,5 +60,8 @@ export const routeConfig = [
   { path: "/editarpremios/:id", page: <PrivateRoute><EditarPremios /></PrivateRoute> },
   { path: "/editarpremio2/:id", page: <PrivateRoute><EditarPremio2 /></PrivateRoute> },
   { path: "/editarpremio2", page: <PrivateRoute><EditarPremio2 /></PrivateRoute> },
+  { path: "/editplaywork/:id", page: <PrivateRoute><EditPlayWork /></PrivateRoute> },
+  { path: "/editplaywork2/:id", page: <PrivateRoute><EditPlayWork2 /></PrivateRoute> },
+  { path: "/editplaywork2/", page: <PrivateRoute><EditPlayWork2 /></PrivateRoute> },
 
 ];

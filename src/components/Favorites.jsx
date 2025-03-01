@@ -96,14 +96,14 @@ const Favorites = () => {
               {favorites[key].map((favorite, index) => (
                 <Grid item xs={12} sm={4} md={4} key={index}>
                   <div
-                    onClick={() => window.location.href = `/${key.replace('favoritos_', '')}/${favorite.id}`}
+                    onClick={() => window.location.href = `/${key === 'favoritos_sala' ? 'teatro' : key.replace('favoritos_', '')}/${favorite.id}`}
                     style={{ cursor: 'pointer' }}
                   >
                     <Personaindex
                       fotito={favorite.photo}
                       nombrepersona={favorite.name}
                       puestopersona={`${favorite.anoinicio || ''}`} // Assuming 'anoinicio' is a field in your data
-                      link={`/${key.replace('favoritos_', '')}/${favorite.id}`}
+                      link={`/${key === 'favoritos_sala' ? 'teatro' : key.replace('favoritos_', '')}/${favorite.id}`}
                     />
                   </div>
                 </Grid>

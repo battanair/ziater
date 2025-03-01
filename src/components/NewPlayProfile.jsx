@@ -405,7 +405,7 @@ function NewPlayProfile() {
               {[
                 'Comedia', 'Teatro', 'Impro', 'Circo', 'Musicales', 'Stand up', 'Danza', 
                 'Drag', 'Ópera', 'Zarzuela', 'Performance', 'Ficción sonora', 'Magia', 
-                 'Microteatro'
+                 'Microteatro', 'Monólogo', 'Mimo', 'Poesía', 'Títeres', 'Variedades', 'Otros'
               ].map((cat) => (
                 <FormControlLabel
                   key={cat}
