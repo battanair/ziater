@@ -48,16 +48,16 @@ export default function Navbar() {
     }}>
       <Toolbar variant="dense">
         <Grid container direction="row" sx={{ justifyContent: "space-around", alignItems: "center", width: '100%' }}>
-          <Grid>
+          <Grid item sx={{ mb: { xs: 2, sm: 0 } }}>
             <NavLink to="/"><img src="../logoziater.png" alt="Logo" style={{ height: "60px", marginLeft: "10px" }} /></NavLink>
           </Grid>
-          <Grid>
+          <Grid item sx={{ mb: { xs: 2, sm: 0 } }}>
             <Buscador />
           </Grid>
 
           {/* Si el usuario NO está logueado, mostramos login y signup */}
           {!user && (
-            <Grid>
+            <Grid item sx={{ mb: { xs: 2, sm: 0 } }}>
               <NavLink to="/login" style={{ marginRight: '10px', textDecoration: 'none', color: 'black' }}>
                 Entrar
               </NavLink>
@@ -69,26 +69,24 @@ export default function Navbar() {
 
           {/* Si el usuario está logueado, mostramos el menú */}
           {user && (
-            <Grid>
-              
+            <Grid item sx={{ mb: { xs: 2, sm: 0 } }}>
               <NavLink to="/dashboard" style={{ textDecoration: "none" }}>
-      <Button
-        variant="contained"
-        sx={{
-          backgroundColor: "black",
-          color: "white",
-          "&:hover": { backgroundColor: "#333" },
-          textTransform: "none",
-          display: "flex",
-          alignItems: "center",
-          gap: 1,
-        }}
-      >
-        <AccountCircleIcon />
-        Tu cuenta
-      </Button>
-    </NavLink>
-                
+                <Button
+                  variant="contained"
+                  sx={{
+                    backgroundColor: "black",
+                    color: "white",
+                    "&:hover": { backgroundColor: "#333" },
+                    textTransform: "none",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 1,
+                  }}
+                >
+                  <AccountCircleIcon />
+                  Tu cuenta
+                </Button>
+              </NavLink>
             </Grid>
           )}
         </Grid>

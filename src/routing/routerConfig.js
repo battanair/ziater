@@ -25,6 +25,8 @@ import EditarPremio2 from "../components/editarpremio2";
 import EditPlay from "../components/EditPlay";
 import EditPlayWork from "../components/EditPlayWork";
 import EditPlayWork2 from "../components/EditPlayWork2";
+import EditPlayAwards from "../components/EditPlayAwards";
+import  EditPlayAwards2 from "../components/EditPlayAwards2";
 
 
 
@@ -63,5 +65,8 @@ export const routeConfig = [
   { path: "/editplaywork/:id", page: <PrivateRoute><EditPlayWork /></PrivateRoute> },
   { path: "/editplaywork2/:id", page: <PrivateRoute><EditPlayWork2 /></PrivateRoute> },
   { path: "/editplaywork2/", page: <PrivateRoute><EditPlayWork2 /></PrivateRoute> },
+  { path: "/editplayawards/:id", page: <PrivateRoute><EditPlayAwards /></PrivateRoute> },
+  { path: "/editplayawards2/:id", page: <PrivateRoute><EditPlayAwards2 /></PrivateRoute> },
+  { path: "/editplayawards2/", page: <PrivateRoute><EditPlayAwards2 /></PrivateRoute> },
 
 ];

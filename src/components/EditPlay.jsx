@@ -121,7 +121,13 @@ function EditPlay() {
           >
             Editar Equipo
           </Button>
-          <Button variant="contained" sx={{ bgcolor: 'black', color: 'white', width: '48%' }}>Editar Premios</Button>
+          <Button 
+            variant="contained" 
+            sx={{ bgcolor: 'black', color: 'white', width: '48%' }}
+            onClick={() => navigate(`/editplayawards/${id}`)}
+          >
+            Editar Premios
+          </Button>
         </Box>
       </Box>
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)} message="Los datos se han guardado" action={<IconButton size="small" color="inherit" onClick={() => setOpenSnackbar(false)}><CloseIcon fontSize="small" /></IconButton>} />
