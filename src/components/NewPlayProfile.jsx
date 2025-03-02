@@ -113,7 +113,7 @@ function NewPlayProfile() {
           instagram,
           anoinicio,
           anofin: anofin || 0,
-          cartel: cartelUrl || "https://picsum.photos/200/300",
+          cartel: cartelUrl || "https://res.cloudinary.com/dk0vvcpyn/image/upload/v1740952724/imagenesdefecto/u92idnadh254vhm9wi84.jpg",
           categoria,
           creacion: user.uid,
           fotos_obra: fotosObra,

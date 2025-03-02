@@ -17,6 +17,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import handleLogout from './logout'; // Asegúrate de que esto está bien exportado
 import { Button } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
+import logomini from '../logomini.PNG';
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -49,7 +50,7 @@ export default function Navbar() {
       <Toolbar variant="dense">
         <Grid container direction="row" sx={{ justifyContent: "space-around", alignItems: "center", width: '100%' }}>
           <Grid item sx={{ mb: { xs: 2, sm: 0 } }}>
-            <NavLink to="/"><img src="../logoziater.png" alt="Logo" style={{ height: "60px", marginLeft: "10px" }} /></NavLink>
+            <NavLink to="/"><img src={logomini} alt="Logo" style={{ height: "135px", marginLeft: "10px" }} /></NavLink>
           </Grid>
           <Grid item sx={{ mb: { xs: 2, sm: 0 } }}>
             <Buscador />

@@ -1,110 +1,100 @@
-import { NavLink } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { Box, Typography, Button, Grid, Container } from "@mui/material";
+import React, { useEffect, useState } from "react";
+import { Container, Typography, Button, Box, Divider } from "@mui/material";
+import { styled } from "@mui/system";
+import { motion } from "framer-motion";
 
+const HeroSection = styled(Box)({
+  textAlign: "center",
+  padding: "6rem 2rem",
+  backgroundColor: "white",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+});
 
-const Home = () => {
-    const [user, setUser] = useState(null);
-    const auth = getAuth();
-    const categories = [
-        {
-          title: "ESPECTÁCULOS",
-          items: ["Teatro", "Impro", "Circo", "Musicales", "Stand up", "Danza", "Drag", "Ópera", "Zarzuela", "Performance", "Ficción sonora", "Magia"],
-        },
-        {
-          title: "PROFESIONALES",
-          items: ["Dirección", "Dramaturgia", "Reparto", "Artistas", "Iluminación", "Escenografía", "Espacio sonoro", "Vestuario", "Asesoría", "Fotografía", "Diseño", "Comunicación"],
-        },
-        {
-          title: "EMPRESAS Y COMPAÑÍAS",
-          items: ["Creativas", "Técnicas", "Casting", "Distribución"],
-        },
-        {
-          title: "MEDIOS",
-          items: ["Especializados", "Generalistas"],
-        },
-      ];
+const Section = styled(Box)({
+  padding: "6rem 2rem",
+  maxWidth: "900px",
+  margin: "auto",
+  textAlign: "left",
+});
 
-    useEffect(() => {
-        const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-            setUser(currentUser);
-        });
+const BlackDivider = styled(Divider)({
+  backgroundColor: "black",
+  height: "4px",
+  width: "100%",
+  margin: "5rem 0",
+});
 
-        return () => unsubscribe(); // Cleanup al desmontar
-    }, []);
+const StyledButton = styled(Button)({
+  marginTop: "2rem",
+  padding: "1rem 2.5rem",
+  fontSize: "1.2rem",
+  borderRadius: "30px",
+  fontWeight: "bold",
+  backgroundColor: "black",
+  color: "white",
+  '&:hover': {
+    backgroundColor: "#444",
+  }
+});
 
-    return (
-        <>
-           <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "center",
-        alignItems: "center",
-        height: "40vh",
-        textAlign: "center",
-        backgroundColor: "#fff",
-        padding: "20px",
-      }}
-    >
-      {/* Contenedor del título */}
-      <Box sx={{ width: "100%", textAlign: "left", mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 300, letterSpacing: "2px" }}>
-          ZIATER
+const ProgressBar = styled(Box)(({ width }) => ({
+  position: "fixed",
+  bottom: 0,
+  left: 0,
+  width: `${width}%`,
+  height: "15px",
+  backgroundColor: "black",
+  transition: "width 0.2s ease-out",
+}));
+
+export default function Home() {
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollTop = window.scrollY;
+      const scrollHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = (scrollTop / scrollHeight) * 100;
+      setScrollProgress(progress);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  return (
+    <Container maxWidth="lg">
+      <ProgressBar width={scrollProgress} />
+
+      {/* Hero Section */}
+      <HeroSection component={motion.div} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
+        <Typography variant="h4" gutterBottom fontWeight="bold">
+          ¿Estás preparado para el cambio de
+          las artes escénicas españolas?
         </Typography>
-      </Box>
+      </HeroSection>
 
-      {/* Pregunta central */}
-      <Typography variant="h5" sx={{ maxWidth: "600px", fontWeight: 300 }}>
-        ¿Estás preparado para el gran cambio de las artes escénicas españolas?
-      </Typography>
+      <BlackDivider />
 
-      {/* Botón */}
-      <Button
-        variant="contained"
-        sx={{
-          marginTop: "20px",
-          backgroundColor: "#000",
-          color: "#fff",
-          "&:hover": { backgroundColor: "#333" },
-        }}
-      >
-        SABER MÁS
-      </Button>
+      {/* Secciones */}
+      {[
+        { title: "QUÉ ES", subtitle: "La gran base de datos escénica", text: "Descubre todos los rincones de los profesionales de las artes en vivo, la mayor red como profesional y la opción de guardar programas de mano." },
+        { title: "CÓMO FUNCIONA", subtitle: "Las artes vivas inmortalizadas", text: "Una interfaz sencilla y amigable para tener al alcance de tu mano la creación escénica actual y pasada." },
+        { subtitle: "El arte de lo más humano más cerca que nunca", text: "Los perfiles podrán incluir sus trabajos. Los espectadores encontrarán la información del mundo de las artes vivas dentro para acercarlo aún más al gran público." },
+        { title: "CUÁNTO CUESTA", subtitle: "La cultura como bien público", text: "Interfaz de usuario/espectador: GRATIS SIEMPRE. Índice de perfiles pro: GRATIS SIEMPRE. Más detalles de la información bajo MEMBRESÍA." },
+        { title: "POR QUÉ", subtitle: "Necesidad y compromiso", text: "Este proyecto nace de la necesidad de amor por el teatro. Compilar la información entre el sector público y privado." },
+        { title: "Encuentra mucho más de lo que pensabas que existía.", subtitle: "Bienvenido a la auténtica digitalización de las artes vivas", text: "Lo que ocurre en un escenario, no se queda en él." },
 
-        {/* Contenedor de la butaca */}
-        
-      </Box>
-      <Container maxWidth="lg" sx={{ py: 8 }}>
-      <Typography variant="h6" fontWeight="300" gutterBottom>
-        ¿QUÉ ES? 
-      </Typography>
-      <Typography variant="h3" fontWeight="bold" gutterBottom>
-        La gran base de datos escénica
-      </Typography>
-      <Typography variant="h6" color="text.secondary" gutterBottom fontWeight="300">
-        Descubre todos los trabajos de los profesionales de las <b>artes en vivo</b>, forma parte de <b>la mayor red como profesional</b>, olvídate de guardar <b>programas de mano</b>.
-      </Typography>
-
-      <Grid container spacing={4} sx={{ mt: 4 }}>
-        {categories.map((category) => (
-          <Grid item xs={12} sm={6} md={3} key={category.title}>
-            <Typography variant="subtitle1" fontWeight="bold" gutterBottom>
-              {category.title}
-            </Typography>
-            {category.items.map((item) => (
-              <Typography key={item} variant="body1" color="text.secondary">
-                {item}
-              </Typography>
-            ))}
-          </Grid>
-        ))}
-      </Grid>
+      ].map((section, index) => (
+        <Section key={index} component={motion.div} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
+          {section.title && <Typography variant="subtitle1" fontWeight="bold">{section.title}</Typography>}
+          <Typography variant="h4" gutterBottom fontWeight="bold">
+            {section.subtitle}
+          </Typography>
+          <Typography>{section.text}</Typography>
+        </Section>
+      ))}
     </Container>
-      </>
-    );
-};
-
-export default Home;
-
+  );
+}

@@ -330,7 +330,7 @@ const Obra2 = () => {
       <Grid item xs={12} md={4}>
         <Box sx={{ textAlign: 'center' }}>
           <img
-            src={obraData.cartel}
+            src={obraData.cartel || 'https://res.cloudinary.com/dk0vvcpyn/image/upload/v1740952724/imagenesdefecto/u92idnadh254vhm9wi84.jpg'}
             alt={obraData.titulo}
             style={{ width: '100%', borderRadius: '8px' }} />
         </Box>

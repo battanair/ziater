@@ -97,11 +97,10 @@ const App = () => {
     <AuthProvider>
       <Router>
         <div className="app">
-          <Box sx={{ background: 'lightgrey', paddingBottom: '50px' }}>
+          <Box sx={{ background: 'white', paddingBottom: '50px' }}>
             <Box sx={{ flexGrow: 1 }}>
              <Navbar />
             </Box>
-
             <Container maxWidth="md" sx={{ background: 'white', marginTop: '50px', marginBottom: '50px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', paddingLeft: 3, paddingRight: 3 }}>
               <Routes>
                 {routeConfig.map(({ path, page }, index) => (

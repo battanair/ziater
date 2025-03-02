@@ -61,7 +61,7 @@ function NewCompanyProfile() {
           descripcion,
           instagram, // Guardar Instagram
           creacion: user.uid,
-          foto_prod: imageUrl || "https://picsum.photos/300/300",
+          foto_prod: imageUrl || "https://res.cloudinary.com/dk0vvcpyn/image/upload/v1740952724/imagenesdefecto/hunzspleabjaukt6s2xw.jpg",
         };
 
         if (id) {
@@ -175,7 +175,7 @@ function NewCompanyProfile() {
             helperText={errors.descripcion && "Campo requerido"}
           />
           <TextField
-            label="Instagram"
+            label="Instagram (nombre de usuario)"
             value={instagram}
             onChange={(e) => setInstagram(e.target.value)}
             fullWidth

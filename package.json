@@ -19,6 +19,7 @@
     "bootstrap": "^5.3.3",
     "cloudinary-core": "^2.13.1",
     "firebase": "^11.3.0",
+    "framer-motion": "^12.4.7",
     "gapi-script": "^1.2.0",
     "lodash": "^4.17.21",
     "react": "^18.3.1",

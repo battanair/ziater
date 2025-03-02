@@ -73,7 +73,7 @@ function NewUserProfile() {
             instagram,
             creacion: user.uid,
             coincide: user.uid,
-            foto: imageUrl || "https://picsum.photos/200/300"
+            foto: imageUrl || "https://res.cloudinary.com/dk0vvcpyn/image/upload/v1740952724/imagenesdefecto/znmg1esf30tgxcwbgpnl.jpg"
           });
         } else {
           const newPersonaRef = await addDoc(collection(db, "persona"), {
@@ -83,7 +83,7 @@ function NewUserProfile() {
             instagram,
             creacion: user.uid,
             coincide: "",
-            foto: imageUrl || "https://picsum.photos/200/300"
+            foto: imageUrl || "https://res.cloudinary.com/dk0vvcpyn/image/upload/v1740952724/imagenesdefecto/znmg1esf30tgxcwbgpnl.jpg"
           });
           personaRef = newPersonaRef;
         }

@@ -110,7 +110,7 @@ function NewTeatroProfile() {
           pais,
           instagram,
           creacion: user.uid,
-          foto: imageUrl || "https://picsum.photos/200/300",
+          foto: imageUrl || "https://res.cloudinary.com/dk0vvcpyn/image/upload/v1740952724/imagenesdefecto/iuumtdngmus9nqlnse7f.jpg",
         };
 
         if (id) {
