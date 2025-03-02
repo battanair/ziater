@@ -77,7 +77,22 @@ function NewTicketProfile() {
 
   return (
     <Container maxWidth="sm" sx={{ py: 4 }}>
-      <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
+      <Stepper 
+        activeStep={activeStep} 
+        alternativeLabel 
+        sx={{ 
+          mb: 4, 
+          '& .MuiStepIcon-root': { 
+            color: 'black' 
+          }, 
+          '& .MuiStepIcon-active': { 
+            color: 'black' 
+          }, 
+          '& .MuiStepIcon-completed': { 
+            color: 'black' 
+          } 
+        }}
+      >
         <Step><StepLabel>Datos</StepLabel></Step>
         <Step><StepLabel>Finalizar</StepLabel></Step>
       </Stepper>
@@ -161,7 +176,19 @@ function NewTicketProfile() {
             error={errors.precio}
             helperText={errors.precio && "Campo requerido"}
           />
-          <Button onClick={handleSaveEntrada} variant="contained" sx={{ mt: 2 }}>Siguiente</Button>
+          <Button 
+            onClick={handleSaveEntrada} 
+            variant="contained" 
+            sx={{ 
+              mt: 2, 
+              bgcolor: 'black', 
+              '&:hover': { 
+                bgcolor: 'black' 
+              } 
+            }}
+          >
+            Siguiente
+          </Button>
         </Box>
       )}
       {activeStep === 1 && (

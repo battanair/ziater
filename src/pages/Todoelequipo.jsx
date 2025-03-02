@@ -104,7 +104,7 @@ const Todoelequipo = () => {
               <Stack direction="row" spacing={2} alignItems="center" sx={{ marginBottom: 2 }}>
                 <Avatar src={persona.foto} alt={persona.nombre} sx={{ height: 57, borderRadius: 0 }} />
                 <Typography>
-                  <b>{persona.nombre} {persona.apellidos}</b> <br />({persona.fecha_inicio} - {persona.fecha_fin || "Actualmente"})
+                  <b>{persona.nombre} {persona.apellidos}</b> <br />({persona.fecha_inicio} - {persona.fecha_fin === "0" || persona.fecha_fin === 0 ? "Actualmente" : persona.fecha_fin})
                 </Typography>
               </Stack>
             </NavLink>

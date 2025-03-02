@@ -2,17 +2,40 @@ import * as React from 'react';
 import { Link } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-import CircularProgress from '@mui/material/CircularProgress';
 import Avatar from '@mui/material/Avatar';
 import { db } from '../firebaseConfig'; // Asegúrate de importar tu configuración de Firebase
 import { collection, getDocs } from 'firebase/firestore';
+import { styled } from '@mui/material/styles';
+
+const CustomTextField = styled(TextField)({
+  '& .MuiOutlinedInput-root': {
+    '&.Mui-focused fieldset': {
+      borderColor: 'black',
+    },
+    '&.Mui-focused .MuiInputBase-input': {
+      color: 'black',
+    },
+  },
+  '& .MuiInputLabel-root': {
+    '&.Mui-focused': {
+      color: 'black',
+    },
+  },
+});
 
 export default function Asynchronous() {
   const [open, setOpen] = React.useState(false);
   const [options, setOptions] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [inputValue, setInputValue] = React.useState('');
 
-  const fetchOptions = async () => {
+  const fetchOptions = async (input) => {
+    if (input.length === 0) {
+      setOptions([]);
+      setLoading(false);
+      return;
+    }
+
     setLoading(true);
     let allOptions = [];
 
@@ -38,18 +61,23 @@ export default function Asynchronous() {
       });
     }
 
-    setOptions(allOptions);
+    setOptions(allOptions.slice(0, 10)); // Limitar a 10 resultados
     setLoading(false);
   };
 
   const handleOpen = () => {
     setOpen(true);
-    fetchOptions();
+    fetchOptions(inputValue);
   };
 
   const handleClose = () => {
     setOpen(false);
     setOptions([]);
+  };
+
+  const handleInputChange = (event, value) => {
+    setInputValue(value);
+    fetchOptions(value);
   };
 
   return (
@@ -58,6 +86,7 @@ export default function Asynchronous() {
       open={open}
       onOpen={handleOpen}
       onClose={handleClose}
+      onInputChange={handleInputChange}
       isOptionEqualToValue={(option, value) => option.name === value.name}
       getOptionLabel={(option) => option.name}
       options={options}
@@ -76,14 +105,13 @@ export default function Asynchronous() {
         </li>
       )}
       renderInput={(params) => (
-        <TextField
+        <CustomTextField
           {...params}
           label="Buscar"
           InputProps={{
             ...params.InputProps,
             endAdornment: (
               <>
-                {loading ? <CircularProgress color="inherit" size={20} /> : null}
                 {params.InputProps.endAdornment}
               </>
             ),

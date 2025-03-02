@@ -252,7 +252,11 @@ function NewUserProfile() {
 
   return (
     <Container maxWidth="sm" sx={{ py: 4 }}>
-      <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
+      <Stepper 
+        activeStep={activeStep} 
+        alternativeLabel 
+        sx={{ mb: 4, '& .MuiStepIcon-root': { color: 'black' }, '& .MuiStepIcon-active': { color: 'black' }, '& .MuiStepIcon-completed': { color: 'black' } }}
+      >
         <Step><StepLabel>Datos</StepLabel></Step>
         <Step><StepLabel>Trabajos</StepLabel></Step>
         <Step><StepLabel>Premios</StepLabel></Step>
@@ -285,7 +289,7 @@ function NewUserProfile() {
             fullWidth
           />
           <TextField
-            label="Instagram"
+            label="Instagram (nombre de usuario)"
             value={instagram}
             onChange={(e) => setInstagram(e.target.value)}
             fullWidth
@@ -307,11 +311,28 @@ function NewUserProfile() {
               <img src={imageUrl} alt="Uploaded" style={{ width: '100%', maxHeight: '300px', objectFit: 'cover' }} />
             </Box>
           )}
-          <Button variant="outlined" onClick={() => setCoincide(!coincide)}>
+          <Button 
+            variant="outlined" 
+            onClick={() => setCoincide(!coincide)}
+            sx={{ 
+              color: 'black', 
+              borderColor: 'black', 
+              '&:hover': { 
+                color: 'black', 
+                borderColor: 'black' 
+              } 
+            }}
+          >
             {coincide ? "¿No eres tú esta persona?" : "¿Eres tú esta persona?"}
           </Button>
 
-          <Button onClick={() => handleSavePersona(imageUrl)} variant="contained" sx={{ mt: 2 }}>Siguiente</Button>
+          <Button 
+            variant="contained" 
+            onClick={() => handleSavePersona(imageUrl)} 
+            sx={{ mt: 2, bgcolor: 'black', '&:hover': { bgcolor: 'black' } }}
+          >
+            Siguiente
+          </Button>
         </Box>
       )}
       {activeStep === 1 && (
@@ -404,9 +425,21 @@ function NewUserProfile() {
               </Box>
             </Box>
           ))}
-          <Button variant="contained" onClick={handleAddTrabajo} sx={{ mt: 2, mb: 2 }}>Añadir Trabajo</Button>
+          <Button 
+            variant="contained" 
+            onClick={handleAddTrabajo} 
+            sx={{ mt: 2, mb: 2, bgcolor: 'black', '&:hover': { bgcolor: 'black' } }}
+          >
+            Añadir Trabajo
+          </Button>
           <Button onClick={() => setActiveStep(0)}>Atrás</Button>
-          <Button onClick={handleNextStep}>Siguiente</Button>
+          <Button 
+            variant="contained" 
+            onClick={handleNextStep} 
+            sx={{ bgcolor: 'black', '&:hover': { bgcolor: 'black' } }}
+          >
+            Siguiente
+          </Button>
         </Box>
       )}
       {activeStep === 2 && (
@@ -466,7 +499,13 @@ function NewUserProfile() {
           <Button onClick={handleAddPremio} variant="outlined" sx={{ mt: 2 }}>Añadir Premio</Button>
           <Box display="flex" justifyContent="space-between" sx={{ mt: 2 }}>
             <Button onClick={() => setActiveStep(1)}>Atrás</Button>
-            <Button onClick={handleFinalSubmit} variant="contained">Finalizar</Button>
+            <Button 
+              variant="contained" 
+              onClick={handleFinalSubmit} 
+              sx={{ bgcolor: 'black', '&:hover': { bgcolor: 'black' } }}
+            >
+              Finalizar
+            </Button>
           </Box>
         </Box>
       )}
@@ -478,7 +517,13 @@ function NewUserProfile() {
               Este perfil ha sido guardado exitosamente.
             </Typography>
             <Box />
-            <Button variant="contained" href="/">Ir al inicio</Button>
+            <Button 
+              variant="contained" 
+              href="/" 
+              sx={{ bgcolor: 'black', '&:hover': { bgcolor: 'black' } }}
+            >
+              Ir al inicio
+            </Button>
           </Container>
         </Box>
       )}

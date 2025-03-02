@@ -272,7 +272,7 @@ const Persona = () => {
                                     .filter(obra => obra.puesto === puesto)
                                     .map((obra, idx) => {
                                         const anioInicio = obra.anoinicio || "Año desconocido";
-                                        const anioFin = !obra.anofin || obra.anofin === 0 ? "Actualmente" : obra.anofin;
+                                        const anioFin = !obra.anofin || obra.anofin === 0 || obra.anofin === "0" ? "Actualmente" : obra.anofin;
                                         const anioTexto = anioInicio !== "Año desconocido" ? `(${anioInicio} - ${anioFin})` : "";
                                         return (
                                             <NavLink to={`/obra/${obra.id}`} style={{ textDecoration: 'none' }} key={idx}>

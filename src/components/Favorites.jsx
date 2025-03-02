@@ -26,10 +26,12 @@ const Favorites = () => {
         if (docSnap.exists()) {
           const data = docSnap.data();
           console.log('User data:', data); // Log user data
-          const favoritos_compania = await fetchDetails(data.favoritos_compania.filter(id => id), 'productoras', 'nombre_prod', 'foto_prod');
-          const favoritos_obra = await fetchDetails(data.favoritos_obra.filter(id => id), 'obra', 'titulo', 'cartel');
-          const favoritos_persona = await fetchDetails(data.favoritos_persona.filter(id => id), 'persona', 'Nombre', 'foto', 'Apellidos');
-          const favoritos_sala = await fetchDetails(data.favoritos_sala.filter(id => id), 'teatro', 'nombre_teatro', 'foto');
+
+          const favoritos_compania = data.favoritos_compania ? await fetchDetails(data.favoritos_compania.filter(id => id), 'productoras', 'nombre_prod', 'foto_prod') : [];
+          const favoritos_obra = data.favoritos_obra ? await fetchDetails(data.favoritos_obra.filter(id => id), 'obra', 'titulo', 'cartel') : [];
+          const favoritos_persona = data.favoritos_persona ? await fetchDetails(data.favoritos_persona.filter(id => id), 'persona', 'Nombre', 'foto', 'Apellidos') : [];
+          const favoritos_sala = data.favoritos_sala ? await fetchDetails(data.favoritos_sala.filter(id => id), 'teatro', 'nombre_teatro', 'foto') : [];
+
           setFavorites({
             favoritos_compania,
             favoritos_obra,
@@ -42,6 +44,8 @@ const Favorites = () => {
             favoritos_persona,
             favoritos_sala
           }); // Log favorites
+        } else {
+          console.error('No user document found');
         }
       } catch (error) {
         console.error('Error fetching user data:', error);
@@ -60,6 +64,8 @@ const Favorites = () => {
             name: lastNameField ? `${data[nameField]} ${data[lastNameField]}` : data[nameField],
             photo: data[photoField]
           });
+        } else {
+          console.error(`No document found for ID: ${id} in collection: ${collectionName}`);
         }
       }
       return details;

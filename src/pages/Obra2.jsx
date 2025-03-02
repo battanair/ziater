@@ -103,8 +103,10 @@ const Obra2 = () => {
   const filteredElenco = elenco.filter((persona) => {
     if (persona.rol !== "Actor") return false; // Solo actores
 
+    const fechaFin = Number(persona.fecha_fin); // Convertir fecha_fin a número
+
     if (showCurrentActors) {
-      return persona.fecha_fin === 0; // Si el switch está activado, solo actores con fecha_fin: 0
+      return fechaFin === 0; // Si el switch está activado, solo actores con fecha_fin: 0
     } else {
       return persona.fecha_inicio === obraData.anoinicio; // Si está desactivado, actores que empezaron el año de anoinicio de la obra
     }
@@ -575,7 +577,7 @@ const Obra2 = () => {
       {filteredElenco.map((persona, index) => (
         <Grid item xs={6} sm={3} key={index}>
           <NavLink to={`/persona/${persona.id}`} style={{ textDecoration: 'none' }}>
-            <Personaindex nombrepersona={persona.nombre} puestopersona={persona.personaje} fotito={persona.foto} />
+            <Personaindex nombrepersona={`${persona.nombre} ${persona.apellidos}`} puestopersona={persona.personaje} fotito={persona.foto} />
           </NavLink>
         </Grid>
       ))}

@@ -28,6 +28,13 @@ import NewTicketProfile from '../components/NewTicketProfile';
 import Favorites from '../components/Favorites';
 import Seen from '../components/Seen';
 import Edit from '../components/Editiar';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const lightTheme = createTheme({
+  palette: {
+    mode: 'light', // 🔥 Siempre en modo claro
+  },
+});
 
 const COMPONENT_MAP = {
   'cuenta': <Cuenta />, 
@@ -70,6 +77,9 @@ function Dashboard(props) {
   const router = useDemoRouter('/dashboard');
   const navigate = useNavigate();
 
+  // Supongamos que tienes una variable que indica si artesEscenicas es 'si'
+  const artesEscenicas = 'si'; // Cambia esto según tu lógica para obtener el valor real
+
   // Función de logout
   const handleLogoutClick = async () => {
     await handleLogout();
@@ -97,23 +107,25 @@ function Dashboard(props) {
 
   // Definir NAVIGATION dentro del componente
   const NAVIGATION = [
-    { segment: 'cuenta', title: 'Tu Cuenta', icon: <DashboardIcon /> },
-    { segment: 'vistos', title: 'Vistos', icon: <VisibilityIcon /> },
-    { segment: 'favorites', title: 'Favoritos', icon: <FavoriteIcon /> },
-    { segment: 'editar', title: 'Editar', icon: <EditIcon /> },
-    {
-      segment: 'addnadir',
-      title: 'Añadir',
-      icon: <ControlPointIcon />,
-      children: [
-        { segment: 'nueva-obra', title: 'Obra', icon: <DescriptionIcon /> },
-        { segment: 'nueva-persona', title: 'Persona', icon: <DescriptionIcon /> },
-        { segment: 'nueva-company', title: 'Compañía', icon: <DescriptionIcon /> },
-        { segment: 'nuevo-premios', title: 'Premios', icon: <DescriptionIcon /> },
-        { segment: 'nuevo-teatro', title: 'Espacio', icon: <DescriptionIcon /> },
-        { segment: 'nueva-entrada', title: 'Entradas', icon: <DescriptionIcon /> },
-      ],
-    },
+    { segment: 'cuenta', title: 'Tu Cuenta', icon: <DashboardIcon sx={{ color: 'black !important' }} /> },
+    { segment: 'vistos', title: 'Vistos', icon: <VisibilityIcon sx={{ color: 'black !important' }} /> },
+    { segment: 'favorites', title: 'Favoritos', icon: <FavoriteIcon sx={{ color: 'black !important' }} /> },
+    ...(artesEscenicas === 'si' ? [
+      { segment: 'editar', title: 'Editar', icon: <EditIcon sx={{ color: 'black !important' }} /> },
+      {
+        segment: 'addnadir',
+        title: 'Añadir',
+        icon: <ControlPointIcon sx={{ color: 'black !important' }} />,
+        children: [
+          { segment: 'nueva-obra', title: 'Obra', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
+          { segment: 'nueva-persona', title: 'Persona', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
+          { segment: 'nueva-company', title: 'Compañía', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
+          { segment: 'nuevo-premios', title: 'Premios', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
+          { segment: 'nuevo-teatro', title: 'Espacio', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
+          { segment: 'nueva-entrada', title: 'Entradas', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
+        ],
+      },
+    ] : []),
     { segment: 'logout', title: renderLogoutButton(), icon: null },
   ];
 
@@ -124,11 +136,24 @@ function Dashboard(props) {
   const demoWindow = window !== undefined ? window() : undefined;
 
   return (
-    <AppProvider navigation={NAVIGATION} router={router} window={demoWindow}>
-      <DashboardLayout disableNavigation disableCollapsibleSidebar sx={{ width: '100%', flexGrow: 1 }}>
-        <DemoPageContent pathname={currentSegment || 'cuenta'} />
-      </DashboardLayout>
-    </AppProvider>
+    <ThemeProvider theme={lightTheme}>
+      <AppProvider navigation={NAVIGATION} router={router} window={demoWindow} theme={lightTheme}>
+        <DashboardLayout
+          disableNavigation
+          disableCollapsibleSidebar
+          disableThemeToggle={true} // 🔥 Desactiva el ThemeSwitcher automático
+          sx={{
+            width: '100%',
+            flexGrow: 1,
+            '& .toolpad-logo': {
+              display: { xs: 'none', md: 'block' },
+            },
+          }}
+        >
+          <DemoPageContent pathname={currentSegment || 'cuenta'} />
+        </DashboardLayout>
+      </AppProvider>
+    </ThemeProvider>
   );
 }
 

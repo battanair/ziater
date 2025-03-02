@@ -4,6 +4,43 @@ import { getFirestore, doc, setDoc, collection, getDocs, addDoc, query, where } 
 import { auth, db } from '../firebaseConfig';
 import { Container, TextField, Button, Stepper, Step, StepLabel, Box, Select, MenuItem, CircularProgress, FormControl, InputLabel, Autocomplete, Typography, IconButton, Checkbox, FormControlLabel, FormGroup, FormLabel, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const theme = createTheme({
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'black',
+          color: 'white',
+          '&:hover': {
+            backgroundColor: 'black',
+          },
+        },
+      },
+    },
+    MuiStepLabel: {
+      styleOverrides: {
+        label: {
+          color: 'black !important',
+        },
+      },
+    },
+    MuiStepIcon: {
+      styleOverrides: {
+        root: {
+          color: 'black !important',
+          '&.Mui-active': {
+            color: 'black !important',
+          },
+          '&.Mui-completed': {
+            color: 'black !important',
+          },
+        },
+      },
+    },
+  },
+});
 
 function NewPlayProfile() {
   const [activeStep, setActiveStep] = useState(0);
@@ -68,7 +105,7 @@ function NewPlayProfile() {
       return;
     }
 
-    if (user) {
+    if (user && !obraId) { // Solo crear la obra si no existe
       try {
         const newObraRef = await addDoc(collection(db, "obra"), {
           titulo,
@@ -87,6 +124,8 @@ function NewPlayProfile() {
       } catch (error) {
         console.error("Error al guardar la información de la obra:", error);
       }
+    } else {
+      setActiveStep(1);
     }
   };
 
@@ -312,302 +351,304 @@ function NewPlayProfile() {
   }
 
   return (
-    <Container maxWidth="sm" sx={{ py: 4 }}>
-      <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
-        <Step><StepLabel>Datos</StepLabel></Step>
-        <Step><StepLabel>Artistas</StepLabel></Step>
-        <Step><StepLabel>Premios</StepLabel></Step>
-        <Step><StepLabel>Finalizar</StepLabel></Step>
-      </Stepper>
-      {activeStep === 0 && (
-        <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 5 }}>
-          <TextField
-            label="Título"
-            value={titulo}
-            onChange={(e) => setTitulo(e.target.value)}
-            fullWidth
-            error={errors.titulo}
-            helperText={errors.titulo && "Campo requerido"}
-          />
-          <TextField
-            label="Sinopsis"
-            value={sinopsis}
-            onChange={(e) => setSinopsis(e.target.value)}
-            multiline
-            rows={4}
-            fullWidth
-            error={errors.sinopsis}
-            helperText={errors.sinopsis && "Campo requerido"}
-          />
-          <TextField
-            label="Instagram"
-            value={instagram}
-            onChange={(e) => setInstagram(e.target.value)}
-            fullWidth
-          />
-          <TextField
-            label="Año de Inicio"
-            type="number"
-            value={anoinicio}
-            onChange={(e) => setAnoinicio(e.target.value)}
-            fullWidth
-            error={errors.anoinicio}
-            helperText={errors.anoinicio && "Campo requerido"}
-          />
-          <Box display="flex" alignItems="center" gap={2}>
+    <ThemeProvider theme={theme}>
+      <Container maxWidth="sm" sx={{ py: 4 }}>
+        <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
+          <Step><StepLabel>Datos</StepLabel></Step>
+          <Step><StepLabel>Artistas</StepLabel></Step>
+          <Step><StepLabel>Premios</StepLabel></Step>
+          <Step><StepLabel>Finalizar</StepLabel></Step>
+        </Stepper>
+        {activeStep === 0 && (
+          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 5 }}>
             <TextField
-              label="Año de Fin"
-              type="number"
-              value={anofin}
-              onChange={(e) => setAnofin(e.target.value)}
+              label="Título"
+              value={titulo}
+              onChange={(e) => setTitulo(e.target.value)}
+              fullWidth
+              error={errors.titulo}
+              helperText={errors.titulo && "Campo requerido"}
+            />
+            <TextField
+              label="Sinopsis"
+              value={sinopsis}
+              onChange={(e) => setSinopsis(e.target.value)}
+              multiline
+              rows={4}
+              fullWidth
+              error={errors.sinopsis}
+              helperText={errors.sinopsis && "Campo requerido"}
+            />
+            <TextField
+              label="Instagram (nombre de usuario)"
+              value={instagram}
+              onChange={(e) => setInstagram(e.target.value)}
               fullWidth
             />
-            <Button variant="outlined" onClick={() => setAnofin(0)}>Actualmente</Button>
-          </Box>
-          <Box display="flex" flexDirection="column" gap={1}>
-            <Typography variant="body1">CARTEL:</Typography>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => handleImageUpload(e, setCartel)}
-              style={{ marginTop: '16px' }}
+            <TextField
+              label="Año de Inicio"
+              type="number"
+              value={anoinicio}
+              onChange={(e) => setAnoinicio(e.target.value)}
+              fullWidth
+              error={errors.anoinicio}
+              helperText={errors.anoinicio && "Campo requerido"}
             />
-            {imageLoading && <CircularProgress size={24} />}
-          </Box>
-          <Typography variant="body1" sx={{ mt: 2 }}>IMÁGENES DE LA OBRA:</Typography>
-          {[0, 1, 2, 3].map((index) => (
-            <Box key={index} display="flex" alignItems="center" gap={2}>
+            <Box display="flex" alignItems="center" gap={2}>
+              <TextField
+                label="Año de Fin"
+                type="number"
+                value={anofin}
+                onChange={(e) => setAnofin(e.target.value)}
+                fullWidth
+              />
+              <Button variant="outlined" onClick={() => setAnofin(0)}>Actualmente</Button>
+            </Box>
+            <Box display="flex" flexDirection="column" gap={1}>
+              <Typography variant="body1">CARTEL:</Typography>
               <input
                 type="file"
                 accept="image/*"
-                onChange={(e) => handleMultipleImageUpload(e, index)}
+                onChange={(e) => handleImageUpload(e, setCartel)}
                 style={{ marginTop: '16px' }}
               />
               {imageLoading && <CircularProgress size={24} />}
             </Box>
-          ))}
-          {imageError && (
-            <Typography color="error" variant="body2">{imageError}</Typography>
-          )}
-          {cartel && (
-            <Box mt={2}>
-              <img src={cartel} alt="Uploaded" style={{ width: '100%', maxHeight: '300px', objectFit: 'cover' }} />
-            </Box>
-          )}
-          {fotosObra.map((foto, index) => (
-            <Box key={index} mt={2}>
-              <img src={foto} alt={`Uploaded ${index}`} style={{ width: '100%', maxHeight: '300px', objectFit: 'cover' }} />
-            </Box>
-          ))}
-          <FormControl component="fieldset">
-            <FormLabel component="legend">Categoría</FormLabel>
-            <FormGroup sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-              {[
-                'Comedia', 'Teatro', 'Impro', 'Circo', 'Musicales', 'Stand up', 'Danza', 
-                'Drag', 'Ópera', 'Zarzuela', 'Performance', 'Ficción sonora', 'Magia', 
-                 'Microteatro', 'Monólogo', 'Mimo', 'Poesía', 'Títeres', 'Variedades', 'Otros'
-              ].map((cat) => (
-                <FormControlLabel
-                  key={cat}
-                  control={<Checkbox checked={categoria.includes(cat)} onChange={handleCategoriaChange} value={cat} />}
-                  label={cat}
-                  sx={{ width: '30%' }} // Ajusta el ancho para distribuir en tres columnas
+            <Typography variant="body1" sx={{ mt: 2 }}>IMÁGENES DE LA OBRA:</Typography>
+            {[0, 1, 2, 3].map((index) => (
+              <Box key={index} display="flex" alignItems="center" gap={2}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleMultipleImageUpload(e, index)}
+                  style={{ marginTop: '16px' }}
                 />
-              ))}
-            </FormGroup>
-          </FormControl>
-          <TextField
-            label="Trailer"
-            value={trailer}
-            onChange={(e) => setTrailer(e.target.value)}
-            fullWidth
-          />
-          <Button onClick={() => handleSaveObra(cartel)} variant="contained" sx={{ mt: 2 }}>Siguiente</Button>
-        </Box>
-      )}
-      {activeStep === 1 && (
-        <Box>
-          <Button variant="contained" onClick={handleAddTrabajo} sx={{ mt: 2, mb: 2 }}>Añadir Artista</Button>
-          {trabajos.length > 0 && trabajos.map((trabajo, index) => (
-            <Box key={index} sx={{ mb: 4, p: 3, border: '1px solid #ddd', borderRadius: 2, boxShadow: 2 }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography variant="h6" gutterBottom>Artista {index + 1}</Typography>
-                <IconButton onClick={() => handleRemoveTrabajo(index)}><DeleteIcon /></IconButton>
+                {imageLoading && <CircularProgress size={24} />}
               </Box>
-              <Button variant="outlined" onClick={() => { setCurrentTrabajoIndex(index); setOpenDialog(true); }}>Editar</Button>
-            </Box>
-          ))}
-          <Button onClick={() => setActiveStep(0)}>Atrás</Button>
-          <Button onClick={handleNextStep}>Siguiente</Button>
-        </Box>
-      )}
-      {activeStep === 2 && (
-        <Box>
-          <Button onClick={handleAddPremio} variant="outlined" sx={{ mt: 2 }}>Añadir Premio</Button>
-          {premiosPersona.map((premio, index) => (
-            <Box key={index} sx={{ mb: 2 }}>
-              <Box display="flex" justifyContent="space-between" alignItems="center">
-                <Typography variant="h6" gutterBottom>Premio {index + 1}</Typography>
-                <IconButton onClick={() => handleRemovePremio(index)}><DeleteIcon /></IconButton>
+            ))}
+            {imageError && (
+              <Typography color="error" variant="body2">{imageError}</Typography>
+            )}
+            {cartel && (
+              <Box mt={2}>
+                <img src={cartel} alt="Uploaded" style={{ width: '100%', maxHeight: '300px', objectFit: 'cover' }} />
               </Box>
-              <Autocomplete
-                options={premios}
-                getOptionLabel={(option) => (option?.nombre_premio ? option.nombre_premio : '')}
-                value={premios.find((premio) => premio.id === premiosPersona[index]?.idPremio) || null}
-                onChange={(event, newValue) => {
-                  if (newValue && typeof newValue === 'object') {
-                    handlePremioChange(index, 'idPremio', newValue.id);
-                  }
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Premio"
-                    fullWidth
-                    onBlur={(e) => {
-                      const value = e.target.value.trim();
-                      if (value.startsWith('http')) {
-                        const id = value.split('/').pop();
-                        handlePremioChange(index, 'idPremio', id);
-                      }
-                    }}
+            )}
+            {fotosObra.map((foto, index) => (
+              <Box key={index} mt={2}>
+                <img src={foto} alt={`Uploaded ${index}`} style={{ width: '100%', maxHeight: '300px', objectFit: 'cover' }} />
+              </Box>
+            ))}
+            <FormControl component="fieldset">
+              <FormLabel component="legend">Categoría</FormLabel>
+              <FormGroup sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
+                {[
+                  'Comedia', 'Teatro', 'Impro', 'Circo', 'Musicales', 'Stand up', 'Danza', 
+                  'Drag', 'Ópera', 'Zarzuela', 'Performance', 'Ficción sonora', 'Magia', 
+                   'Microteatro', 'Monólogo', 'Mimo', 'Poesía', 'Títeres', 'Variedades', 'Otros'
+                ].map((cat) => (
+                  <FormControlLabel
+                    key={cat}
+                    control={<Checkbox checked={categoria.includes(cat)} onChange={handleCategoriaChange} value={cat} />}
+                    label={cat}
+                    sx={{ width: '30%' }} // Ajusta el ancho para distribuir en tres columnas
                   />
-                )}
-              />
-              <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                Si no encuentras el premio que buscas, pega la URL de su página.
-              </Typography>
-              <TextField
-                sx={{ mb: 2 }}
-                label="Año del Premio"
-                type="number"
-                value={premio.anioPremio}
-                onChange={(e) => handlePremioChange(index, 'anioPremio', e.target.value)}
-                fullWidth
-                error={errors.premiosPersona}
-                helperText={errors.premiosPersona && "Campo requerido"}
-              />
-              <TextField
-                sx={{ mb: 2 }}
-                label="Galardón de la Persona"
-                value={premio.galardonPers}
-                onChange={(e) => handlePremioChange(index, 'galardonPers', e.target.value)}
-                fullWidth
-                error={errors.premiosPersona}
-                helperText={errors.premiosPersona && "Campo requerido"}
-              />
-            </Box>
-          ))}
-          <Box display="flex" justifyContent="space-between" sx={{ mt: 2 }}>
-            <Button onClick={() => setActiveStep(1)}>Atrás</Button>
-            <Button onClick={handleFinalSubmit} variant="contained">Finalizar</Button>
+                ))}
+              </FormGroup>
+            </FormControl>
+            <TextField
+              label="Trailer"
+              value={trailer}
+              onChange={(e) => setTrailer(e.target.value)}
+              fullWidth
+            />
+            <Button onClick={() => handleSaveObra(cartel)} variant="contained" sx={{ mt: 2 }}>Siguiente</Button>
           </Box>
-        </Box>
-      )}
-      {activeStep === 3 && (
-        <Box>
-          <Container maxWidth="sm" sx={{ py: 4, textAlign: 'center' }}>
-            <Typography variant="h5" sx={{ mb: 2 }}>¡Perfil Creado!</Typography>
-            <Typography variant="body1" sx={{ mb: 4 }}>
-              Este perfil ha sido guardado exitosamente.
-            </Typography>
-            <Box />
-            <Button variant="contained" href="/">Ir al inicio</Button>
-          </Container>
-        </Box>
-      )}
-      <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-        <DialogTitle>Editar Artista</DialogTitle>
-        <DialogContent>
-          {currentTrabajoIndex !== null && (
-            <>
-              <Autocomplete sx={{ mb: 2 }}
-                options={artistas}
-                getOptionLabel={(option) => (option?.Nombre ? option.Nombre : '')}
-                value={artistas.find((persona) => persona.id === trabajos[currentTrabajoIndex]?.idPersona) || null}
-                onChange={(event, newValue) => {
-                  if (newValue && typeof newValue === 'object') {
-                    handleTrabajoChange(currentTrabajoIndex, 'idPersona', newValue.id);
-                  }
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    label="Persona"
-                    fullWidth
-                    onBlur={(e) => {
-                      const value = e.target.value.trim();
-
-                      if (value.startsWith('http')) {
-                        const id = value.split('/').pop();
-                        handleTrabajoChange(currentTrabajoIndex, 'idPersona', id);
-                      }
-                    }}
-                  />
-                )}
-              />
-              <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                Si no encuentras la persona que buscas, pega la URL de su página.
-              </Typography>
-              <FormControl fullWidth sx={{ mb: 2 }}>
-                <InputLabel>Departamento</InputLabel>
-                <Select
-                  value={trabajos[currentTrabajoIndex].departamento}
-                  onChange={(e) => handleTrabajoChange(currentTrabajoIndex, 'departamento', e.target.value)}
-                  error={errors.trabajos}
-                >
-                  <MenuItem value="Actor">Interpretación</MenuItem>
-                  <MenuItem value="Dramaturgia">Dramaturgia</MenuItem>
-                  <MenuItem value="Iluminación">Iluminación</MenuItem>
-                  <MenuItem value="Dirección">Dirección</MenuItem>
-                  <MenuItem value="Escenografía">Escenografía</MenuItem>
-                  <MenuItem value="Espacio Sonoro">Espacio Sonoro</MenuItem>
-                  <MenuItem value="Vestuario">Vestuario</MenuItem>
-                  <MenuItem value="Asesoría">Asesoría</MenuItem>
-                  <MenuItem value="Fotografía">Audiovisual</MenuItem>
-                  <MenuItem value="Diseño">Diseño</MenuItem>
-                  <MenuItem value="Comunicación">Comunicación</MenuItem>
-                </Select>
-                {errors.trabajos && <Typography color="error">Campo requerido</Typography>}
-              </FormControl>
-              <TextField
-                label="Trabajo / Personaje"
-                value={trabajos[currentTrabajoIndex].trabajo}
-                onChange={(e) => handleTrabajoChange(currentTrabajoIndex, 'trabajo', e.target.value)}
-                fullWidth
-                sx={{ mb: 2 }}
-                error={errors.trabajos}
-                helperText={errors.trabajos && "Campo requerido"}
-              />
-              <TextField
-                label="Fecha Inicio"
-                type="number"
-                value={trabajos[currentTrabajoIndex].fechaInicio}
-                onChange={(e) => handleTrabajoChange(currentTrabajoIndex, 'fechaInicio', e.target.value)}
-                fullWidth
-                sx={{ mb: 2 }}
-                error={errors.trabajos}
-                helperText={errors.trabajos && "Campo requerido"}
-              />
-              <Box display="flex" alignItems="center" gap={2}>
-                <TextField
-                  label="Fecha Fin"
-                  type="number"
-                  value={trabajos[currentTrabajoIndex].fechaFin}
-                  onChange={(e) => handleTrabajoChange(currentTrabajoIndex, 'fechaFin', e.target.value)}
-                  fullWidth
-                />
-                <Button variant="outlined" onClick={() => handleTrabajoChange(currentTrabajoIndex, 'fechaFin', 0)}>Actualmente</Button>
+        )}
+        {activeStep === 1 && (
+          <Box>
+            <Button variant="contained" onClick={handleAddTrabajo} sx={{ mt: 2, mb: 2 }}>Añadir Artista</Button>
+            {trabajos.length > 0 && trabajos.map((trabajo, index) => (
+              <Box key={index} sx={{ mb: 4, p: 3, border: '1px solid #ddd', borderRadius: 2, boxShadow: 2 }}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Typography variant="h6" gutterBottom>Artista {index + 1}</Typography>
+                  <IconButton onClick={() => handleRemoveTrabajo(index)}><DeleteIcon /></IconButton>
+                </Box>
+                <Button variant="outlined" onClick={() => { setCurrentTrabajoIndex(index); setOpenDialog(true); }}>Editar</Button>
               </Box>
-            </>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
-          <Button onClick={handleSaveTrabajo} variant="contained">Guardar</Button>
-        </DialogActions>
-      </Dialog>
-    </Container>
+            ))}
+            <Button onClick={() => setActiveStep(0)}>Atrás</Button>
+            <Button onClick={handleNextStep}>Siguiente</Button>
+          </Box>
+        )}
+        {activeStep === 2 && (
+          <Box>
+            <Button onClick={handleAddPremio} variant="outlined" sx={{ mt: 2 }}>Añadir Premio</Button>
+            {premiosPersona.map((premio, index) => (
+              <Box key={index} sx={{ mb: 2 }}>
+                <Box display="flex" justifyContent="space-between" alignItems="center">
+                  <Typography variant="h6" gutterBottom>Premio {index + 1}</Typography>
+                  <IconButton onClick={() => handleRemovePremio(index)}><DeleteIcon /></IconButton>
+                </Box>
+                <Autocomplete
+                  options={premios}
+                  getOptionLabel={(option) => (option?.nombre_premio ? option.nombre_premio : '')}
+                  value={premios.find((premio) => premio.id === premiosPersona[index]?.idPremio) || null}
+                  onChange={(event, newValue) => {
+                    if (newValue && typeof newValue === 'object') {
+                      handlePremioChange(index, 'idPremio', newValue.id);
+                    }
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Premio"
+                      fullWidth
+                      onBlur={(e) => {
+                        const value = e.target.value.trim();
+                        if (value.startsWith('http')) {
+                          const id = value.split('/').pop();
+                          handlePremioChange(index, 'idPremio', id);
+                        }
+                      }}
+                    />
+                  )}
+                />
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                  Si no encuentras el premio que buscas, pega la URL de su página.
+                </Typography>
+                <TextField
+                  sx={{ mb: 2 }}
+                  label="Año del Premio"
+                  type="number"
+                  value={premio.anioPremio}
+                  onChange={(e) => handlePremioChange(index, 'anioPremio', e.target.value)}
+                  fullWidth
+                  error={errors.premiosPersona}
+                  helperText={errors.premiosPersona && "Campo requerido"}
+                />
+                <TextField
+                  sx={{ mb: 2 }}
+                  label="Galardón de la Persona"
+                  value={premio.galardonPers}
+                  onChange={(e) => handlePremioChange(index, 'galardonPers', e.target.value)}
+                  fullWidth
+                  error={errors.premiosPersona}
+                  helperText={errors.premiosPersona && "Campo requerido"}
+                />
+              </Box>
+            ))}
+            <Box display="flex" justifyContent="space-between" sx={{ mt: 2 }}>
+              <Button onClick={() => setActiveStep(1)}>Atrás</Button>
+              <Button onClick={handleFinalSubmit} variant="contained">Finalizar</Button>
+            </Box>
+          </Box>
+        )}
+        {activeStep === 3 && (
+          <Box>
+            <Container maxWidth="sm" sx={{ py: 4, textAlign: 'center' }}>
+              <Typography variant="h5" sx={{ mb: 2 }}>¡Perfil Creado!</Typography>
+              <Typography variant="body1" sx={{ mb: 4 }}>
+                Este perfil ha sido guardado exitosamente.
+              </Typography>
+              <Box />
+              <Button variant="contained" href="/">Ir al inicio</Button>
+            </Container>
+          </Box>
+        )}
+        <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
+          <DialogTitle>Editar Artista</DialogTitle>
+          <DialogContent>
+            {currentTrabajoIndex !== null && (
+              <>
+                <Autocomplete sx={{ mb: 2 }}
+                  options={artistas}
+                  getOptionLabel={(option) => (option?.Nombre ? option.Nombre : '')}
+                  value={artistas.find((persona) => persona.id === trabajos[currentTrabajoIndex]?.idPersona) || null}
+                  onChange={(event, newValue) => {
+                    if (newValue && typeof newValue === 'object') {
+                      handleTrabajoChange(currentTrabajoIndex, 'idPersona', newValue.id);
+                    }
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Persona"
+                      fullWidth
+                      onBlur={(e) => {
+                        const value = e.target.value.trim();
+
+                        if (value.startsWith('http')) {
+                          const id = value.split('/').pop();
+                          handleTrabajoChange(currentTrabajoIndex, 'idPersona', id);
+                        }
+                      }}
+                    />
+                  )}
+                />
+                <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                  Si no encuentras la persona que buscas, pega la URL de su página.
+                </Typography>
+                <FormControl fullWidth sx={{ mb: 2 }}>
+                  <InputLabel>Departamento</InputLabel>
+                  <Select
+                    value={trabajos[currentTrabajoIndex].departamento}
+                    onChange={(e) => handleTrabajoChange(currentTrabajoIndex, 'departamento', e.target.value)}
+                    error={errors.trabajos}
+                  >
+                    <MenuItem value="Actor">Interpretación</MenuItem>
+                    <MenuItem value="Dramaturgia">Dramaturgia</MenuItem>
+                    <MenuItem value="Iluminación">Iluminación</MenuItem>
+                    <MenuItem value="Dirección">Dirección</MenuItem>
+                    <MenuItem value="Escenografía">Escenografía</MenuItem>
+                    <MenuItem value="Espacio Sonoro">Espacio Sonoro</MenuItem>
+                    <MenuItem value="Vestuario">Vestuario</MenuItem>
+                    <MenuItem value="Asesoría">Asesoría</MenuItem>
+                    <MenuItem value="Fotografía">Audiovisual</MenuItem>
+                    <MenuItem value="Diseño">Diseño</MenuItem>
+                    <MenuItem value="Comunicación">Comunicación</MenuItem>
+                  </Select>
+                  {errors.trabajos && <Typography color="error">Campo requerido</Typography>}
+                </FormControl>
+                <TextField
+                  label="Trabajo / Personaje"
+                  value={trabajos[currentTrabajoIndex].trabajo}
+                  onChange={(e) => handleTrabajoChange(currentTrabajoIndex, 'trabajo', e.target.value)}
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  error={errors.trabajos}
+                  helperText={errors.trabajos && "Campo requerido"}
+                />
+                <TextField
+                  label="Fecha Inicio"
+                  type="number"
+                  value={trabajos[currentTrabajoIndex].fechaInicio}
+                  onChange={(e) => handleTrabajoChange(currentTrabajoIndex, 'fechaInicio', e.target.value)}
+                  fullWidth
+                  sx={{ mb: 2 }}
+                  error={errors.trabajos}
+                  helperText={errors.trabajos && "Campo requerido"}
+                />
+                <Box display="flex" alignItems="center" gap={2}>
+                  <TextField
+                    label="Fecha Fin"
+                    type="number"
+                    value={trabajos[currentTrabajoIndex].fechaFin}
+                    onChange={(e) => handleTrabajoChange(currentTrabajoIndex, 'fechaFin', e.target.value)}
+                    fullWidth
+                  />
+                  <Button variant="outlined" onClick={() => handleTrabajoChange(currentTrabajoIndex, 'fechaFin', 0)}>Actualmente</Button>
+                </Box>
+              </>
+            )}
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenDialog(false)}>Cancelar</Button>
+            <Button onClick={handleSaveTrabajo} variant="contained">Guardar</Button>
+          </DialogActions>
+        </Dialog>
+      </Container>
+    </ThemeProvider>
   );
 }
 

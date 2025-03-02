@@ -4,6 +4,35 @@ import { onAuthStateChanged } from "firebase/auth";
 import { getFirestore, collection, addDoc, doc, getDoc, updateDoc } from "firebase/firestore";
 import { auth, db } from '../firebaseConfig';
 import { Container, TextField, Button, Stepper, Step, StepLabel, Box, CircularProgress, Typography } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+const theme = createTheme({
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          backgroundColor: 'black',
+          '&:hover': {
+            backgroundColor: 'black',
+          },
+        },
+      },
+    },
+    MuiStepIcon: {
+      styleOverrides: {
+        root: {
+          color: 'black',
+          '&.Mui-active': {
+            color: 'black',
+          },
+          '&.Mui-completed': {
+            color: 'black',
+          },
+        },
+      },
+    },
+  },
+});
 
 function NewTeatroProfile() {
   const { id } = useParams();
@@ -167,94 +196,95 @@ function NewTeatroProfile() {
   }
 
   return (
-    <Container maxWidth="sm" sx={{ py: 4 }}>
-      <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
-        <Step><StepLabel>Datos del Teatro</StepLabel></Step>
-        <Step><StepLabel>Finalizar</StepLabel></Step>
-      </Stepper>
+    <ThemeProvider theme={theme}>
+      <Container maxWidth="sm" sx={{ py: 4 }}>
+        <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
+          <Step><StepLabel>Datos del Teatro</StepLabel></Step>
+          <Step><StepLabel>Finalizar</StepLabel></Step>
+        </Stepper>
 
-      {activeStep === 0 && (
-        <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 5 }}>
-          <TextField
-            label="Nombre del Teatro"
-            value={nombreTeatro}
-            onChange={(e) => setNombreTeatro(e.target.value)}
-            fullWidth
-            error={errors.nombreTeatro}
-            helperText={errors.nombreTeatro && "Campo requerido"}
-          />
-          <TextField
-            label="Descripción"
-            value={descripcion}
-            onChange={(e) => setDescripcion(e.target.value)}
-            multiline
-            rows={4}
-            fullWidth
-            error={errors.descripcion}
-            helperText={errors.descripcion && "Campo requerido"}
-          />
-          
-          <TextField
-            label="Dirección"
-            value={direccion}
-            onChange={(e) => setDireccion(e.target.value)}
-            fullWidth
-            error={errors.direccion}
-            helperText={errors.direccion && "Campo requerido"}
-          />
-          <TextField
-            label="Ciudad"
-            value={ciudad}
-            onChange={(e) => setCiudad(e.target.value)}
-            fullWidth
-            error={errors.ciudad}
-            helperText={errors.ciudad && "Campo requerido"}
-          />
-          <TextField
-            label="País"
-            value={pais}
-            onChange={(e) => setPais(e.target.value)}
-            fullWidth
-            error={errors.pais}
-            helperText={errors.pais && "Campo requerido"}
-          />
-          <TextField
-            label="Instagram"
-            value={instagram}
-            onChange={(e) => setInstagram(e.target.value)}
-            fullWidth
-            error={errors.instagram}
-            helperText={errors.instagram && "Campo requerido"}
-          />
-          <Box display="flex" alignItems="center" gap={2}>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              style={{ marginTop: '16px' }}
+        {activeStep === 0 && (
+          <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 5 }}>
+            <TextField
+              label="Nombre del Teatro"
+              value={nombreTeatro}
+              onChange={(e) => setNombreTeatro(e.target.value)}
+              fullWidth
+              error={errors.nombreTeatro}
+              helperText={errors.nombreTeatro && "Campo requerido"}
             />
-            {imageLoading && <CircularProgress size={24} />}
-          </Box>
-          {imageError && (
-            <Typography color="error" variant="body2">{imageError}</Typography>
-          )}
-          {imageUrl && (
-            <Box mt={2}>
-              <img src={imageUrl} alt="Uploaded" style={{ width: '100%', maxHeight: '300px', objectFit: 'cover' }} />
+            <TextField
+              label="Descripción"
+              value={descripcion}
+              onChange={(e) => setDescripcion(e.target.value)}
+              multiline
+              rows={4}
+              fullWidth
+              error={errors.descripcion}
+              helperText={errors.descripcion && "Campo requerido"}
+            />
+            
+            <TextField
+              label="Dirección"
+              value={direccion}
+              onChange={(e) => setDireccion(e.target.value)}
+              fullWidth
+              error={errors.direccion}
+              helperText={errors.direccion && "Campo requerido"}
+            />
+            <TextField
+              label="Ciudad"
+              value={ciudad}
+              onChange={(e) => setCiudad(e.target.value)}
+              fullWidth
+              error={errors.ciudad}
+              helperText={errors.ciudad && "Campo requerido"}
+            />
+            <TextField
+              label="País"
+              value={pais}
+              onChange={(e) => setPais(e.target.value)}
+              fullWidth
+              error={errors.pais}
+              helperText={errors.pais && "Campo requerido"}
+            />
+            <TextField
+              label="Instagram (nombre de usuario)"
+              value={instagram}
+              onChange={(e) => setInstagram(e.target.value)}
+              fullWidth
+              
+            />
+            <Box display="flex" alignItems="center" gap={2}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleImageUpload}
+                style={{ marginTop: '16px' }}
+              />
+              {imageLoading && <CircularProgress size={24} />}
             </Box>
-          )}
+            {imageError && (
+              <Typography color="error" variant="body2">{imageError}</Typography>
+            )}
+            {imageUrl && (
+              <Box mt={2}>
+                <img src={imageUrl} alt="Uploaded" style={{ width: '100%', maxHeight: '300px', objectFit: 'cover' }} />
+              </Box>
+            )}
 
-          <Button onClick={handleSaveTeatro} variant="contained" sx={{ mt: 2 }}>Siguiente</Button>
-        </Box>
-      )}
+            <Button onClick={handleSaveTeatro} variant="contained" sx={{ mt: 2 }}>Siguiente</Button>
+          </Box>
+        )}
 
-      {activeStep === 1 && (
-        <Box textAlign="center">
-          <Typography variant="h5" gutterBottom>¡Teatro {id ? 'actualizado' : 'registrado'} con éxito!</Typography>
-          <Button variant="contained" onClick={handleResetForm}>Registrar otro</Button>
-        </Box>
-      )}
-    </Container>
+        {activeStep === 1 && (
+          <Box textAlign="center">
+            <Typography variant="h5" gutterBottom>¡Teatro {id ? 'actualizado' : 'registrado'} con éxito!</Typography>
+            <Button variant="contained" onClick={handleResetForm}>Registrar otro</Button>
+          </Box>
+        )}
+      </Container>
+    </ThemeProvider>
   );
 }
 

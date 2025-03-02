@@ -82,3 +82,24 @@
 
 /*PERSONA RESUMEN*/
 .hederacord{background-color: black; color: white;}
+.css-u4p24i{display: none !important;}
+  .css-u4p24i{display: none !important;}
+
+
+  .step-label {
+    color: black !important;
+  }
+  
+  .step-label .MuiStepIcon-root.Mui-active,
+  .step-label .MuiStepIcon-root.Mui-completed {
+    color: black !important;
+  }
+  
+  .black-button {
+    background-color: black !important;
+    color: white !important;
+  }
+  
+  .black-button:hover {
+    background-color: black !important;
+  }
