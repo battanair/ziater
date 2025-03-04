@@ -515,7 +515,7 @@ function NewPlayProfile() {
                   )}
                 />
                 <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                  Si no encuentras el premio que buscas, pega la URL de su página.
+                  Si no encuentras el premio que buscas, pega la URL de su página. Si no existe, créalo y añade este trabajo desde la página de creación de premios. 
                 </Typography>
                 <TextField
                   sx={{ mb: 2 }}
@@ -587,7 +587,7 @@ function NewPlayProfile() {
                   )}
                 />
                 <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                  Si no encuentras la persona que buscas, pega la URL de su página.
+                  Si no encuentras la persona que buscas, pega la URL de su página. Si aún no está creada, créala y añade este trabajo desde su página.
                 </Typography>
                 <FormControl fullWidth sx={{ mb: 2 }}>
                   <InputLabel>Departamento</InputLabel>

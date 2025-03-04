@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -12,8 +12,9 @@ import Typography from "@mui/material/Typography";
 import Stack from "@mui/material/Stack";
 import MuiCard from "@mui/material/Card";
 import { styled } from "@mui/material/styles";
-import { GoogleIcon} from "../components/CustomIcons";
+import { GoogleIcon } from "../components/CustomIcons";
 import { NavLink } from "react-router";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: "flex",
@@ -29,6 +30,19 @@ const Card = styled(MuiCard)(({ theme }) => ({
     width: "450px",
   },
 }));
+
+const StyledButton = styled(Button)({
+  marginTop: "1rem",
+  padding: "0.5rem 1.5rem",
+  fontSize: "1rem",
+  borderRadius: "5px",
+  fontWeight: "bold",
+  backgroundColor: "black",
+  color: "white",
+  '&:hover': {
+    backgroundColor: "#444",
+  }
+});
 
 export default function SignUp(props) {
   const [email, setEmail] = useState("");
@@ -50,35 +64,51 @@ export default function SignUp(props) {
     }
   };
 
-  return (
-      <><CssBaseline enableColorScheme /><Stack direction="column" justifyContent="center" alignItems="center" spacing={2}>
-      <Card variant="outlined">
+  const handleGoogleSignIn = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      console.log("User signed in with Google");
+    } catch (error) {
+      setErrorMessage(error.message);
+    }
+  };
 
-        <Typography component="h1" variant="h4">REGISTRO</Typography>
-        <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-          <FormControl>
-            <FormLabel>Nombre y Apellidos</FormLabel>
-            <TextField fullWidth value={name} onChange={(e) => setName(e.target.value)} />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Email</FormLabel>
-            <TextField fullWidth value={email} onChange={(e) => setEmail(e.target.value)}  />
-          </FormControl>
-          <FormControl>
-            <FormLabel>Contraseña</FormLabel>
-            <TextField fullWidth type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          </FormControl>
-          <Button type="submit" fullWidth variant="contained">Regístrate</Button>
-        </Box>
-        {errorMessage && <Typography color="error">{errorMessage}</Typography>}
-        <Divider>
-          <Typography>o</Typography>
-        </Divider>
-        <Button fullWidth variant="outlined" startIcon={<GoogleIcon />}>Registrate con Google</Button>
-        <Typography>¿Ya tienes una cuenta? <NavLink to="/login" style={{ marginRight: '10px', textDecoration: 'none', color: 'blue' }}>
-                ¡Entra! 
-            </NavLink></Typography>
-      </Card>
-    </Stack></>
+  return (
+    <>
+      <CssBaseline enableColorScheme />
+      <Stack direction="column" justifyContent="center" alignItems="center" spacing={2}>
+        <Card variant="outlined">
+          <Typography component="h1" variant="h4" fontWeight="bold">REGISTRO</Typography>
+          <Box component="form" onSubmit={handleSubmit} sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <FormControl>
+              <FormLabel>Nombre y Apellidos</FormLabel>
+              <TextField fullWidth value={name} onChange={(e) => setName(e.target.value)} />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Email</FormLabel>
+              <TextField fullWidth value={email} onChange={(e) => setEmail(e.target.value)} />
+            </FormControl>
+            <FormControl>
+              <FormLabel>Contraseña</FormLabel>
+              <TextField fullWidth type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
+            </FormControl>
+            <StyledButton type="submit" fullWidth variant="contained">Regístrate</StyledButton>
+          </Box>
+          {errorMessage && <Typography color="error">{errorMessage}</Typography>}
+          <Divider>
+            <Typography>o</Typography>
+          </Divider>
+          <StyledButton fullWidth variant="outlined" startIcon={<GoogleIcon />} onClick={handleGoogleSignIn}>
+            Regístrate con Google
+          </StyledButton>
+          <Typography>¿Ya tienes una cuenta? 
+          <NavLink to="/login" style={{ marginLeft: '10px', textDecoration: 'underline', color: 'black' }}>
+              ¡Entra!
+            </NavLink>
+          </Typography>
+        </Card>
+      </Stack>
+    </>
   );
 }

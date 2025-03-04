@@ -7,18 +7,31 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import OutlinedInput from '@mui/material/OutlinedInput';
+import { sendPasswordResetEmail } from 'firebase/auth';
+import { auth } from '../firebase';
 
 function ForgotPassword({ open, handleClose }) {
+  const [email, setEmail] = React.useState('');
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    try {
+      await sendPasswordResetEmail(auth, email);
+      alert('Correo de recuperación enviado');
+      handleClose();
+    } catch (error) {
+      console.error('Error sending email:', error);
+      alert('Error enviando el correo de recuperación');
+    }
+  };
+
   return (
     <Dialog
       open={open}
       onClose={handleClose}
       PaperProps={{
         component: 'form',
-        onSubmit: (event) => {
-          event.preventDefault();
-          handleClose();
-        },
+        onSubmit: handleSubmit,
         sx: { backgroundImage: 'none' },
       }}
     >
@@ -39,11 +52,33 @@ function ForgotPassword({ open, handleClose }) {
           placeholder="Email"
           type="email"
           fullWidth
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
       </DialogContent>
       <DialogActions sx={{ pb: 3, px: 3 }}>
-        <Button onClick={handleClose}>Cancelar</Button>
-        <Button variant="contained" type="submit">
+        <Button
+          onClick={handleClose}
+          sx={{
+            color: 'black',
+            '&:hover': {
+              backgroundColor: 'black',
+              color: 'white',
+            },
+          }}
+        >
+          Cancelar
+        </Button>
+        <Button
+          variant="contained"
+          type="submit"
+          sx={{
+            backgroundColor: 'black',
+            '&:hover': {
+              backgroundColor: 'black',
+            },
+          }}
+        >
           Continuar
         </Button>
       </DialogActions>

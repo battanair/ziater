@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
 import { auth } from "../firebaseConfig";
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -18,7 +18,9 @@ import MuiCard from '@mui/material/Card';
 import { styled } from '@mui/material/styles';
 import ForgotPassword from '../components/ForgotPassword';
 import GoogleLogin from "../components/GoogleLogin";
-import { NavLink } from 'react-router';
+import { NavLink } from 'react-router-dom';
+import { GoogleIcon } from "../components/CustomIcons";
+
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -33,6 +35,32 @@ const Card = styled(MuiCard)(({ theme }) => ({
   },
   boxShadow: 'hsla(220, 30%, 5%, 0.05) 0px 5px 15px 0px, hsla(220, 25%, 10%, 0.05) 0px 15px 35px -5px',
 }));
+
+const StyledButton = styled(Button)({
+  marginTop: "1rem",
+  padding: "0.5rem 1.5rem",
+  fontSize: "1rem",
+  borderRadius: "5px",
+  fontWeight: "bold",
+  backgroundColor: "black",
+  color: "white",
+  '&:hover': {
+    backgroundColor: "#444",
+  }
+});
+
+const GoogleButton = styled(Button)({
+  marginTop: "1rem",
+  padding: "0.5rem 1.5rem",
+  fontSize: "1rem",
+  borderRadius: "5px",
+  fontWeight: "bold",
+  color: "black",
+  borderColor: "black",
+  '&:hover': {
+    backgroundColor: "#f5f5f5",
+  }
+});
 
 export default function SignIn(props) {
   const [email, setEmail] = useState("");
@@ -60,12 +88,23 @@ export default function SignIn(props) {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      console.log("Google login successful");
+    } catch (error) {
+      console.error("Google login error:", error);
+      setError("Failed to login with Google");
+    }
+  };
+
   return (
-   <>
+    <>
       <CssBaseline enableColorScheme />
-      <Stack direction="column" justifyContent="space-between" sx={{marginBottom: '50px', padding: 2 }}>
+      <Stack direction="column" justifyContent="center" alignItems="center" spacing={2}>
         <Card variant="outlined">
-          <Typography component="h1" variant="h4">Inicia sesión</Typography>
+          <Typography component="h1" variant="h4" fontWeight="bold">Inicia sesión</Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {error && <Typography color="error">{error}</Typography>}
             <FormControl>
@@ -78,27 +117,29 @@ export default function SignIn(props) {
             </FormControl>
             <FormControlLabel control={<Checkbox />} label="Remember me" />
             <ForgotPassword open={open} handleClose={handleClose} />
-            <Button type="submit" fullWidth variant="contained">Entrar</Button>
+            <StyledButton type="submit" fullWidth variant="contained">Entrar</StyledButton>
             <Link
               component="button"
               type="button"
               onClick={handleClickOpen}
               variant="body2"
-              sx={{ alignSelf: 'center' }}
+              sx={{ alignSelf: 'center', color: 'black', textDecoration: 'underline' }}
             >
               ¿Se te ha olvidado la contraseña? 
             </Link>
           </Box>
-          <Divider>or</Divider>
-          <GoogleLogin />
+          <Divider>o</Divider>
+          <GoogleButton fullWidth variant="outlined" startIcon={<GoogleIcon />} onClick={handleGoogleLogin}>
+            Entrar con Google
+          </GoogleButton>
           <Typography sx={{ textAlign: 'center'}}>
             ¿No tienes una cuenta? 
-            <NavLink to="/Signup" style={{  marginLeft: '10px', textDecoration: 'none', color: 'blue' }}>
-                Signup
+            <NavLink to="/signup" style={{ marginLeft: '10px', textDecoration: 'underline', color: 'black' }}>
+              Regístrate
             </NavLink>
           </Typography>
         </Card>
-      </Stack></>
-   
+      </Stack>
+    </>
   );
 }

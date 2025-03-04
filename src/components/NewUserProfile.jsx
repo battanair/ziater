@@ -257,10 +257,18 @@ function NewUserProfile() {
         alternativeLabel 
         sx={{ mb: 4, '& .MuiStepIcon-root': { color: 'black' }, '& .MuiStepIcon-active': { color: 'black' }, '& .MuiStepIcon-completed': { color: 'black' } }}
       >
-        <Step><StepLabel>Datos</StepLabel></Step>
-        <Step><StepLabel>Trabajos</StepLabel></Step>
-        <Step><StepLabel>Premios</StepLabel></Step>
-        <Step><StepLabel>Finalizar</StepLabel></Step>
+        <Step sx={{ '& .MuiStepLabel-root .Mui-completed': { color: 'black' }, '& .MuiStepLabel-root .Mui-active': { color: 'black' }, '& .MuiStepLabel-root .MuiStepIcon-text': { color: 'black' } }}>
+          <StepLabel>Datos</StepLabel>
+        </Step>
+        <Step sx={{ '& .MuiStepLabel-root .Mui-completed': { color: 'black' }, '& .MuiStepLabel-root .Mui-active': { color: 'black' }, '& .MuiStepLabel-root .MuiStepIcon-text': { color: 'black' } }}>
+          <StepLabel>Trabajos</StepLabel>
+        </Step>
+        <Step sx={{ '& .MuiStepLabel-root .Mui-completed': { color: 'black' }, '& .MuiStepLabel-root .Mui-active': { color: 'black' }, '& .MuiStepLabel-root .MuiStepIcon-text': { color: 'black' } }}>
+          <StepLabel>Premios</StepLabel>
+        </Step>
+        <Step sx={{ '& .MuiStepLabel-root .Mui-completed': { color: 'black' }, '& .MuiStepLabel-root .Mui-active': { color: 'black' }, '& .MuiStepLabel-root .MuiStepIcon-text': { color: 'black' } }}>
+          <StepLabel>Finalizar</StepLabel>
+        </Step>
       </Stepper>
       {activeStep === 0 && (
         <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 5 }}>
@@ -402,7 +410,9 @@ function NewUserProfile() {
                 error={errors.trabajos}
                 helperText={errors.trabajos && "Campo requerido"}
               />
-
+ <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+                  Si no encuentras el espectáculo que buscas, pega la URL de su página. Si aún no está creado, créalo y añade este trabajo desde su página.
+                </Typography>
               <TextField
                 label="Fecha Inicio"
                 type="number"

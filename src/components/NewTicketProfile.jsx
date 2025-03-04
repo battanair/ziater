@@ -67,6 +67,13 @@ function NewTicketProfile() {
     }
   };
 
+  const handleBlur = (field, value) => {
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [field]: !value,
+    }));
+  };
+
   if (loading) {
     return (
       <Box display="flex" justifyContent="center" alignItems="center" height="100vh" bgcolor="black">
@@ -86,7 +93,7 @@ function NewTicketProfile() {
             color: 'black' 
           }, 
           '& .MuiStepIcon-active': { 
-            color: 'black' 
+            color: 'black !important' 
           }, 
           '& .MuiStepIcon-completed': { 
             color: 'black' 
@@ -102,6 +109,7 @@ function NewTicketProfile() {
             label="Enlace de Entradas"
             value={enlaceEntradas}
             onChange={(e) => setEnlaceEntradas(e.target.value)}
+            onBlur={(e) => handleBlur('enlaceEntradas', e.target.value)}
             fullWidth
             error={errors.enlaceEntradas}
             helperText={errors.enlaceEntradas && "Campo requerido"}
@@ -111,6 +119,7 @@ function NewTicketProfile() {
             type="datetime-local"
             value={fecha}
             onChange={(e) => setFecha(e.target.value)}
+            onBlur={(e) => handleBlur('fecha', e.target.value)}
             fullWidth
             error={errors.fecha}
             helperText={errors.fecha && "Campo requerido"}
@@ -133,17 +142,20 @@ function NewTicketProfile() {
                 fullWidth
                 onBlur={(e) => {
                   const value = e.target.value.trim();
+                  handleBlur('idObra', value);
                   if (value.startsWith('http')) {
-                    const id = value.split('/').pop(); // Extrae la ID de la URL
+                    const id = value.split('/').pop();
                     setIdObra(id);
                   }
                 }}
+                error={errors.idObra}
+                helperText={errors.idObra && "Campo requerido"}
               />
             )}
           />
-           <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
-                Si no encuentras el espectáculo o el espacio que buscas,<br></br> pega la URL de su página.
-              </Typography>
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+            Si no encuentras el espectáculo o el espacio que buscas,<br></br> pega la URL de su página.
+          </Typography>
           <Autocomplete
             options={teatros}
             getOptionLabel={(option) => (option?.nombre_teatro ? option.nombre_teatro : '')}
@@ -159,11 +171,14 @@ function NewTicketProfile() {
                 fullWidth
                 onBlur={(e) => {
                   const value = e.target.value.trim();
+                  handleBlur('idSala', value);
                   if (value.startsWith('http')) {
-                    const id = value.split('/').pop(); // Extrae la ID de la URL
+                    const id = value.split('/').pop();
                     setIdSala(id);
                   }
                 }}
+                error={errors.idSala}
+                helperText={errors.idSala && "Campo requerido"}
               />
             )}
           />
@@ -172,6 +187,7 @@ function NewTicketProfile() {
             type="number"
             value={precio}
             onChange={(e) => setPrecio(e.target.value)}
+            onBlur={(e) => handleBlur('precio', e.target.value)}
             fullWidth
             error={errors.precio}
             helperText={errors.precio && "Campo requerido"}
