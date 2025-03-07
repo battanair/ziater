@@ -17,17 +17,16 @@ import { AuthProvider } from "./components/AuthContext";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Navbar from './components/Navbar';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-
+import CookieConsent from "./components/CookieConsent";
+import { CookieProvider } from "./context/CookieContext"; // Import CookieProvider
 
 const App = () => {
-  
-
   const theme = createTheme({
     palette: {
       primary: {
         main: "#000000", // Color principal negro
         dark: "#000000",  // Sobrescribe el azul oscuro
-      light: "#000000",
+        light: "#000000",
       },
     },
     components: {
@@ -74,7 +73,6 @@ const App = () => {
     },
   });
 
-
   const [user, setUser] = useState(null);
   const [anchorEl, setAnchorEl] = useState(null);
   const auth = getAuth();
@@ -91,27 +89,30 @@ const App = () => {
   const handleMenu = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
-  
-
   return (
-    <AuthProvider>
-      <Router>
-        <div className="app">
-          <Box sx={{ background: 'white', paddingBottom: '50px' }}>
-            <Box sx={{ flexGrow: 1 }}>
-             <Navbar />
-            </Box>
-            <Container maxWidth="md" sx={{ background: 'white', marginTop: '50px', marginBottom: '50px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', paddingLeft: 3, paddingRight: 3 }}>
-              <Routes>
-                {routeConfig.map(({ path, page }, index) => (
-                  <Route key={index} path={path} element={page} />
-                ))}
-              </Routes>
-            </Container>
-          </Box>
-        </div>
-      </Router>
-    </AuthProvider>
+    <ThemeProvider theme={theme}>
+      <CookieProvider>
+        <AuthProvider>
+          <Router>
+            <div className="app">
+              <Box sx={{ background: 'white', paddingBottom: '50px' }}>
+                <Box sx={{ flexGrow: 1 }}>
+                  <Navbar />
+                </Box>
+                <Container maxWidth="md" sx={{ background: 'white', marginTop: '50px', marginBottom: '50px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', paddingLeft: 3, paddingRight: 3 }}>
+                  <Routes>
+                    {routeConfig.map(({ path, page }, index) => (
+                      <Route key={index} path={path} element={page} />
+                    ))}
+                  </Routes>
+                </Container>
+              </Box>
+              <CookieConsent /> {/* Asegúrate de que está aquí */}
+            </div>
+          </Router>
+        </AuthProvider>
+      </CookieProvider>
+    </ThemeProvider>
   );
 };
 

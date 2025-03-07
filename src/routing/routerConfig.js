@@ -26,9 +26,8 @@ import EditPlay from "../components/EditPlay";
 import EditPlayWork from "../components/EditPlayWork";
 import EditPlayWork2 from "../components/EditPlayWork2";
 import EditPlayAwards from "../components/EditPlayAwards";
-import  EditPlayAwards2 from "../components/EditPlayAwards2";
-
-
+import EditPlayAwards2 from "../components/EditPlayAwards2";
+import PoliticaCookies from "../pages/politica-de-cookies";
 
 export const routeConfig = [
   { path: "/", page: <Home /> },
@@ -40,9 +39,7 @@ export const routeConfig = [
   { path: "/Todoelequipo/:id_obra", page: <Todoelequipo /> },
   { path: "/Premios/:id", page: <Premios /> },
   { path: "/teatro/:id", page: <Teatro /> },
-
-
-
+  { path: "/politica-de-cookies", page: <PoliticaCookies /> },
 
   // Solo si NO está logueado
   { path: "/login", page: <PublicRoute><Login /></PublicRoute> },
@@ -50,7 +47,7 @@ export const routeConfig = [
 
   // Solo si ESTÁ logueado
   { path: "/dashboard", page: <PrivateRoute><Dashboard /></PrivateRoute> },
-  {path: "/edit", page: <PrivateRoute><Edit /></PrivateRoute> },
+  { path: "/edit", page: <PrivateRoute><Edit /></PrivateRoute> },
   { path: "/edit-award/:id", page: <PrivateRoute><NewAwardProfile /></PrivateRoute> },
   { path: "/edit-company/:id", page: <PrivateRoute><NewCompanyProfile /></PrivateRoute> },
   { path: "/edit-play/:id", page: <PrivateRoute><EditPlay /></PrivateRoute> },
@@ -68,5 +65,4 @@ export const routeConfig = [
   { path: "/editplayawards/:id", page: <PrivateRoute><EditPlayAwards /></PrivateRoute> },
   { path: "/editplayawards2/:id", page: <PrivateRoute><EditPlayAwards2 /></PrivateRoute> },
   { path: "/editplayawards2/", page: <PrivateRoute><EditPlayAwards2 /></PrivateRoute> },
-
 ];

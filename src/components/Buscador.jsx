@@ -31,7 +31,34 @@ export default function Asynchronous() {
 
   const fetchOptions = async (input) => {
     if (input.length === 0) {
-      setOptions([]);
+      setLoading(true);
+      let randomOptions = [];
+
+      const collections = [
+        { name: 'obra', label: 'titulo', image: 'cartel', path: 'obra' },
+        { name: 'persona', label: 'Nombre', extraLabel: 'Apellidos', image: 'foto', path: 'persona' },
+        { name: 'productoras', label: 'nombre_prod', image: 'foto_prod', path: 'compania' },
+        { name: 'premios', label: 'nombre_premio', image: 'foto_premio', path: 'premios' },
+        { name: 'teatro', label: 'nombre_teatro', image: 'foto', path: 'teatro' } // Añadido para teatros
+      ];
+
+      for (let col of collections) {
+        const querySnapshot = await getDocs(collection(db, col.name));
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const fullName = col.extraLabel ? `${data[col.label] || ''} ${data[col.extraLabel] || ''}`.trim() : data[col.label];
+          randomOptions.push({
+            id: doc.id,
+            name: fullName || 'Sin nombre',
+            img: data[col.image] || '',
+            path: `/${col.path}/${doc.id}`
+          });
+        });
+      }
+
+      // Seleccionar 6 opciones al azar
+      const shuffledOptions = randomOptions.sort(() => 0.5 - Math.random());
+      setOptions(shuffledOptions.slice(0, 6));
       setLoading(false);
       return;
     }
