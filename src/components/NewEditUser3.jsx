@@ -11,12 +11,13 @@ const NewEditUser3 = ({ handleRemoveTrabajo, errors = {} }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const idPersonaFromURL = searchParams.get("id_persona");
+  const idPersonaFromURL = searchParams.get("persona");
 
   const [trabajo, setTrabajo] = useState({ id_persona: idPersonaFromURL || '' });
   const [obraTitulo, setObraTitulo] = useState('');
   const [isActualmenteSelected, setIsActualmenteSelected] = useState(false);
   const [obras, setObras] = useState([]);
+  const [obraNotFound, setObraNotFound] = useState('');
 
   useEffect(() => {
     const fetchObras = async () => {
@@ -118,34 +119,63 @@ const NewEditUser3 = ({ handleRemoveTrabajo, errors = {} }) => {
           sx={{ mb: 2 }}
         />
       ) : (
-        <Autocomplete
-          sx={{ mb: 2 }}
-          options={obras}
-          getOptionLabel={(option) => (option?.titulo ? option.titulo : '')}
-          value={obras.find((obra) => obra.id === trabajo.id_obra) || null}
-          onChange={(event, newValue) => {
-            if (newValue && typeof newValue === 'object') {
-              handleTrabajoChange('id_obra', newValue.id); // Guarda el ID de la obra seleccionada
-            }
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Obra"
-              fullWidth
-              onBlur={(e) => {
-                const value = e.target.value.trim();
+        <>
+          <Typography variant="body2" color="textSecondary" sx={{ mb: 2 }}>
+            Si no encuentras la obra que buscas, pega la URL de su página. Si no existe, créala.
+          </Typography>
+          <Autocomplete
+            sx={{ mb: 2 }}
+            options={obras}
+            getOptionLabel={(option) => (option?.titulo ? option.titulo : '')}
+            value={obras.find((obra) => obra.id === trabajo.id_obra) || null}
+            onChange={(event, newValue) => {
+              if (newValue && typeof newValue === 'object') {
+                handleTrabajoChange('id_obra', newValue.id); // Guarda el ID de la obra seleccionada
+                setObraNotFound('');
+              }
+            }}
+            freeSolo
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Obra"
+                fullWidth
+                onChange={(e) => {
+                  const value = e.target.value.trim();
+                  if (!value.startsWith('http')) {
+                    setObraNotFound('');
+                  }
+                }}
+                onBlur={async (e) => {
+                  const value = e.target.value.trim();
 
-                if (value.startsWith('http')) {
-                  const id = value.split('/').pop(); // Extrae la ID de la URL
-                  handleTrabajoChange('id_obra', id);
-                }
-              }}
-              disabled={!!trabajo.id_obra} // Deshabilita el campo si ya hay un id_obra
-            />
-          )}
-        />
+                  if (value.startsWith('http')) {
+                    const id = value.split('/').pop(); // Extrae la ID de la URL
+                    handleTrabajoChange('id_obra', id);
+
+                    // Fetch obra title from the ID
+                    const obraRef = doc(db, 'obra', id);
+                    const obraSnap = await getDoc(obraRef);
+                    if (obraSnap.exists()) {
+                      setObraTitulo(obraSnap.data().titulo);
+                      setObraNotFound('');
+                    } else {
+                      setObraNotFound('Obra no encontrada');
+                    }
+                  }
+                }}
+                disabled={!!trabajo.id_obra} // Deshabilita el campo si ya hay un id_obra
+              />
+            )}
+            ListboxProps={{
+              style: {
+                maxHeight: '200px', // Ajusta la altura máxima del menú desplegable
+              },
+            }}
+          />
+        </>
       )}
+      {obraNotFound && <Typography color="error">{obraNotFound}</Typography>}
       <FormControl fullWidth sx={{ mb: 2 }}>
         <InputLabel>Departamento</InputLabel>
         <Select
@@ -202,7 +232,24 @@ const NewEditUser3 = ({ handleRemoveTrabajo, errors = {} }) => {
           Actualmente
         </Button>
       </Box>
-      <Button variant="contained" color="primary" onClick={handleSave} sx={{ mt: 2 }}>Guardar</Button>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={handleSave}
+        sx={{
+          mt: 2,
+          bgcolor: 'black',
+          color: 'white',
+          '&:hover': {
+            bgcolor: 'black',
+          },
+          '&:active': {
+            bgcolor: 'black',
+          },
+        }}
+      >
+        Guardar
+      </Button>
     </Box>
   );
 };

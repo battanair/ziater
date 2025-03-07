@@ -464,8 +464,25 @@ const Obra2 = () => {
                         </Box>
                     )}
 
-        <Button variant="contained" sx={{ background: 'black', marginBottom: '40px' }} onClick={handleOpen}><h6><b>COMPRAR ENTRADAS</b></h6>
-        </Button>
+        <Button 
+  variant="contained" 
+  sx={{ 
+    background: 'black', 
+    color: 'white', 
+    '&:hover': {
+      backgroundColor: 'black',
+      color: 'white',
+    },
+    '&:active': {
+      backgroundColor: 'black',
+      color: 'white',
+    },
+    marginBottom: '40px' 
+  }} 
+  onClick={handleOpen}
+>
+  <h6><b>COMPRAR ENTRADAS</b></h6>
+</Button>
       </Grid>
     </Grid>
 
@@ -592,16 +609,25 @@ const Obra2 = () => {
       }}
     >
       <NavLink to={`/Todoelequipo/${id}`} style={{ textDecoration: 'none' }}>
-        <Button
-          variant="contained"
-          size="large"
-          sx={{ background: 'black' }}
-        >
-          <h5>
-            <b>TODO EL EQUIPO</b>
-          </h5>
-        </Button>
-      </NavLink>
+  <Button
+    variant="contained"
+    size="large"
+    sx={{ 
+      background: 'black', 
+      color: 'white', 
+      '&:hover': {
+        backgroundColor: 'black',
+        color: 'white',
+      },
+      '&:active': {
+        backgroundColor: 'black',
+        color: 'white',
+      }
+    }}
+  >
+    <h5><b>TODO EL EQUIPO</b></h5>
+  </Button>
+</NavLink>
     </Grid>
   </Grid>
 )}
@@ -685,10 +711,26 @@ const Obra2 = () => {
   }}
 >
   <NavLink to={`/criticas/${id}`} style={{ textDecoration: 'none' }}>
-    <Button variant="contained" size="large" sx={{ background: 'black', marginBottom: '40px' }}>
-      <h5><b>CRÍTICAS</b></h5>
-    </Button>
-  </NavLink>
+  <Button 
+    variant="contained" 
+    size="large" 
+    sx={{ 
+      background: 'black', 
+      color: 'white', 
+      '&:hover': {
+        backgroundColor: 'black',
+        color: 'white',
+      },
+      '&:active': {
+        backgroundColor: 'black',
+        color: 'white',
+      },
+      marginBottom: '40px' 
+    }}
+  >
+    <h5><b>CRÍTICAS</b></h5>
+  </Button>
+</NavLink>
 </Grid>
 
   

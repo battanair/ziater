@@ -1,10 +1,12 @@
 import React, { useState } from "react";
-import { Container, Typography, Button, Box, Divider } from "@mui/material";
+import { Container, Typography, Button, Box, Divider, TextField } from "@mui/material";
 import { styled } from "@mui/system";
 import { motion } from "framer-motion";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { db } from '../firebaseConfig';
+import { collection, addDoc } from "firebase/firestore";
 
 const HeroSection = styled(Box)(({ theme }) => ({
   textAlign: "center",
@@ -44,13 +46,12 @@ const BlackDivider = styled(Divider)({
 const StyledButton = styled(Button)({
   marginTop: "2rem",
   padding: "1rem 2.5rem",
-  fontSize: "1.2rem",
-  borderRadius: "30px",
-  fontWeight: "bold",
-  backgroundColor: "black",
-  color: "white",
+  fontSize: "1rem",
+    fontWeight: "bold",
+  backgroundColor: "white",
+  color: "black",
   '&:hover': {
-    backgroundColor: "#444",
+    backgroundColor: "#ddd",
   }
 });
 
@@ -83,6 +84,40 @@ const Arrow = styled('div')`
     color: black;
   }
 `;
+
+const ContactSection = styled(Box)(({ theme }) => ({
+  backgroundColor: "black",
+  color: "white",
+  padding: "4rem 2rem",
+  textAlign: "center",
+}));
+
+const ContactForm = styled('form')({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  marginTop: "2rem",
+});
+
+const StyledTextField = styled(TextField)({
+  '& .MuiInputBase-input': {
+    color: 'white',
+  },
+  '& .MuiInputLabel-root': {
+    color: 'white',
+  },
+  '& .MuiOutlinedInput-root': {
+    '& fieldset': {
+      borderColor: 'white',
+    },
+    '&:hover fieldset': {
+      borderColor: 'white',
+    },
+    '&.Mui-focused fieldset': {
+      borderColor: 'white',
+    },
+  },
+});
 
 function NextArrow(props) {
   const { className, style, onClick } = props;
@@ -123,6 +158,24 @@ export default function Home() {
     prevArrow: <PrevArrow />,
   };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    const formData = new FormData(event.target);
+    const data = {
+      name: formData.get('name'),
+      email: formData.get('email'),
+      message: formData.get('message'),
+    };
+    try {
+      await addDoc(collection(db, "fallos"), data);
+      alert("Mensaje enviado con éxito");
+    } catch (error) {
+      console.error("Error al enviar el mensaje: ", error);
+      alert("Hubo un error al enviar el mensaje");
+    }
+    event.target.reset();
+  };
+
   return (
     <Container maxWidth="lg">
       <ProgressBar width={scrollProgress} />
@@ -159,6 +212,43 @@ export default function Home() {
           </Section>
         ))}
       </Slider>
+
+      {/* Contact Section */}
+      <ContactSection sx={{width: "100%"}}>
+        <Typography variant="h6" gutterBottom sx={{ color: "white" }}>
+          Hola, toda esta web está siendo programada por una sola persona que lo está haciendo con todo el cariño del mundo. Si hay algún error por favor ponte en contacto conmigo.
+        </Typography>
+        <ContactForm onSubmit={handleSubmit}>
+          <StyledTextField
+            label="Nombre"
+            name="name"
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            required
+          />
+          <StyledTextField
+            label="Email"
+            name="email"
+            type="email"
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            required
+          />
+          <StyledTextField
+            label="Mensaje"
+            name="message"
+            variant="outlined"
+            margin="normal"
+            fullWidth
+            required
+            multiline
+            rows={4}
+          />
+          <StyledButton type="submit">Enviar</StyledButton>
+        </ContactForm>
+      </ContactSection>
     </Container>
   );
 }

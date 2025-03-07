@@ -35,6 +35,7 @@ const Edit = () => {
         const q = query(collection(db, collections[i]), where('creacion', '==', userId));
         const querySnapshot = await getDocs(q);
         const data = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+        console.log(`Data for ${collections[i]}:`, data); // Log the data for each collection
         setters[i](data);
       }
     };
@@ -47,11 +48,11 @@ const Edit = () => {
       navigate(`/edit-company/${id}`);
     } else if (type === 'premio') {
       navigate(`/edit-award/${id}`);
-    }else if (type === 'obra') {
+    } else if (type === 'obra') {
       navigate(`/edit-play/${id}`);
-    }else if (type === 'teatro') {
+    } else if (type === 'teatro') {
       navigate(`/edit-sala/${id}`);
-    }else if (type === 'persona') {
+    } else if (type === 'persona') {
       navigate(`/edit-persona/${id}`);
     }
     // Agrega más condiciones según sea necesario para otros tipos
