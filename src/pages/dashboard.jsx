@@ -118,11 +118,11 @@ function Dashboard(props) {
         icon: <ControlPointIcon sx={{ color: 'black !important' }} />,
         children: [
           { segment: 'nueva-obra', title: 'Obra', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
-          { segment: 'nueva-persona', title: 'Persona', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
+          { segment: 'nueva-persona', title: 'Artista', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
           { segment: 'nueva-company', title: 'Compañía', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
           { segment: 'nuevo-premios', title: 'Premios', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
           { segment: 'nuevo-teatro', title: 'Espacio', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
-          { segment: 'nueva-entrada', title: 'Entradas', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
+        {/*  { segment: 'nueva-entrada', title: 'Entradas', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },*/}
         ],
       },
     ] : []),

@@ -464,7 +464,7 @@ const Obra2 = () => {
                         </Box>
                     )}
 
-        <Button 
+        {/*<Button 
   variant="contained" 
   sx={{ 
     background: 'black', 
@@ -482,7 +482,7 @@ const Obra2 = () => {
   onClick={handleOpen}
 >
   <h6><b>COMPRAR ENTRADAS</b></h6>
-</Button>
+</Button>*/}
       </Grid>
     </Grid>
 

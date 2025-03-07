@@ -19,6 +19,7 @@ import Navbar from './components/Navbar';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CookieConsent from "./components/CookieConsent";
 import { CookieProvider } from "./context/CookieContext"; // Import CookieProvider
+import Footer from './components/Footer';
 
 const App = () => {
   const theme = createTheme({
@@ -106,6 +107,9 @@ const App = () => {
                     ))}
                   </Routes>
                 </Container>
+                <Box sx={{ flexGrow: 1 }}>
+                  <Footer />
+                </Box>
               </Box>
               <CookieConsent /> {/* Asegúrate de que está aquí */}
             </div>
