@@ -93,26 +93,33 @@ function UserProfile() {
   };
 
   const getProfileInfo = async (user) => {
-    const q = query(collection(db, "persona"), where("coincide", "==", user.uid));
-    const querySnapshot = await getDocs(q);
-
-    if (!querySnapshot.empty) {
-      const personaDoc = querySnapshot.docs[0];
-      const personaData = personaDoc.data();
-      setNombre(personaData.Nombre);
-      setApellidos(personaData.Apellidos);
-      setBiografia(personaData.biografia || '');
-      setInstagram(personaData.instagram || '');
-      setArtesEscenicas(personaData.artesEscenicas || '');
-      setImageUrl(personaData.foto || '');
-      setPersonaId(personaDoc.id);
-      setProfileCompleted(true);
+    const userRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userRef);
+  
+    if (userDoc.exists()) {
+      const userData = userDoc.data();
+      setNombre(userData.Nombre);
+      setApellidos(userData.Apellidos);
     } else {
       if (user.displayName) {
         const [firstName, ...lastName] = user.displayName.split(" ");
         setNombre(firstName);
         setApellidos(lastName.join(" "));
       }
+    }
+  
+    const q = query(collection(db, "persona"), where("coincide", "==", user.uid));
+    const querySnapshot = await getDocs(q);
+  
+    if (!querySnapshot.empty) {
+      const personaDoc = querySnapshot.docs[0];
+      const personaData = personaDoc.data();
+      setBiografia(personaData.biografia || '');
+      setInstagram(personaData.instagram || '');
+      setArtesEscenicas(personaData.artesEscenicas || '');
+      setImageUrl(personaData.foto || '');
+      setPersonaId(personaDoc.id);
+      setProfileCompleted(true);
     }
   };
 
@@ -125,7 +132,7 @@ function UserProfile() {
         };
 
         const userRef = doc(db, "users", user.uid);
-        await updateDoc(userRef, userData);
+        await setDoc(userRef, userData, { merge: true });
 
         if (artesEscenicas === 'si') {
           const q = query(collection(db, "persona"), where("coincide", "==", user.uid));
@@ -249,3 +256,4 @@ function UserProfile() {
 }
 
 export default UserProfile;
+
