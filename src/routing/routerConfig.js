@@ -28,6 +28,7 @@ import EditPlayWork2 from "../components/EditPlayWork2";
 import EditPlayAwards from "../components/EditPlayAwards";
 import EditPlayAwards2 from "../components/EditPlayAwards2";
 import PoliticaCookies from "../pages/politica-de-cookies";
+import PrivacyPolicy from "../pages/PrivacyPolicy";
 
 export const routeConfig = [
   { path: "/", page: <Home /> },
@@ -40,6 +41,7 @@ export const routeConfig = [
   { path: "/Premios/:id", page: <Premios /> },
   { path: "/teatro/:id", page: <Teatro /> },
   { path: "/politica-de-cookies", page: <PoliticaCookies /> },
+  { path: "/politica-de-privacidad", page: <PrivacyPolicy /> },
 
   // Solo si NO está logueado
   { path: "/login", page: <PublicRoute><Login /></PublicRoute> },
