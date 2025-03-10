@@ -47,7 +47,7 @@ const StyledButton = styled(Button)({
   marginTop: "2rem",
   padding: "1rem 2.5rem",
   fontSize: "1rem",
-    fontWeight: "bold",
+  fontWeight: "bold",
   backgroundColor: "white",
   color: "black",
   '&:hover': {
@@ -119,6 +119,14 @@ const StyledTextField = styled(TextField)({
   },
 });
 
+const Footer = styled(Box)(({ theme }) => ({
+  backgroundColor: "black",
+  color: "white",
+  padding: "1rem 2rem",
+  textAlign: "center",
+  marginTop: "auto",
+}));
+
 function NextArrow(props) {
   const { className, style, onClick } = props;
   return (
@@ -177,7 +185,7 @@ export default function Home() {
   };
 
   return (
-    <Container maxWidth="lg">
+    <Container maxWidth="lg" sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", paddingBottom: 0 }}>
       <ProgressBar width={scrollProgress} />
 
       {/* Hero Section */}
@@ -249,6 +257,13 @@ export default function Home() {
           <StyledButton type="submit">Enviar</StyledButton>
         </ContactForm>
       </ContactSection>
+
+      {/* Footer */}
+      <Footer>
+        <Typography variant="body2">
+          &copy; 2025 DramApp. Todos los derechos reservados.
+        </Typography>
+      </Footer>
     </Container>
   );
 }

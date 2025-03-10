@@ -96,7 +96,7 @@ const App = () => {
         <AuthProvider>
           <Router>
             <div className="app">
-              <Box sx={{ background: 'white', paddingBottom: '50px' }}>
+              <Box sx={{ background: 'white', paddingBottom: '0px' }}>
                 <Box sx={{ flexGrow: 1 }}>
                   <Navbar />
                 </Box>

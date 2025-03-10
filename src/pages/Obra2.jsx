@@ -104,11 +104,14 @@ const Obra2 = () => {
     if (persona.rol !== "Actor") return false; // Solo actores
 
     const fechaFin = Number(persona.fecha_fin); // Convertir fecha_fin a número
+    const fechaInicio = Number(persona.fecha_inicio); // Convertir fecha_inicio a número
+    const anofin = Number(obraData.anofin); // Convertir anofin a número
+    const anoinicio = Number(obraData.anoinicio); // Convertir anoinicio a número
 
     if (showCurrentActors) {
-      return fechaFin === 0; // Si el switch está activado, solo actores con fecha_fin: 0
+      return fechaFin === 0 || fechaFin === anofin || (fechaInicio === anoinicio && fechaFin === anofin); // Si el switch está activado, actores con fecha_fin: 0 o fecha_fin igual a anofin de la obra o ambos coinciden
     } else {
-      return persona.fecha_inicio === obraData.anoinicio; // Si está desactivado, actores que empezaron el año de anoinicio de la obra
+      return fechaInicio === anoinicio || (fechaInicio === anoinicio && fechaFin === anofin); // Si está desactivado, actores que empezaron el año de anoinicio de la obra o ambos coinciden
     }
   });
 

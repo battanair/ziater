@@ -95,8 +95,13 @@ const Todoelequipo = () => {
   {Object.keys(equipo).length > 0 ? (
     Object.entries(equipo).map(([puesto, personas], index) => (
       <Accordion key={index}>
-        <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ background: "black", color: "white" }}>
-          <Typography variant="h6">{puesto === "Actor" ? "Reparto" : puesto}</Typography>
+        <AccordionSummary 
+          expandIcon={<ExpandMoreIcon sx={{ color: "white" }} />} 
+          sx={{ background: "black", color: "white" }}
+        >
+          <Typography variant="h6" sx={{ color: "white" }}>
+            {puesto === "Actor" ? "Reparto" : puesto}
+          </Typography>
         </AccordionSummary>
         <AccordionDetails>
           {personas.map((persona, idx) => (
