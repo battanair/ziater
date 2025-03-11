@@ -240,25 +240,30 @@ const Persona = () => {
             </Grid>
 
             {obrasRelacionadas.length > 0 && (
-                <>
-                    <Typography variant="h5" sx={{ fontWeight: "bold", textAlign: "center", marginY: 3 }}>
-                        OBRAS DESTACADAS
-                    </Typography>
-                    <Grid container spacing={4} sx={{ maxWidth: "100%", margin: "0 auto" }}>
-                        {obrasRelacionadas.slice(0, 4).map((obra, index) => (
-                            <Grid item xs={6} sm={3} md={3} key={index}>
-                                <NavLink to={`/obra/${obra.id}`} style={{ textDecoration: 'none' }}>
-                                    <Personaindex
-                                        nombrepersona={obra.obraTitulo}
-                                        puestopersona={obra.personaje}
-                                        fotito={obra.cartel}
-                                    />
-                                </NavLink>
-                            </Grid>
-                        ))}
-                    </Grid>
-                </>
-            )}
+    <>
+        <Typography variant="h5" sx={{ fontWeight: "bold", textAlign: "center", marginY: 3 }}>
+            OBRAS DESTACADAS
+        </Typography>
+        <Grid container spacing={4} sx={{ maxWidth: "100%", margin: "0 auto" }}>
+            {Array.from(new Set(obrasRelacionadas.map(obra => obra.id))) // Elimina duplicados
+                .slice(0, 4)
+                .map((obraId, index) => {
+                    const obra = obrasRelacionadas.find(o => o.id === obraId);
+                    return (
+                        <Grid item xs={6} sm={3} md={3} key={index}>
+                            <NavLink to={`/obra/${obra.id}`} style={{ textDecoration: 'none' }}>
+                                <Personaindex
+                                    nombrepersona={obra.obraTitulo}
+                                    puestopersona={obra.personaje}
+                                    fotito={obra.cartel}
+                                />
+                            </NavLink>
+                        </Grid>
+                    );
+                })}
+        </Grid>
+    </>
+)}
 
             <Box sx={{ marginTop: 5, paddingBottom: 5 }}>
                 {puestos.length > 0 ? (

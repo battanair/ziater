@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
-import { Box, Typography, IconButton, Autocomplete, TextField, FormControl, InputLabel, Select, MenuItem, Button } from '@mui/material';
+import { Box, Typography, IconButton, Autocomplete, TextField, FormControl, InputLabel, Select, MenuItem, Button, Checkbox, FormControlLabel } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { getFirestore, doc, getDoc, deleteDoc, updateDoc, addDoc, collection, getDocs } from 'firebase/firestore';
@@ -11,13 +11,15 @@ const NewEditUser3 = ({ handleRemoveTrabajo, errors = {} }) => {
   const navigate = useNavigate();
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
-  const idPersonaFromURL = searchParams.get("persona");
+  const idPersonaFromURL = searchParams.get("id_persona");
 
   const [trabajo, setTrabajo] = useState({ id_persona: idPersonaFromURL || '' });
   const [obraTitulo, setObraTitulo] = useState('');
   const [isActualmenteSelected, setIsActualmenteSelected] = useState(false);
   const [obras, setObras] = useState([]);
   const [obraNotFound, setObraNotFound] = useState('');
+  const [formErrors, setFormErrors] = useState({});
+  const [saveError, setSaveError] = useState('');
 
   useEffect(() => {
     const fetchObras = async () => {
@@ -64,7 +66,7 @@ const NewEditUser3 = ({ handleRemoveTrabajo, errors = {} }) => {
     setIsActualmenteSelected(!isActualmenteSelected);
     setTrabajo((prev) => ({
       ...prev,
-      fecha_fin: isActualmenteSelected ? '' : 0, // Si se selecciona "Actualmente", fecha_fin es 0
+      fecha_fin: !isActualmenteSelected ? 0 : '', // Si se selecciona "Actualmente", fecha_fin es 0
     }));
   };
   
@@ -77,29 +79,41 @@ const NewEditUser3 = ({ handleRemoveTrabajo, errors = {} }) => {
       console.error('Error al eliminar el trabajo:', error);
     }
   };
-  
+
+  const validateForm = () => {
+    const errors = {};
+    if (!trabajo.id_persona) errors.id_persona = 'Persona es requerida';
+    if (!trabajo.id_obra) errors.id_obra = 'Obra es requerida';
+    if (!trabajo.puesto) errors.puesto = 'Departamento es requerido';
+    if (!trabajo.titulo) errors.titulo = 'Trabajo / Personaje es requerido';
+    if (!trabajo.fecha_inicio) errors.fecha_inicio = 'Fecha Inicio es requerida';
+    if (!isActualmenteSelected && !trabajo.fecha_fin) errors.fecha_fin = 'Fecha Fin es requerida';
+    return errors;
+  };
+
   const handleSave = async () => {
-    if (!trabajo.id_persona) {
-      console.error('id_persona is undefined');
+    const errors = validateForm();
+    if (Object.keys(errors).length > 0) {
+      setFormErrors(errors);
       return;
     }
-  
+
     try {
       if (id) {
         // Si existe ID, actualizamos el documento
         await updateDoc(doc(db, 'persona_obra', id), trabajo);
       } else {
         // Si NO hay ID, creamos un nuevo documento en la colección persona_obra
-        const newDocRef = await addDoc(collection(db, 'persona_obra'), trabajo);
+        await addDoc(collection(db, 'persona_obra'), trabajo);
         
         // Redirigir a la página anterior con el ID de la persona
         navigate(`/newedituser2/${trabajo.id_persona}`);
       }
     } catch (error) {
       console.error('Error al guardar el trabajo:', error);
+      setSaveError('Error al guardar el trabajo. Por favor, inténtalo de nuevo.');
     }
   };
-  
 
   return (
     <Box sx={{ mb: 4, p: 3, border: '1px solid #ddd', borderRadius: 2, boxShadow: 2 }}>
@@ -135,10 +149,21 @@ const NewEditUser3 = ({ handleRemoveTrabajo, errors = {} }) => {
               }
             }}
             freeSolo
+            renderOption={(props, option) => (
+              <li {...props}>
+                <Box
+                  component="img"
+                  src={option.cartel}
+                  alt={option.titulo}
+                  sx={{ width: 40, height: 60, mr: 2, objectFit: 'cover' }}
+                />
+                {option.titulo}
+              </li>
+            )}
             renderInput={(params) => (
               <TextField
                 {...params}
-                label="Obra"
+                label="Obra *"
                 fullWidth
                 onChange={(e) => {
                   const value = e.target.value.trim();
@@ -165,6 +190,8 @@ const NewEditUser3 = ({ handleRemoveTrabajo, errors = {} }) => {
                   }
                 }}
                 disabled={!!trabajo.id_obra} // Deshabilita el campo si ya hay un id_obra
+                error={!!formErrors.id_obra}
+                helperText={formErrors.id_obra}
               />
             )}
             ListboxProps={{
@@ -176,16 +203,16 @@ const NewEditUser3 = ({ handleRemoveTrabajo, errors = {} }) => {
         </>
       )}
       {obraNotFound && <Typography color="error">{obraNotFound}</Typography>}
-      <FormControl fullWidth sx={{ mb: 2 }}>
-        <InputLabel>Departamento</InputLabel>
+      <FormControl fullWidth sx={{ mb: 2 }} error={!!formErrors.puesto}>
+        <InputLabel>Departamento *</InputLabel>
         <Select
           value={trabajo.puesto || ''}
           onChange={(e) => handleTrabajoChange('puesto', e.target.value)}
-          error={!!errors.trabajos}
         >
           <MenuItem value="Actor">Interpretación</MenuItem>
           <MenuItem value="Dramaturgia">Dramaturgia</MenuItem>
           <MenuItem value="Iluminación">Iluminación</MenuItem>
+          <MenuItem value="Producción">Producción</MenuItem>
           <MenuItem value="Dirección">Dirección</MenuItem>
           <MenuItem value="Escenografía">Escenografía</MenuItem>
           <MenuItem value="Espacio Sonoro">Espacio Sonoro</MenuItem>
@@ -195,16 +222,16 @@ const NewEditUser3 = ({ handleRemoveTrabajo, errors = {} }) => {
           <MenuItem value="Diseño">Diseño</MenuItem>
           <MenuItem value="Comunicación">Comunicación</MenuItem>
         </Select>
-        {errors.trabajos && <Typography color="error">Campo requerido</Typography>}
+        {formErrors.puesto && <Typography color="error">{formErrors.puesto}</Typography>}
       </FormControl>
       <TextField
-        label="Trabajo / Personaje"
+        label="Trabajo / Personaje *"
         value={trabajo.titulo || ''}
         onChange={(e) => handleTrabajoChange('titulo', e.target.value)}
         fullWidth
         sx={{ mb: 2 }}
-        error={!!errors.trabajos}
-        helperText={errors.trabajos && "Campo requerido"}
+        error={!!formErrors.titulo}
+        helperText={formErrors.titulo}
       />
       <TextField
         label="Fecha Inicio"
@@ -213,8 +240,8 @@ const NewEditUser3 = ({ handleRemoveTrabajo, errors = {} }) => {
         onChange={(e) => handleTrabajoChange('fecha_inicio', e.target.value)}
         fullWidth
         sx={{ mb: 2 }}
-        error={!!errors.trabajos}
-        helperText={errors.trabajos && "Campo requerido"}
+        error={!!formErrors.fecha_inicio}
+        helperText={formErrors.fecha_inicio}
       />
       <Box display="flex" alignItems="center" gap={2}>
         <TextField
@@ -223,15 +250,22 @@ const NewEditUser3 = ({ handleRemoveTrabajo, errors = {} }) => {
           value={trabajo.fecha_fin === 0 ? '' : trabajo.fecha_fin}
           onChange={(e) => handleTrabajoChange('fecha_fin', e.target.value)}
           fullWidth
+          disabled={isActualmenteSelected}
+          error={!!formErrors.fecha_fin}
+          helperText={formErrors.fecha_fin}
         />
-        <Button
-          variant="outlined"
-          onClick={handleActualmenteClick}
-          color={isActualmenteSelected ? 'primary' : 'default'}
-        >
-          Actualmente
-        </Button>
+        <FormControlLabel
+          control={
+            <Checkbox
+              checked={isActualmenteSelected}
+              onChange={handleActualmenteClick}
+              color="primary"
+            />
+          }
+          label="Actualmente"
+        />
       </Box>
+      {saveError && <Typography color="error" sx={{ mt: 2 }}>{saveError}</Typography>}
       <Button
         variant="contained"
         color="primary"

@@ -10,16 +10,16 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Navbar from './components/Navbar';
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CookieConsent from "./components/CookieConsent";
-import { CookieProvider } from "./context/CookieContext"; // Import CookieProvider
+import { CookieProvider } from "./context/CookieContext";
 import Footer from './components/Footer';
-import ReactGA from 'react-ga'; // Importa ReactGA
+import ReactGA from 'react-ga';
 
 const App = () => {
   const theme = createTheme({
     palette: {
       primary: {
-        main: "#000000", // Color principal negro
-        dark: "#000000",  // Sobrescribe el azul oscuro
+        main: "#000000",
+        dark: "#000000",
         light: "#000000",
       },
     },
@@ -29,7 +29,7 @@ const App = () => {
           root: {
             color: "#000000",
             "&:hover": {
-              backgroundColor: "#333333", // Cambia el fondo en hover
+              backgroundColor: "#333333",
             },
             "&:focus": {
               backgroundColor: "#222222",
@@ -71,21 +71,19 @@ const App = () => {
   const [anchorEl, setAnchorEl] = useState(null);
   const auth = getAuth();
 
-  // Detectar cambios en la autenticación
   useEffect(() => {
-    ReactGA.initialize('G-DB63MNK8BK'); // Reemplaza 'YOUR_TRACKING_ID' con tu ID de seguimiento de Google Analytics
+    ReactGA.initialize('G-DB63MNK8BK');
 
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user); // Si hay usuario, lo guarda, si no, lo deja en null
+      setUser(user);
     });
 
-    return () => unsubscribe(); // Limpieza al desmontar
+    return () => unsubscribe();
   }, []);
 
   const handleMenu = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
 
-  // Limpiar la URL
   useEffect(() => {
     const cleanUrl = () => {
       const url = window.location.href;
@@ -97,7 +95,7 @@ const App = () => {
     };
 
     window.addEventListener('hashchange', cleanUrl);
-    cleanUrl(); // Limpiar la URL al cargar la página
+    cleanUrl();
 
     return () => {
       window.removeEventListener('hashchange', cleanUrl);
@@ -114,18 +112,20 @@ const App = () => {
                 <Box sx={{ flexGrow: 1 }}>
                   <Navbar />
                 </Box>
-                <Container maxWidth="md" sx={{ background: 'white', marginTop: '50px', marginBottom: '50px', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', paddingLeft: 3, paddingRight: 3 }}>
-                  <Routes>
-                    {routeConfig.map(({ path, page }, index) => (
-                      <Route key={index} path={path} element={page} />
-                    ))}
-                  </Routes>
-                </Container>
-                <Box sx={{ flexGrow: 1 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+                  <Container maxWidth="md" sx={{ background: 'white', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', paddingLeft: 3, paddingRight: 3 }}>
+                    <Routes>
+                      {routeConfig.map(({ path, page }, index) => (
+                        <Route key={index} path={path} element={page} />
+                      ))}
+                    </Routes>
+                  </Container>
+                </Box>
+                <Box sx={{ flexGrow: 1, marginTop: '50px' }}>
                   <Footer />
                 </Box>
               </Box>
-              <CookieConsent /> {/* Asegúrate de que está aquí */}
+              <CookieConsent />
             </div>
           </Router>
         </AuthProvider>

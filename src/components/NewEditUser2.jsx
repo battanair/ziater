@@ -196,10 +196,17 @@ const NewEditUser2 = () => {
                                 .filter(obra => obra.puesto === puesto)
                                 .map((obra, idx) => {
                                     const anioInicio = obra.anoinicio || "Año desconocido";
-                                    const anioFin = !obra.anofin || obra.anofin === 0 ? "Actualmente" : obra.anofin;
+                                    const anioFin = !obra.anofin || Number(obra.anofin) === 0 ? "Actualmente" : obra.anofin;
                                     const anioTexto = anioInicio !== "Año desconocido" ? `(${anioInicio} - ${anioFin})` : "";
                                     return (
-                                        <Stack direction="row" spacing={2} alignItems="center" justifyContent="space-between" sx={{ width: '100%' }} key={idx}>
+                                        <Stack
+                                            direction="row"
+                                            spacing={2}
+                                            alignItems="center"
+                                            justifyContent="space-between"
+                                            sx={{ width: '100%', marginBottom: 2 }} // Añadir margen inferior
+                                            key={idx}
+                                        >
                                             <Stack direction="row" spacing={2} alignItems="center">
                                                 <img
                                                     src={obra.cartel || "https://via.placeholder.com/70"}
