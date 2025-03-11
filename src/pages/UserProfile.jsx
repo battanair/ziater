@@ -206,7 +206,7 @@ function UserProfile() {
         </Box>
         <Box display="flex" justifyContent="center" gap={2} mt={2}>
           <Button component={NavLink} to="/edit-play" variant="contained" sx={{ bgcolor: 'black', color: 'white' }}>Añade una obra</Button>
-          <Button component={NavLink} to={`/edit-user3?persona=${personaId}`} variant="contained" sx={{ bgcolor: 'black', color: 'white' }}>Añade un trabajo</Button>
+          <Button component={NavLink} to={`/newedituser2/${personaId}`} variant="contained" sx={{ bgcolor: 'black', color: 'white' }}>Edita tus trabajos</Button>
         </Box>
       </Container>
     );

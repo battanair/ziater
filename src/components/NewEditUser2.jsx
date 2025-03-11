@@ -169,7 +169,7 @@ const NewEditUser2 = () => {
     };
 
     const handleBackClick = () => {
-        navigate(`/edit-persona/${id}`);
+        navigate(`/dashboard`);
     };
 
     if (!persona) return <h1>Cargando datos...</h1>;

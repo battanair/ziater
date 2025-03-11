@@ -247,7 +247,7 @@ function NewEditUser() {
           <Button 
             onClick={() => navigate(`/newedituser2/${id}`)} 
             variant="contained" 
-            sx={{ backgroundColor: 'black', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.8)' } }}
+            sx={{ color: 'white', backgroundColor: 'black', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.8)' } }}
           >
             Editar trabajos
           </Button>
@@ -255,7 +255,7 @@ function NewEditUser() {
           <Button 
             onClick={() => navigate(`/editarpremios/${id}`)} 
             variant="contained" 
-            sx={{ backgroundColor: 'black', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.8)' } }}
+            sx={{ color: 'white', backgroundColor: 'black', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.8)' } }}
           >
             Editar Premios
           </Button>
@@ -264,7 +264,7 @@ function NewEditUser() {
         <Button 
           onClick={() => handleSavePersona(imageUrl)} 
           variant="contained" 
-          sx={{ mt: 2, backgroundColor: 'black', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.8)' } }}
+          sx={{ mt: 2, color: 'white', backgroundColor: 'black', '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.8)' } }}
         >
           Guardar
         </Button>

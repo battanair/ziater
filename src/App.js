@@ -1,18 +1,10 @@
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import React, { useEffect, useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
+import { HashRouter as Router, Routes, Route, NavLink } from "react-router-dom";
 import Container from '@mui/material/Container';
 import { routeConfig } from "./routing/routerConfig";
-import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import AccountCircle from '@mui/icons-material/AccountCircle';
-import MenuItem from '@mui/material/MenuItem';
-import Menu from '@mui/material/Menu';
-import Grid from '@mui/material/Grid';
-import Buscador from './components/Buscador';
 import { AuthProvider } from "./components/AuthContext";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import Navbar from './components/Navbar';
@@ -20,6 +12,7 @@ import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CookieConsent from "./components/CookieConsent";
 import { CookieProvider } from "./context/CookieContext"; // Import CookieProvider
 import Footer from './components/Footer';
+import ReactGA from 'react-ga'; // Importa ReactGA
 
 const App = () => {
   const theme = createTheme({
@@ -80,6 +73,8 @@ const App = () => {
 
   // Detectar cambios en la autenticación
   useEffect(() => {
+    ReactGA.initialize('G-DB63MNK8BK'); // Reemplaza 'YOUR_TRACKING_ID' con tu ID de seguimiento de Google Analytics
+
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user); // Si hay usuario, lo guarda, si no, lo deja en null
     });
@@ -89,6 +84,25 @@ const App = () => {
 
   const handleMenu = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
+
+  // Limpiar la URL
+  useEffect(() => {
+    const cleanUrl = () => {
+      const url = window.location.href;
+      const hashIndex = url.indexOf('#');
+      if (hashIndex !== -1) {
+        const cleanUrl = url.substring(0, hashIndex + 2) + url.substring(hashIndex + 2).split('/')[0];
+        window.history.replaceState(null, null, cleanUrl);
+      }
+    };
+
+    window.addEventListener('hashchange', cleanUrl);
+    cleanUrl(); // Limpiar la URL al cargar la página
+
+    return () => {
+      window.removeEventListener('hashchange', cleanUrl);
+    };
+  }, []);
 
   return (
     <ThemeProvider theme={theme}>
