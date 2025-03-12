@@ -32,7 +32,7 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const lightTheme = createTheme({
   palette: {
-    mode: 'light', // 🔥 Siempre en modo claro
+    mode: 'light', 
   },
 });
 
@@ -59,8 +59,8 @@ function DemoPageContent({ pathname }) {
         alignItems: 'center',
         textAlign: 'center',
         width: '100%',
-        height: '100%',
         flexGrow: 1,
+        height: 'auto', // Ajusta la altura automáticamente
       }}
     >
       {COMPONENT_MAP[pathname] || <Cuenta />}
@@ -118,11 +118,9 @@ function Dashboard(props) {
         icon: <ControlPointIcon sx={{ color: 'black !important' }} />,
         children: [
           { segment: 'nueva-obra', title: 'Obra', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
-          { segment: 'nueva-persona', title: 'Artista', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
           { segment: 'nueva-company', title: 'Compañía', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
           { segment: 'nuevo-premios', title: 'Premios', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
           { segment: 'nuevo-teatro', title: 'Espacio', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },
-        {/*  { segment: 'nueva-entrada', title: 'Entradas', icon: <DescriptionIcon sx={{ color: 'black !important' }} /> },*/}
         ],
       },
     ] : []),
@@ -145,6 +143,7 @@ function Dashboard(props) {
           sx={{
             width: '100%',
             flexGrow: 1,
+            height: 'auto', // Ajusta la altura automáticamente
             '& .toolpad-logo': {
               display: { xs: 'none', md: 'block' },
             },

@@ -59,10 +59,25 @@ export default function Navbar() {
           {/* Si el usuario NO está logueado, mostramos login y signup */}
           {!user && (
             <Grid item sx={{ mb: { xs: 2, sm: 0 } }}>
-              <NavLink to="/login" style={{ marginRight: '10px', textDecoration: 'none', color: 'black' }}>
+              <NavLink to="/login" style={{ 
+                marginRight: '10px', 
+                textDecoration: 'none', 
+                color: 'black', 
+                backgroundColor: 'white', 
+                border: '1px solid black', 
+                padding: '5px 10px', 
+                borderRadius: '5px' 
+              }}>
                 Entrar
               </NavLink>
-              <NavLink to="/signup" style={{ marginRight: '10px', textDecoration: 'none', color: 'black' }}>
+              <NavLink to="/signup" style={{ 
+                marginRight: '10px', 
+                textDecoration: 'none', 
+                color: 'white', 
+                backgroundColor: 'black', 
+                padding: '5px 10px', 
+                borderRadius: '5px' 
+              }}>
                 Registrarse
               </NavLink>
             </Grid>

@@ -15,11 +15,22 @@ const CustomTextField = styled(TextField)({
     '&.Mui-focused .MuiInputBase-input': {
       color: 'black',
     },
+    display: 'flex',
+    alignItems: 'center',
+    paddingLeft: '8px', // Añadir espacio a la izquierda
+  },
+  '& .MuiInputBase-input': {
+    padding: '10.5px 14px', // Ajusta el padding para centrar verticalmente
   },
   '& .MuiInputLabel-root': {
-    '&.Mui-focused': {
+    '&.Mui-focused, &.MuiInputLabel-shrink': {
       color: 'black',
+      top: 0,
+      transform: 'translateY(-100%)',
     },
+    top: '50%',
+    transform: 'translateY(-50%)',
+    left: '8px', // Añadir espacio a la izquierda
   },
 });
 
@@ -109,7 +120,7 @@ export default function Asynchronous() {
 
   return (
     <Autocomplete
-      sx={{ width: 300 }}
+      sx={{ width: '300px', height: 'auto' }}
       open={open}
       onOpen={handleOpen}
       onClose={handleClose}
@@ -120,7 +131,7 @@ export default function Asynchronous() {
       loading={loading}
       renderOption={(props, option) => (
         <li {...props} key={option.id} style={{ display: 'flex', alignItems: 'center', width: '100%' }}>
-          <Link to={option.path} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit', width: '100%', padding: '8px' }}>
+          <Link to={option.path} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit', width: '100%', padding: '8px', paddingBottom: '0' }}>
             <Avatar 
               src={option.img} 
               alt={option.name} 
@@ -137,6 +148,7 @@ export default function Asynchronous() {
           label="Buscar"
           InputProps={{
             ...params.InputProps,
+            style: { height: '46px', display: 'flex', alignItems: 'center', paddingLeft: '8px' }, // Ajusta la altura y centra verticalmente, añade espacio a la izquierda
             endAdornment: (
               <>
                 {params.InputProps.endAdornment}

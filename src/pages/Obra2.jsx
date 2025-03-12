@@ -491,17 +491,17 @@ const Obra2 = () => {
 
     <><Box container sx={{ marginTop: 4, paddingLeft: 3 }}>
   <Grid container spacing={2} direction="row" sx={{
-    justifyContent: "space-around",
-    alignItems: "center",
-  }}>
+  justifyContent: director && dramaturgo && director.id === dramaturgo.id ? "flex-start" : "space-around",
+  alignItems: "center",
+}}>
     {/* Columna 1: Dirección y Dramaturgia */}
     <Grid item xs={12} md={6}>
   {/* Si la misma persona es director y dramaturgo */}
   {director && dramaturgo && director.id === dramaturgo.id ? (
-    <>
+    <Box sx={{ textAlign: 'left' }}>
       <h5><b>Dramaturgia y Dirección de:</b></h5>
-      <Personaindex nombrepersona={director.nombre} puestopersona={"Dramaturgia y Dirección"} />
-    </>
+      <Personaindex nombrepersona={director.nombre} puestopersona={"Dramaturgia y Dirección"} fotito={director.foto}/>
+    </Box>
   ) : (
     <Grid container spacing={2}>
       {/* Si hay director, pero no es el mismo que el dramaturgo */}
