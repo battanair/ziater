@@ -231,6 +231,8 @@ function UserProfile() {
             <TextField label="Biografía" variant="outlined" value={biografia} onChange={handleBiografiaChange} fullWidth multiline rows={4} sx={{ input: { color: 'black' }, label: { color: 'black' }, '& .MuiOutlinedInput-root': { '&:hover fieldset': { borderColor: 'black' } } }} />
             <TextField label="Instagram (nombre de usuario)" variant="outlined" value={instagram} onChange={handleInstagramChange} fullWidth sx={{ input: { color: 'black' }, label: { color: 'black' }, '& .MuiOutlinedInput-root': { '&:hover fieldset': { borderColor: 'black' } } }} />
             <Box display="flex" alignItems="center" gap={2}>
+            <Typography variant="body1">FOTO DE PERFIL:</Typography>
+
               <input
                 type="file"
                 accept="image/*"
@@ -242,9 +244,13 @@ function UserProfile() {
             {imageError && (
               <Typography color="error" variant="body2">{imageError}</Typography>
             )}
-            {imageUrl && (
+            {imageUrl ? (
               <Box mt={2}>
-                <img src={imageUrl} alt="Uploaded" style={{ width: '100%', maxHeight: '300px', objectFit: 'cover' }} />
+                <img src={imageUrl} alt="Uploaded" style={{ width: '150px', height: '150px', objectFit: 'contain' }} />
+              </Box>
+            ) : (
+              <Box mt={2}>
+                <img src="https://res.cloudinary.com/dk0vvcpyn/image/upload/v1740952724/imagenesdefecto/znmg1esf30tgxcwbgpnl.jpg" alt="Default" style={{ width: '150px', height: '150px', objectFit: 'contain' }} />
               </Box>
             )}
           </>
