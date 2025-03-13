@@ -4,6 +4,29 @@ import { onAuthStateChanged } from "firebase/auth";
 import { getFirestore, collection, doc, getDoc, setDoc, addDoc } from "firebase/firestore";
 import { auth, db } from '../firebaseConfig';
 import { Container, TextField, Button, Stepper, Step, StepLabel, Box, CircularProgress, Typography } from '@mui/material';
+import { StepIconProps } from '@mui/material/StepIcon';
+
+const StepIcon = (props) => {
+  const { active, completed, className } = props;
+
+  return (
+    <div
+      className={className}
+      style={{
+        backgroundColor: active || completed ? 'black' : 'grey',
+        borderRadius: '50%',
+        width: 24,
+        height: 24,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        color: 'white',
+      }}
+    >
+      {props.icon}
+    </div>
+  );
+};
 
 function NewAwardProfile() {
   const { id } = useParams(); // Obtener el id de los parámetros de la URL
@@ -142,10 +165,10 @@ function NewAwardProfile() {
     <Container maxWidth="sm" sx={{ py: 4 }}>
       <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
         <Step>
-          <StepLabel StepIconProps={{ sx: { color: 'black !important' } }}>Datos de los Premios</StepLabel>
+          <StepLabel StepIconComponent={StepIcon}>Datos de los Premios</StepLabel>
         </Step>
         <Step>
-          <StepLabel StepIconProps={{ sx: { color: 'black' } }}>Finalizar</StepLabel>
+          <StepLabel StepIconComponent={StepIcon}>Finalizar</StepLabel>
         </Step>
       </Stepper>
 

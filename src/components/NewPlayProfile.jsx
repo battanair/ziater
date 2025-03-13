@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { onAuthStateChanged } from "firebase/auth";
 import { getFirestore, doc, setDoc, collection, getDocs, addDoc, query, where } from "firebase/firestore";
 import { auth, db } from '../firebaseConfig';
-import { Container, TextField, Button, Stepper, Step, StepLabel, Box, Select, MenuItem, CircularProgress, FormControl, InputLabel, Autocomplete, Typography, IconButton, Checkbox, FormControlLabel, FormGroup, FormLabel, Dialog, DialogActions, DialogContent, DialogTitle } from '@mui/material';
+import { Container, TextField, Button, Stepper, Step, StepLabel, Box, Select, MenuItem, CircularProgress, FormControl, InputLabel, Autocomplete, Typography, IconButton, Checkbox, FormControlLabel, FormGroup, FormLabel, Dialog, DialogActions, DialogContent, DialogTitle, Grid } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
@@ -29,12 +29,12 @@ const theme = createTheme({
     MuiStepIcon: {
       styleOverrides: {
         root: {
-          color: 'black !important',
+          color: 'grey !important', // Color de los pasos no activos
           '&.Mui-active': {
-            color: 'black !important',
+            color: 'black !important', // Color del paso activo
           },
           '&.Mui-completed': {
-            color: 'black !important',
+            color: 'black !important', // Color de los pasos completados
           },
         },
       },
@@ -414,18 +414,6 @@ function NewPlayProfile() {
               />
               {imageLoading && <CircularProgress size={24} />}
             </Box>
-            <Typography variant="body1" sx={{ mt: 2 }}>IMÁGENES DE LA OBRA:</Typography>
-            {[0, 1, 2, 3].map((index) => (
-              <Box key={index} display="flex" alignItems="center" gap={2}>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleMultipleImageUpload(e, index)}
-                  style={{ marginTop: '16px' }}
-                />
-                {imageLoading && <CircularProgress size={24} />}
-              </Box>
-            ))}
             {imageError && (
               <Typography color="error" variant="body2">{imageError}</Typography>
             )}
@@ -440,20 +428,23 @@ function NewPlayProfile() {
               </Box>
             ))}
             <FormControl component="fieldset">
-              <FormLabel component="legend">Categoría</FormLabel>
-              <FormGroup sx={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
-                {[
-                  'Comedia', 'Teatro', 'Impro', 'Circo', 'Musicales', 'Stand up', 'Danza', 
-                  'Drag', 'Ópera', 'Zarzuela', 'Performance', 'Ficción sonora', 'Magia', 
-                   'Microteatro', 'Monólogo', 'Mimo', 'Poesía', 'Títeres', 'Variedades', 'Otros'
-                ].map((cat) => (
-                  <FormControlLabel
-                    key={cat}
-                    control={<Checkbox checked={categoria.includes(cat)} onChange={handleCategoriaChange} value={cat} />}
-                    label={cat}
-                    sx={{ width: '30%' }} // Ajusta el ancho para distribuir en tres columnas
-                  />
-                ))}
+              <Typography variant="body1" sx={{ paddingBottom: 2 }}>CATEGORÍA:</Typography>
+              <FormGroup>
+                <Grid container spacing={2}>
+                  {[
+                    'Comedia', 'Teatro', 'Impro', 'Circo', 'Musicales', 'Stand up', 'Danza', 
+                    'Drag', 'Ópera', 'Zarzuela', 'Performance', 'Ficción sonora', 'Magia', 
+                    'Microteatro', 'Monólogo', 'Mimo', 'Poesía', 'Títeres', 'Variedades', 'Otros'
+                  ].map((cat) => (
+                    <Grid item xs={12} sm={6} md={4} key={cat} style={{ display: 'flex', alignItems: 'flex-start' }}>
+                      <FormControlLabel
+                        control={<Checkbox checked={categoria.includes(cat)} onChange={handleCategoriaChange} value={cat} />}
+                        label={cat}
+                        style={{ margin: 0 }}
+                      />
+                    </Grid>
+                  ))}
+                </Grid>
               </FormGroup>
             </FormControl>
             <TextField

@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { db, auth } from '../firebaseConfig'; // Asegúrate de que la ruta sea correcta
-import Personaindex from '../components/personaindex';
+import { db, auth } from '../firebaseConfig';
 import { onAuthStateChanged } from 'firebase/auth';
-import { collection, doc, getDoc } from 'firebase/firestore';
-import { Grid } from '@mui/material'; // Importa Grid de Material-UI
+import { doc, getDoc } from 'firebase/firestore';
+import { List, ListItem, ListItemAvatar, ListItemText, Avatar, Grid } from '@mui/material';
+import { NavLink } from 'react-router-dom';
 
 const Favorites = () => {
   const [favorites, setFavorites] = useState({
@@ -25,7 +25,7 @@ const Favorites = () => {
         const docSnap = await getDoc(userRef);
         if (docSnap.exists()) {
           const data = docSnap.data();
-          console.log('User data:', data); // Log user data
+          console.log('User data:', data);
 
           const favoritos_compania = data.favoritos_compania ? await fetchDetails(data.favoritos_compania.filter(id => id), 'productoras', 'nombre_prod', 'foto_prod') : [];
           const favoritos_obra = data.favoritos_obra ? await fetchDetails(data.favoritos_obra.filter(id => id), 'obra', 'titulo', 'cartel') : [];
@@ -43,7 +43,7 @@ const Favorites = () => {
             favoritos_obra,
             favoritos_persona,
             favoritos_sala
-          }); // Log favorites
+          });
         } else {
           console.error('No user document found');
         }
@@ -98,23 +98,20 @@ const Favorites = () => {
         favorites[key].length > 0 && (
           <div key={key} style={{ width: '100%' }}>
             <h3>{categoryNames[key]}</h3>
-            <Grid container spacing={2} style={{ width: '100%' }}>
+            <List>
               {favorites[key].map((favorite, index) => (
-                <Grid item xs={12} sm={4} md={4} key={index}>
-                  <div
-                    onClick={() => window.location.href = `/${key === 'favoritos_sala' ? 'teatro' : key.replace('favoritos_', '')}/${favorite.id}`}
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <Personaindex
-                      fotito={favorite.photo}
-                      nombrepersona={favorite.name}
-                      puestopersona={`${favorite.anoinicio || ''}`} // Assuming 'anoinicio' is a field in your data
-                      link={`/${key === 'favoritos_sala' ? 'teatro' : key.replace('favoritos_', '')}/${favorite.id}`}
+                <ListItem key={index} component={NavLink} to={`/${key === 'favoritos_sala' ? 'teatro' : key.replace('favoritos_', '')}/${favorite.id}`} button>
+                  <ListItemAvatar>
+                    <Avatar 
+                      src={favorite.photo} 
+                      variant="square" 
+                      style={{ width: '60px', height: '90px', objectFit: 'contain', marginRight: '1rem' }} 
                     />
-                  </div>
-                </Grid>
+                  </ListItemAvatar>
+                  <ListItemText primary={favorite.name} primaryTypographyProps={{ style: { color: 'black' } }} />
+                </ListItem>
               ))}
-            </Grid>
+            </List>
           </div>
         )
       ))}

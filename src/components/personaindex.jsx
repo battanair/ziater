@@ -15,27 +15,39 @@ const Personaindex = ({nombrepersona, puestopersona, fotito}) => {
           backgroundColor: 'white',
           borderRadius: '16px',
           maxWidth: '173px', // Ancho máximo del componente
+          width: '100%', // Asegura que el componente sea responsivo
         }}
       >
         <Box
           sx={{
-            width: '157px',
-            height: '237px',
+            width: '100%',
+            height: 0,
+            paddingBottom: '150%', // Proporción de 2:3 (altura:ancho)
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             overflow: 'hidden',
             borderRadius: '8px',
             marginBottom: '16px',
+            position: 'relative',
           }}
         >
-          <img
+          <Box
+            component="img"
             alt={`Foto de ${nombrepersona}`} 
             src={fotito}
-            style={{
+            sx={{
               maxWidth: '100%',
               maxHeight: '100%',
               objectFit: 'contain',
+              objectPosition: 'center', // Centra la imagen tanto vertical como horizontalmente
+              display: 'block',
+              margin: 'auto', // Centra la imagen dentro del contenedor
+              position: 'absolute',
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
             }}
           />
         </Box>

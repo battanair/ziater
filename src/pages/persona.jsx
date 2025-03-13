@@ -273,28 +273,28 @@ const Persona = () => {
                                 <h5>{puesto === "Actor" ? "Interpretación" : puesto}</h5>
                             </AccordionSummary>
                             <AccordionDetails>
-                                {obrasRelacionadas
-                                    .filter(obra => obra.puesto === puesto)
-                                    .map((obra, idx) => {
-                                        const anioInicio = obra.anoinicio || "Año desconocido";
-                                        const anioFin = !obra.anofin || obra.anofin === 0 || obra.anofin === "0" ? "Actualmente" : obra.anofin;
-                                        const anioTexto = anioInicio !== "Año desconocido" ? `(${anioInicio} - ${anioFin})` : "";
-                                        return (
-                                            <NavLink to={`/obra/${obra.id}`} style={{ textDecoration: 'none' }} key={idx}>
-                                                <Stack direction="row" spacing={2} alignItems="center">
-                                                    <img
-                                                        src={obra.cartel || "https://via.placeholder.com/70"}
-                                                        alt={obra.obraTitulo}
-                                                        style={{ width: "70px", borderRadius: "8px" }}
-                                                    />
-                                                    <Typography variant="body1" sx={{ lineHeight: 1.2, color: "#333", fontSize: "1rem" }}>
-                                                        <b>{obra.obraTitulo}</b>  <br />{anioTexto} <br /> {obra.personaje}
-                                                    </Typography>
-                                                </Stack>
-                                            </NavLink>
-                                        );
-                                    })}
-                            </AccordionDetails>
+    {obrasRelacionadas
+        .filter(obra => obra.puesto === puesto)
+        .map((obra, idx) => {
+            const anioInicio = obra.anoinicio || "Año desconocido";
+            const anioFin = !obra.anofin || obra.anofin === 0 || obra.anofin === "0" ? "Actualmente" : obra.anofin;
+            const anioTexto = anioInicio !== "Año desconocido" ? `(${anioInicio} - ${anioFin})` : "";
+            return (
+                <NavLink to={`/obra/${obra.id}`} style={{ textDecoration: 'none' }} key={idx}>
+                    <Stack direction="row" spacing={2} alignItems="center" sx={{ marginBottom: 2 }}>
+                        <img
+                            src={obra.cartel || "https://via.placeholder.com/70"}
+                            alt={obra.obraTitulo}
+                            style={{ width: "70px", borderRadius: "8px" }}
+                        />
+                        <Typography variant="body1" sx={{ lineHeight: 1.2, color: "#333", fontSize: "1rem" }}>
+                            <b>{obra.obraTitulo}</b>  <br />{anioTexto} <br /> {obra.personaje}
+                        </Typography>
+                    </Stack>
+                </NavLink>
+            );
+        })}
+</AccordionDetails>
                         </Accordion>
                     ))
                 ) : (

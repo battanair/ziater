@@ -18,6 +18,7 @@ import handleLogout from './logout'; // Asegúrate de que esto está bien export
 import { Button } from "@mui/material";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import logomini from '../logomini.PNG';
+import ZIATER from '../ZIATER.png';
 
 export default function Navbar() {
   const [user, setUser] = useState(null);
@@ -49,8 +50,8 @@ export default function Navbar() {
     }}>
       <Toolbar variant="dense">
         <Grid container direction="row" sx={{ justifyContent: "space-around", alignItems: "center", width: '100%' }}>
-          <Grid item sx={{ mb: { xs: 2, sm: 0 } }}>
-            <NavLink to="/"><img src={logomini} alt="Logo" style={{ height: "135px", marginLeft: "10px" }} /></NavLink>
+          <Grid item sx={{ mb: { xs: 0, sm: 0 } }}>
+            <NavLink to="/"><img src={ZIATER} alt="Logo" style={{ height: "85px", marginLeft: "10px" }} /></NavLink>
           </Grid>
           <Grid item sx={{ mb: { xs: 2, sm: 0 } }}>
             <Buscador />

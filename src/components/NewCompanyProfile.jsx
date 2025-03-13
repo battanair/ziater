@@ -146,12 +146,17 @@ function NewCompanyProfile() {
   return (
     <Container maxWidth="sm" sx={{ py: 4 }}>
       <Stepper activeStep={activeStep} alternativeLabel sx={{ mb: 4 }}>
-        <Step>
-          <StepLabel StepIconProps={{ sx: { color: 'black !important' } }}>Datos de la Compañía</StepLabel>
-        </Step>
-        <Step>
-          <StepLabel StepIconProps={{ sx: { color: 'black !important' } }}>Finalizar</StepLabel>
-        </Step>
+        {['Datos de la Compañía', 'Finalizar'].map((label, index) => (
+          <Step key={label}>
+            <StepLabel StepIconProps={{
+              sx: {
+                color: index === activeStep ? 'black !important' : index < activeStep ? 'black !important' : 'gray !important'
+              }
+            }}>
+              {label}
+            </StepLabel>
+          </Step>
+        ))}
       </Stepper>
 
       {activeStep === 0 && (

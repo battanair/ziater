@@ -21,12 +21,12 @@ const theme = createTheme({
     MuiStepIcon: {
       styleOverrides: {
         root: {
-          color: 'black',
+          color: 'grey', // Color for the next steps
           '&.Mui-active': {
-            color: 'black',
+            color: 'black', // Color for the active step
           },
           '&.Mui-completed': {
-            color: 'black',
+            color: 'black', // Color for the completed steps
           },
         },
       },
