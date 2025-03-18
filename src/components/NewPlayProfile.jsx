@@ -368,6 +368,26 @@ function NewPlayProfile() {
               fullWidth
               error={errors.titulo}
               helperText={errors.titulo && "Campo requerido"}
+              InputLabelProps={{ required: true, sx: { color: 'black' } }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'black',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'black',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'black',
+                  '&.Mui-focused': {
+                    color: 'black',
+                  },
+                },
+              }}
             />
             <TextField
               label="Sinopsis"
@@ -378,12 +398,51 @@ function NewPlayProfile() {
               fullWidth
               error={errors.sinopsis}
               helperText={errors.sinopsis && "Campo requerido"}
+              InputLabelProps={{ required: true, sx: { color: 'black' } }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'black',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'black',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'black',
+                  '&.Mui-focused': {
+                    color: 'black',
+                  },
+                },
+              }}
             />
             <TextField
               label="Instagram (nombre de usuario)"
               value={instagram}
               onChange={(e) => setInstagram(e.target.value)}
               fullWidth
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'black',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'black',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'black',
+                  '&.Mui-focused': {
+                    color: 'black',
+                  },
+                },
+              }}
             />
             <TextField
               label="Año de Inicio"
@@ -393,6 +452,26 @@ function NewPlayProfile() {
               fullWidth
               error={errors.anoinicio}
               helperText={errors.anoinicio && "Campo requerido"}
+              InputLabelProps={{ required: true, sx: { color: 'black' } }}
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  '& fieldset': {
+                    borderColor: 'black',
+                  },
+                  '&:hover fieldset': {
+                    borderColor: 'black',
+                  },
+                  '&.Mui-focused fieldset': {
+                    borderColor: 'black',
+                  },
+                },
+                '& .MuiInputLabel-root': {
+                  color: 'black',
+                  '&.Mui-focused': {
+                    color: 'black',
+                  },
+                },
+              }}
             />
             <Box display="flex" alignItems="center" gap={2}>
               <TextField
@@ -401,8 +480,42 @@ function NewPlayProfile() {
                 value={anofin}
                 onChange={(e) => setAnofin(e.target.value)}
                 fullWidth
+                disabled={anofin === 0}
+                sx={{
+                  '& .MuiOutlinedInput-root': {
+                    '& fieldset': {
+                      borderColor: 'black',
+                    },
+                    '&:hover fieldset': {
+                      borderColor: 'black',
+                    },
+                    '&.Mui-focused fieldset': {
+                      borderColor: 'black',
+                    },
+                  },
+                  '& .MuiInputLabel-root': {
+                    color: 'black',
+                    '&.Mui-focused': {
+                      color: 'black',
+                    },
+                  },
+                }}
               />
-              <Button variant="outlined" onClick={() => setAnofin(0)}>Actualmente</Button>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={anofin === 0}
+                    onChange={(e) => setAnofin(e.target.checked ? 0 : '')}
+                    sx={{
+                      color: 'black',
+                      '&.Mui-checked': {
+                        color: 'black',
+                      },
+                    }}
+                  />
+                }
+                label="Actualmente"
+              />
             </Box>
             <Box display="flex" flexDirection="column" gap={1}>
               <Typography variant="body1">CARTEL:</Typography>
@@ -458,7 +571,9 @@ function NewPlayProfile() {
         )}
         {activeStep === 1 && (
           <Box>
-            <Button variant="contained" onClick={handleAddTrabajo} sx={{ mt: 2, mb: 2 }}>Añadir Artista</Button>
+            <Box display="flex" justifyContent="center" sx={{ mb: 2 }}>
+              <Button variant="contained" onClick={handleAddTrabajo}>Añadir Artista</Button>
+            </Box>
             {trabajos.length > 0 && trabajos.map((trabajo, index) => (
               <Box key={index} sx={{ mb: 4, p: 3, border: '1px solid #ddd', borderRadius: 2, boxShadow: 2 }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center">
@@ -468,8 +583,10 @@ function NewPlayProfile() {
                 <Button variant="outlined" onClick={() => { setCurrentTrabajoIndex(index); setOpenDialog(true); }}>Editar</Button>
               </Box>
             ))}
-            <Button onClick={() => setActiveStep(0)}>Atrás</Button>
-            <Button onClick={handleNextStep}>Siguiente</Button>
+            <Box display="flex" justifyContent="space-between" sx={{ mt: 2 }}>
+              <Button onClick={() => setActiveStep(0)}>Atrás</Button>
+              <Button onClick={handleNextStep}>Siguiente</Button>
+            </Box>
           </Box>
         )}
         {activeStep === 2 && (

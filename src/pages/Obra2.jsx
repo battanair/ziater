@@ -326,174 +326,175 @@ const Obra2 = () => {
     : "N/A";
 
   return (
-    <><Grid container spacing={4} sx={{ paddingTop: 4, paddingLeft: 4 }}>
+    <>
+      <Grid container spacing={4} sx={{ paddingTop: 4, paddingLeft: 4 }}>
 
-      {/* Columna 1: Imagen */}
+        {/* Columna 1: Imagen */}
 
-      <Grid item xs={12} md={4}>
-        <Box sx={{ textAlign: 'center' }}>
-          <img
-            src={obraData.cartel || 'https://res.cloudinary.com/dk0vvcpyn/image/upload/v1740952724/imagenesdefecto/u92idnadh254vhm9wi84.jpg'}
-            alt={obraData.titulo}
-            style={{ width: '100%', borderRadius: '8px' }} />
-        </Box>
-      </Grid>
+        <Grid item xs={12} md={4}>
+          <Box sx={{ textAlign: 'center' }}>
+            <img
+              src={obraData.cartel || 'https://res.cloudinary.com/dk0vvcpyn/image/upload/v1740952724/imagenesdefecto/u92idnadh254vhm9wi84.jpg'}
+              alt={obraData.titulo}
+              style={{ width: '100%', borderRadius: '8px' }} />
+          </Box>
+        </Grid>
 
-      {/* Columna 2: Texto */}
-      <Grid item xs={12} md={8}>
+        {/* Columna 2: Texto */}
+        <Grid item xs={12} md={8}>
 
 
-       <Stack 
-  direction="row" 
-  spacing={2} 
-  sx={{ marginBottom: 2, justifyContent: 'flex-end' }} // Alinea los iconos a la derecha
->
-  <Box
-    sx={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: 30,
-      height: 30,
-      borderRadius: '50%',
-      backgroundColor: isViewed ? 'black' : 'white',
-      color: isViewed ? 'white' : 'black',
-      cursor: 'pointer',
-      border: '1px solid black', // Agrega un borde
+        <Stack 
+    direction="row" 
+    spacing={2} 
+    sx={{ marginBottom: 2, justifyContent: 'flex-end' }} // Alinea los iconos a la derecha
+  >
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 30,
+        height: 30,
+        borderRadius: '50%',
+        backgroundColor: isViewed ? 'black' : 'white',
+        color: isViewed ? 'white' : 'black',
+        cursor: 'pointer',
+        border: '1px solid black', // Agrega un borde
+        '&:hover': {
+          backgroundColor: 'black',
+          color: 'white',
+        },
+      }}
+      onClick={handleViewClick}
+    >
+      <VisibilityIcon />
+    </Box>
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: 30,
+        height: 30,
+        borderRadius: '50%',
+        backgroundColor: isFavorite ? 'black' : 'white',
+        color: isFavorite ? 'white' : 'black',
+        cursor: 'pointer',
+        border: '1px solid black', // Agrega un borde
+        '&:hover': {
+          backgroundColor: 'black',
+          color: 'white',
+        },
+      }}
+      onClick={handleFavoriteClick}
+    >
+      <FavoriteIcon />
+    </Box>
+  </Stack>
+
+
+
+          {/* Componente Categoriaobra agregado encima del título con separación */}
+          <div className="linea">
+            <Stack
+              direction="row"
+              spacing={1}
+              sx={{
+                justifyContent: "flex-end",
+                alignItems: "center",
+                marginBottom: 2
+              }}
+            >
+              {obraData.categoria?.map((item, index) => (
+                <Item key={index}>{item}</Item>
+              ))}
+
+              {formattedMediaNotas !== null && (
+                <Item
+                  sx={{
+                    width: 40, // Ajusta el tamaño del círculo
+                    height: 40,
+                    borderRadius: "50%", // Hace el objeto redondo
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "lightgrey", // Fondo opcional
+                    color: "black", // Color del texto opcional
+                    fontWeight: "bold", // Opcional para destacar la nota
+                  }}
+                >
+                  {formattedMediaNotas}
+                </Item>
+              )}
+            </Stack>
+          </div>
+
+          
+
+          {/* Título con el año en la misma línea */}
+          <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, marginBottom: 1 }}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
+              {obraData.titulo}
+            </Typography>
+            <Typography variant="h6" color="textSecondary" sx={{ fontSize: '1rem' }}>
+              ({obraData.anoinicio} - {obraData.anofin === 0 ? "actualmente" : obraData.anofin})
+            </Typography>
+          </Box>
+
+          <Typography variant="body1" sx={{ fontWeight: "bold", marginBottom: "8px" }}>
+            {productoras.length > 0
+              ? productoras.map((prod, index) => (
+                <NavLink
+                  key={prod.id || index}
+                  to={`/compania/${prod.id}`}
+                  style={{ textDecoration: 'none', marginRight: '5px', color: 'black' }}
+                >
+                  {prod.nombre_prod}
+                </NavLink>
+              ))
+              : ""}
+          </Typography>
+
+          <Typography variant="body2" paragraph>
+            {obraData.sinopsis}
+          </Typography>
+          
+          {obraData.instagram && (
+                          <Box sx={{ textAlign: "left", marginTop: 2 }}>
+                              <a href={`https://www.instagram.com/${obraData.instagram}`} target="_blank" rel="noopener noreferrer">
+                                  <InstagramIcon sx={{ fontSize: 30, color: "black", marginBottom: 2 }} />
+                              </a>
+                          </Box>
+                      )}
+
+          {/*<Button 
+    variant="contained" 
+    sx={{ 
+      background: 'black', 
+      color: 'white', 
       '&:hover': {
         backgroundColor: 'black',
         color: 'white',
       },
-    }}
-    onClick={handleViewClick}
-  >
-    <VisibilityIcon />
-  </Box>
-  <Box
-    sx={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: 30,
-      height: 30,
-      borderRadius: '50%',
-      backgroundColor: isFavorite ? 'black' : 'white',
-      color: isFavorite ? 'white' : 'black',
-      cursor: 'pointer',
-      border: '1px solid black', // Agrega un borde
-      '&:hover': {
+      '&:active': {
         backgroundColor: 'black',
         color: 'white',
       },
-    }}
-    onClick={handleFavoriteClick}
+      marginBottom: '40px' 
+    }} 
+    onClick={handleOpen}
   >
-    <FavoriteIcon />
-  </Box>
-</Stack>
-
-
-
-        {/* Componente Categoriaobra agregado encima del título con separación */}
-        <div className="linea">
-          <Stack
-            direction="row"
-            spacing={1}
-            sx={{
-              justifyContent: "flex-end",
-              alignItems: "center",
-              marginBottom: 2
-            }}
-          >
-            {obraData.categoria?.map((item, index) => (
-              <Item key={index}>{item}</Item>
-            ))}
-
-            {formattedMediaNotas !== null && (
-              <Item
-                sx={{
-                  width: 40, // Ajusta el tamaño del círculo
-                  height: 40,
-                  borderRadius: "50%", // Hace el objeto redondo
-                  display: "flex",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: "lightgrey", // Fondo opcional
-                  color: "black", // Color del texto opcional
-                  fontWeight: "bold", // Opcional para destacar la nota
-                }}
-              >
-                {formattedMediaNotas}
-              </Item>
-            )}
-          </Stack>
-        </div>
-
-        
-
-        {/* Título con el año en la misma línea */}
-        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, marginBottom: 1 }}>
-          <Typography variant="h5" sx={{ fontWeight: 'bold' }}>
-            {obraData.titulo}
-          </Typography>
-          <Typography variant="h6" color="textSecondary" sx={{ fontSize: '1rem' }}>
-            ({obraData.anoinicio} - {obraData.anofin === 0 ? "actualmente" : obraData.anofin})
-          </Typography>
-        </Box>
-
-        <Typography variant="body1" sx={{ fontWeight: "bold", marginBottom: "8px" }}>
-          {productoras.length > 0
-            ? productoras.map((prod, index) => (
-              <NavLink
-                key={prod.id || index}
-                to={`/compania/${prod.id}`}
-                style={{ textDecoration: 'none', marginRight: '5px', color: 'black' }}
-              >
-                {prod.nombre_prod}
-              </NavLink>
-            ))
-            : ""}
-        </Typography>
-
-        <Typography variant="body2" paragraph>
-          {obraData.sinopsis}
-        </Typography>
-        
-        {obraData.instagram && (
-                        <Box sx={{ textAlign: "left", marginTop: 2 }}>
-                            <a href={`https://www.instagram.com/${obraData.instagram}`} target="_blank" rel="noopener noreferrer">
-                                <InstagramIcon sx={{ fontSize: 30, color: "black", marginBottom: 2 }} />
-                            </a>
-                        </Box>
-                    )}
-
-        {/*<Button 
-  variant="contained" 
-  sx={{ 
-    background: 'black', 
-    color: 'white', 
-    '&:hover': {
-      backgroundColor: 'black',
-      color: 'white',
-    },
-    '&:active': {
-      backgroundColor: 'black',
-      color: 'white',
-    },
-    marginBottom: '40px' 
-  }} 
-  onClick={handleOpen}
->
-  <h6><b>COMPRAR ENTRADAS</b></h6>
-</Button>*/}
+    <h6><b>COMPRAR ENTRADAS</b></h6>
+  </Button>*/}
+        </Grid>
       </Grid>
-    </Grid>
 
-    <><Box container sx={{ marginTop: 4, paddingLeft: 3 }}>
-  <Grid container spacing={2} direction="row" sx={{
-  justifyContent: director && dramaturgo && director.id === dramaturgo.id ? "flex-start" : "space-around",
-  alignItems: "center",
-}}>
+      <><Box container sx={{ marginTop: 4, paddingLeft: 3 }}>
+    <Grid container spacing={2} direction="row" sx={{
+    justifyContent: director && dramaturgo && director.id === dramaturgo.id ? "flex-start" : "space-around",
+    alignItems: "center",
+  }}>
     {/* Columna 1: Dirección y Dramaturgia */}
     <Grid item xs={12} md={6}>
   {/* Si la misma persona es director y dramaturgo */}
@@ -634,7 +635,7 @@ const Obra2 = () => {
     </Grid>
   </Grid>
 )}
-      <Imagenesobra imagenes={obraData.fotos_obra || []} />
+      <Imagenesobra imagenes={obraData.fotosObra || []} />
       <Stack
         direction="column"
         spacing={4}

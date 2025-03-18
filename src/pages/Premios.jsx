@@ -6,6 +6,10 @@ import { db, auth } from '../firebaseConfig';
 import InstagramIcon from '@mui/icons-material/Instagram';
 import { onAuthStateChanged } from 'firebase/auth';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import { Helmet } from "react-helmet-async";
+import ReactGA from 'react-ga';
+
+
 
 
 const Premios = () => {
@@ -129,6 +133,20 @@ const Premios = () => {
   }
 
   return (
+    <>
+    <Helmet>
+    <title>{premio.nombre_premio} - Ziater</title>
+    <meta name="description" content={premio.bio_premio} />
+    <meta property="og:title" content={premio.nombre_premio} />
+    <meta property="og:description" content={premio.bio_premio} />
+    <meta property="og:image" content={premio.foto_premio || 'https://via.placeholder.com/300'} />
+    <meta property="og:url" content={`https://www.ziater.com/premios/${id}`} />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={premio.nombre_premio} />
+    <meta name="twitter:description" content={premio.bio_premio} />
+    <meta name="twitter:image" content={premio.foto_premio || 'https://via.placeholder.com/300'} />
+  </Helmet>
     <Grid container spacing={4} sx={{ padding: 4 }}>
       <Grid item xs={12} md={4}>
         <Box sx={{ textAlign: 'center' }}>
@@ -203,6 +221,7 @@ const Premios = () => {
         ))}
       </Grid>
     </Grid>
+    </>
   );
 };
 

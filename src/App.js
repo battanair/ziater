@@ -14,6 +14,7 @@ import { CookieProvider } from "./context/CookieContext";
 import Footer from './components/Footer';
 import ReactGA from 'react-ga';
 
+
 const App = () => {
   const theme = createTheme({
     palette: {

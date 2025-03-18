@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { doc, getDoc, collection, getDocs, query, where, updateDoc, arrayRemove, arrayUnion } from "firebase/firestore";
-import { db,  auth } from "../firebaseConfig";
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { doc, getDoc, collection, query, where, getDocs, updateDoc, arrayUnion, arrayRemove } from 'firebase/firestore';
+import { onAuthStateChanged } from 'firebase/auth';
+import { db, auth } from '../firebaseConfig'; 
 import { Grid, Box, Typography, Accordion, AccordionSummary, AccordionDetails, Stack } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import Imagenesobra from "../components/imagenesobra";
@@ -9,10 +10,7 @@ import Personaindex from "../components/personaindex";
 import { NavLink } from "react-router-dom";
 import { Premiosobra } from "../components/premiosobra";
 import InstagramIcon from '@mui/icons-material/Instagram';
-import { onAuthStateChanged } from 'firebase/auth';
 import FavoriteIcon from '@mui/icons-material/Favorite';
-
-
 
 const Persona = () => {
     const { id } = useParams();
@@ -22,7 +20,6 @@ const Persona = () => {
     const [premiosPersona, setPremiosPersona] = useState([]);
     const [isFavorite, setIsFavorite] = useState(false);
     const [user, setUser] = useState(null);
-
 
     useEffect(() => {
         const fetchPersona = async () => {
@@ -39,8 +36,6 @@ const Persona = () => {
                 console.error("Error al obtener datos de la persona:", error);
             }
         };
-
-        
 
         const fetchObrasRelacionadas = async () => {
             if (!id) return;
@@ -91,7 +86,6 @@ const Persona = () => {
             }
         };
 
-
         const fetchUser = () => {
             onAuthStateChanged(auth, async (user) => {
               if (user) {
@@ -107,9 +101,6 @@ const Persona = () => {
               }
             });
           };
-
-
-          
 
         const fetchPremiosPersona = async () => {
             if (!id) return;
@@ -133,7 +124,7 @@ const Persona = () => {
 
                         return {
                             id: docPremio.id, // ID del documento en "premios_personas"
-                            id_premio: premioData.id_premio || "sin-id", // Asegura que id_premio esté presente                            nombre: nombrePremio,
+                            id_premio: premioData.id_premio || "sin-id", // Asegura que id_premio esté presente
                             nombre: nombrePremio,
                             año: premioData.anio_premper || "Año desconocido",
                             categoria: premioData.galardon_pers || "Categoría desconocida",
@@ -161,22 +152,21 @@ const Persona = () => {
         try {
             if (isFavorite) {
                 await updateDoc(userRef, {
-                    favoritos_persona: arrayRemove(id),
+                    favoritos_persona: arrayRemove(id)
                 });
                 setIsFavorite(false);
             } else {
                 await updateDoc(userRef, {
-                    favoritos_persona: arrayUnion(id),
+                    favoritos_persona: arrayUnion(id)
                 });
                 setIsFavorite(true);
             }
         } catch (error) {
-            console.error("Error al actualizar favoritos:", error);
+            console.error("Error al actualizar los favoritos:", error);
         }
     };
-    
 
-    if (!persona) return <h1>Cargando datos...</h1>;
+    if (!persona) return <div>Cargando...</div>;
 
     return (
         <>
@@ -192,34 +182,33 @@ const Persona = () => {
                 </Grid>
 
                 <Grid item xs={12} md={8}>
-                <Stack 
-  direction="row" 
-  spacing={2} 
-  sx={{ marginBottom: 2, justifyContent: 'flex-end' }} // Alinea los iconos a la derecha
->
-  
-  <Box
-    sx={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      width: 30,
-      height: 30,
-      borderRadius: '50%',
-      backgroundColor: isFavorite ? 'black' : 'white',
-      color: isFavorite ? 'white' : 'black',
-      cursor: 'pointer',
-      border: '1px solid black', // Agrega un borde
-      '&:hover': {
-        backgroundColor: 'black',
-        color: 'white',
-      },
-    }}
-    onClick={handleFavoriteClick}
-  >
-    <FavoriteIcon />
-  </Box>
-</Stack>
+                    <Stack 
+                        direction="row" 
+                        spacing={2} 
+                        sx={{ marginBottom: 2, justifyContent: 'flex-end' }} // Alinea los iconos a la derecha
+                    >
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                width: 30,
+                                height: 30,
+                                borderRadius: '50%',
+                                backgroundColor: isFavorite ? 'black' : 'white',
+                                color: isFavorite ? 'white' : 'black',
+                                cursor: 'pointer',
+                                border: '1px solid black', // Agrega un borde
+                                '&:hover': {
+                                    backgroundColor: 'black',
+                                    color: 'white',
+                                },
+                            }}
+                            onClick={handleFavoriteClick}
+                        >
+                            <FavoriteIcon />
+                        </Box>
+                    </Stack>
                     <Typography variant="h5" sx={{ fontWeight: "bold" }}>
                         {persona.Nombre} {persona.Apellidos}
                     </Typography>
@@ -240,30 +229,30 @@ const Persona = () => {
             </Grid>
 
             {obrasRelacionadas.length > 0 && (
-    <>
-        <Typography variant="h5" sx={{ fontWeight: "bold", textAlign: "center", marginY: 3 }}>
-            OBRAS DESTACADAS
-        </Typography>
-        <Grid container spacing={4} sx={{ maxWidth: "100%", margin: "0 auto" }}>
-            {Array.from(new Set(obrasRelacionadas.map(obra => obra.id))) // Elimina duplicados
-                .slice(0, 4)
-                .map((obraId, index) => {
-                    const obra = obrasRelacionadas.find(o => o.id === obraId);
-                    return (
-                        <Grid item xs={6} sm={3} md={3} key={index}>
-                            <NavLink to={`/obra/${obra.id}`} style={{ textDecoration: 'none' }}>
-                                <Personaindex
-                                    nombrepersona={obra.obraTitulo}
-                                    puestopersona={obra.personaje}
-                                    fotito={obra.cartel}
-                                />
-                            </NavLink>
-                        </Grid>
-                    );
-                })}
-        </Grid>
-    </>
-)}
+                <>
+                    <Typography variant="h5" sx={{ fontWeight: "bold", textAlign: "center", marginY: 3 }}>
+                        OBRAS DESTACADAS
+                    </Typography>
+                    <Grid container spacing={4} sx={{ maxWidth: "100%", margin: "0 auto" }}>
+                        {Array.from(new Set(obrasRelacionadas.map(obra => obra.id))) // Elimina duplicados
+                            .slice(0, 4)
+                            .map((obraId, index) => {
+                                const obra = obrasRelacionadas.find(o => o.id === obraId);
+                                return (
+                                    <Grid item xs={6} sm={3} md={3} key={index}>
+                                        <NavLink to={`/obra/${obra.id}`} style={{ textDecoration: 'none' }}>
+                                            <Personaindex
+                                                nombrepersona={obra.obraTitulo}
+                                                puestopersona={obra.personaje}
+                                                fotito={obra.cartel}
+                                            />
+                                        </NavLink>
+                                    </Grid>
+                                );
+                            })}
+                    </Grid>
+                </>
+            )}
 
             <Box sx={{ marginTop: 5, paddingBottom: 5 }}>
                 {puestos.length > 0 ? (
@@ -273,28 +262,28 @@ const Persona = () => {
                                 <h5>{puesto === "Actor" ? "Interpretación" : puesto}</h5>
                             </AccordionSummary>
                             <AccordionDetails>
-    {obrasRelacionadas
-        .filter(obra => obra.puesto === puesto)
-        .map((obra, idx) => {
-            const anioInicio = obra.anoinicio || "Año desconocido";
-            const anioFin = !obra.anofin || obra.anofin === 0 || obra.anofin === "0" ? "Actualmente" : obra.anofin;
-            const anioTexto = anioInicio !== "Año desconocido" ? `(${anioInicio} - ${anioFin})` : "";
-            return (
-                <NavLink to={`/obra/${obra.id}`} style={{ textDecoration: 'none' }} key={idx}>
-                    <Stack direction="row" spacing={2} alignItems="center" sx={{ marginBottom: 2 }}>
-                        <img
-                            src={obra.cartel || "https://via.placeholder.com/70"}
-                            alt={obra.obraTitulo}
-                            style={{ width: "70px", borderRadius: "8px" }}
-                        />
-                        <Typography variant="body1" sx={{ lineHeight: 1.2, color: "#333", fontSize: "1rem" }}>
-                            <b>{obra.obraTitulo}</b>  <br />{anioTexto} <br /> {obra.personaje}
-                        </Typography>
-                    </Stack>
-                </NavLink>
-            );
-        })}
-</AccordionDetails>
+                                {obrasRelacionadas
+                                    .filter(obra => obra.puesto === puesto)
+                                    .map((obra, idx) => {
+                                        const anioInicio = obra.anoinicio || "Año desconocido";
+                                        const anioFin = !obra.anofin || obra.anofin === 0 || obra.anofin === "0" ? "Actualmente" : obra.anofin;
+                                        const anioTexto = anioInicio !== "Año desconocido" ? `(${anioInicio} - ${anioFin})` : "";
+                                        return (
+                                            <NavLink to={`/obra/${obra.id}`} style={{ textDecoration: 'none' }} key={idx}>
+                                                <Stack direction="row" spacing={2} alignItems="center" sx={{ marginBottom: 2 }}>
+                                                    <img
+                                                        src={obra.cartel || "https://via.placeholder.com/70"}
+                                                        alt={obra.obraTitulo}
+                                                        style={{ width: "70px", borderRadius: "8px" }}
+                                                    />
+                                                    <Typography variant="body1" sx={{ lineHeight: 1.2, color: "#333", fontSize: "1rem" }}>
+                                                        <b>{obra.obraTitulo}</b>  <br />{anioTexto} <br /> {obra.personaje}
+                                                    </Typography>
+                                                </Stack>
+                                            </NavLink>
+                                        );
+                                    })}
+                            </AccordionDetails>
                         </Accordion>
                     ))
                 ) : (
@@ -302,32 +291,31 @@ const Persona = () => {
                 )}
             </Box>
             {premiosPersona.length > 0 ? (
-    <>
-        <Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center", marginTop: 5, marginBottom: 3 }}>
-            PREMIOS
-        </Typography>
-        <Stack
-            direction={{ xs: "column", sm: "row" }}
-            spacing={2}
-            sx={{
-                justifyContent: { xs: "center", sm: "space-around" },
-                alignItems: "center",
-                width: "100%",
-                paddingX: 2,
-                paddingBottom: 5,
-            }}
-        >
-            {premiosPersona.map((premio, index) => (
-                <NavLink key={index} to={`/premios/${premio.id_premio}`} style={{ textDecoration: 'none' }}>
-                    <Premiosobra premio={premio.nombre} year={premio.año} condecoracion={premio.categoria} />
-                </NavLink>
-            ))}
-        </Stack>
-    </>
-) : (
-    <Typography></Typography>
-)}
-
+                <>
+                    <Typography variant="h5" component="h5" sx={{ fontWeight: "bold", textAlign: "center", marginTop: 5, marginBottom: 3 }}>
+                        PREMIOS
+                    </Typography>
+                    <Stack
+                        direction={{ xs: "column", sm: "row" }}
+                        spacing={2}
+                        sx={{
+                            justifyContent: { xs: "center", sm: "space-around" },
+                            alignItems: "center",
+                            width: "100%",
+                            paddingX: 2,
+                            paddingBottom: 5,
+                        }}
+                    >
+                        {premiosPersona.map((premio, index) => (
+                            <NavLink key={index} to={`/premios/${premio.id_premio}`} style={{ textDecoration: 'none' }}>
+                                <Premiosobra premio={premio.nombre} year={premio.año} condecoracion={premio.categoria} />
+                            </NavLink>
+                        ))}
+                    </Stack>
+                </>
+            ) : (
+                <Typography></Typography>
+            )}
         </>
     );
 };

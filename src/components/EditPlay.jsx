@@ -6,6 +6,7 @@ import { auth, db } from '../firebaseConfig';
 import { Container, TextField, Button, Box, CircularProgress, Typography, Snackbar, IconButton, Checkbox, FormControl, FormControlLabel, FormGroup, FormLabel } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 function EditPlay() {
   const { id } = useParams();
@@ -16,12 +17,14 @@ function EditPlay() {
   const [anoinicio, setAnoinicio] = useState('');
   const [anofin, setAnofin] = useState('');
   const [cartel, setCartel] = useState('');
-  const [fotosObra, setFotosObra] = useState([]);
+  const [fotosObra, setFotosObra] = useState(['', '', '', '']);
   const [categoria, setCategoria] = useState([]);
   const [trailer, setTrailer] = useState('');
   const [loading, setLoading] = useState(true);
   const [errors, setErrors] = useState({});
   const [openSnackbar, setOpenSnackbar] = useState(false);
+  const [imageError, setImageError] = useState('');
+  const [imageLoading, setImageLoading] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -43,7 +46,7 @@ function EditPlay() {
       setAnoinicio(obraData.anoinicio);
       setAnofin(obraData.anofin);
       setCartel(obraData.cartel);
-      setFotosObra(obraData.fotosObra || []);
+      setFotosObra(obraData.fotosObra || ['', '', '', '']);
       setCategoria(obraData.categoria || []);
       setTrailer(obraData.trailer);
     }
@@ -68,7 +71,7 @@ function EditPlay() {
         anoinicio,
         anofin,
         cartel,
-        fotosObra,
+        fotosObra: fotosObra.filter(foto => foto !== ''),
         categoria,
         trailer
       }, { merge: true });
@@ -76,6 +79,100 @@ function EditPlay() {
     } catch (error) {
       console.error("Error al guardar la obra:", error);
     }
+  };
+
+  const handleImageUpload = async (event, index) => {
+    const file = event.target.files[0];
+    if (!file) {
+      setImageError("Por favor, selecciona una imagen.");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      setImageError("El archivo seleccionado no es una imagen.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) { // 5MB
+      setImageError("La imagen es demasiado grande. El tamaño máximo es de 5MB.");
+      return;
+    }
+    setImageError("");
+    setImageLoading(true);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'obrafotos'); // Reemplaza 'obrafotos' con tu upload preset de Cloudinary
+
+    try {
+      const response = await fetch("https://api.cloudinary.com/v1_1/dk0vvcpyn/image/upload", {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (response.ok) {
+        const newFotosObra = [...fotosObra];
+        newFotosObra[index] = data.secure_url;
+        setFotosObra(newFotosObra);
+      } else {
+        console.error("Error al subir la imagen:", data);
+        setImageError("Error al subir la imagen. Por favor, inténtalo de nuevo.");
+      }
+    } catch (error) {
+      console.error("Error al subir la imagen:", error);
+      setImageError("Error al subir la imagen. Por favor, inténtalo de nuevo.");
+    } finally {
+      setImageLoading(false);
+    }
+  };
+
+  const handleCartelUpload = async (event) => {
+    const file = event.target.files[0];
+    if (!file) {
+      setImageError("Por favor, selecciona una imagen.");
+      return;
+    }
+    if (!file.type.startsWith("image/")) {
+      setImageError("El archivo seleccionado no es una imagen.");
+      return;
+    }
+    if (file.size > 5 * 1024 * 1024) { // 5MB
+      setImageError("La imagen es demasiado grande. El tamaño máximo es de 5MB.");
+      return;
+    }
+    setImageError("");
+    setImageLoading(true);
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', 'obrafotos'); // Reemplaza 'obrafotos' con tu upload preset de Cloudinary
+
+    try {
+      const response = await fetch("https://api.cloudinary.com/v1_1/dk0vvcpyn/image/upload", {
+        method: 'POST',
+        body: formData,
+      });
+      const data = await response.json();
+      if (response.ok) {
+        setCartel(data.secure_url);
+      } else {
+        console.error("Error al subir la imagen:", data);
+        setImageError("Error al subir la imagen. Por favor, inténtalo de nuevo.");
+      }
+    } catch (error) {
+      console.error("Error al subir la imagen:", error);
+      setImageError("Error al subir la imagen. Por favor, inténtalo de nuevo.");
+    } finally {
+      setImageLoading(false);
+    }
+  };
+
+  const handleImageDelete = (index) => {
+    const newFotosObra = [...fotosObra];
+    newFotosObra[index] = '';
+    setFotosObra(newFotosObra);
+  };
+
+  const handleCartelDelete = () => {
+    setCartel('');
   };
 
   if (loading) {
@@ -112,6 +209,56 @@ function EditPlay() {
           </FormGroup>
         </FormControl>
         <TextField label="Trailer" value={trailer} onChange={(e) => setTrailer(e.target.value)} fullWidth />
+        <Box display="flex" flexDirection="column" gap={1}>
+          <Typography variant="body1">CARTEL:</Typography>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={handleCartelUpload}
+            style={{ marginTop: '16px' }}
+          />
+          {imageLoading && <CircularProgress size={24} />}
+          {cartel && (
+            <Box mt={2} position="relative">
+              <img src={cartel} alt="Cartel" style={{ width: '100%', maxHeight: '150px', objectFit: 'cover' }} />
+              <IconButton
+                onClick={handleCartelDelete}
+                sx={{ position: 'absolute', top: 8, right: 8, color: 'white', bgcolor: 'rgba(0, 0, 0, 0.5)' }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Box>
+          )}
+        </Box>
+        <Box display="flex" flexDirection="column" gap={1}>
+          <Typography variant="body1">FOTOS:</Typography>
+          {fotosObra.map((foto, index) => (
+            <Box key={index} display="flex" flexDirection="column" gap={1}>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={(event) => handleImageUpload(event, index)}
+                style={{ marginTop: '16px' }}
+                disabled={fotosObra[index] !== ''}
+              />
+              {imageLoading && <CircularProgress size={24} />}
+              {foto && (
+                <Box mt={2} position="relative">
+                  <img src={foto} alt={`Uploaded ${index}`} style={{ width: '100%', maxHeight: '150px', objectFit: 'cover' }} />
+                  <IconButton
+                    onClick={() => handleImageDelete(index)}
+                    sx={{ position: 'absolute', top: 8, right: 8, color: 'white', bgcolor: 'rgba(0, 0, 0, 0.5)' }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              )}
+            </Box>
+          ))}
+        </Box>
+        {imageError && (
+          <Typography color="error" variant="body2">{imageError}</Typography>
+        )}
         <Button onClick={handleSaveObra} variant="contained" sx={{ mt: 2, bgcolor: 'black', color: 'white' }}>Guardar</Button>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
           <Button 
