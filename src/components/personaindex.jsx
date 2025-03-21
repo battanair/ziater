@@ -3,7 +3,7 @@ import { Box, Typography, Paper } from '@mui/material';
 
 const Personaindex = ({nombrepersona, puestopersona, fotito}) => {
   return (
-    <Grid item>
+    <Grid item sx={{ width: '173px', height: 'auto' }}>
       <Paper
         elevation={3}
         sx={{
@@ -14,7 +14,6 @@ const Personaindex = ({nombrepersona, puestopersona, fotito}) => {
           padding: 1,
           backgroundColor: 'white',
           borderRadius: '16px',
-          maxWidth: '173px', // Ancho máximo del componente
           width: '100%', // Asegura que el componente sea responsivo
         }}
       >

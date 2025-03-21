@@ -123,6 +123,16 @@ function UserProfile() {
     }
   };
 
+  const cleanInstagramUsername = (username) => {
+    if (username.startsWith('@')) {
+      return username.slice(1);
+    }
+    if (username.startsWith('https://www.instagram.com/')) {
+      return username.slice(26).replace('/', '');
+    }
+    return username;
+  };
+
   const handleSavePersona = async (imageUrl) => {
     if (user) {
       try {
@@ -144,7 +154,7 @@ function UserProfile() {
             coincide: user.uid,
             foto: imageUrl || "https://res.cloudinary.com/dk0vvcpyn/image/upload/v1740952724/imagenesdefecto/znmg1esf30tgxcwbgpnl.jpg",
             biografia: biografia,
-            instagram: instagram,
+            instagram: cleanInstagramUsername(instagram),
             artesEscenicas: artesEscenicas
           };
 

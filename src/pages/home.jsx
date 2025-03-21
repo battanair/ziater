@@ -1,12 +1,14 @@
-import React, { useState } from "react";
-import { Container, Typography, Button, Box, Divider, TextField } from "@mui/material";
-import { styled } from "@mui/system";
+import React, { useState, useEffect } from "react";
+import { Container, Typography, Button, Box, Divider, TextField, Grid } from "@mui/material";
+import { styled, useTheme } from "@mui/system";
 import { motion } from "framer-motion";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { db } from '../firebaseConfig';
-import { collection, addDoc } from "firebase/firestore";
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import Personaindex from "../components/personaindex";
+import { NavLink } from 'react-router-dom';
 
 const HeroSection = styled(Box)(({ theme }) => ({
   textAlign: "center",
@@ -32,7 +34,18 @@ const Section = styled(Box)(({ theme }) => ({
   flexDirection: "column",
   justifyContent: "center",
   [theme.breakpoints.down('sm')]: {
-    height: "60vh", // Adjust for smaller navbar height on small screens
+    padding: "3rem 1rem",
+    height: "auto", // Adjust for smaller navbar height on small screens
+  },
+}));
+
+const GridContainer = styled(Grid)(({ theme }) => ({
+  maxWidth: "100%",
+  margin: '0 auto',
+  marginBottom: 3,
+  flexWrap: 'wrap', // Ensure items wrap on smaller screens
+  [theme.breakpoints.down('sm')]: {
+    flexDirection: 'row', // Stack items vertically on small screens
   },
 }));
 
@@ -90,6 +103,9 @@ const ContactSection = styled(Box)(({ theme }) => ({
   color: "white",
   padding: "4rem 2rem",
   textAlign: "center",
+  [theme.breakpoints.down('sm')]: {
+    padding: "2rem 1rem",
+  },
 }));
 
 const ContactForm = styled('form')({
@@ -125,6 +141,9 @@ const Footer = styled(Box)(({ theme }) => ({
   padding: "1rem 2rem",
   textAlign: "center",
   marginTop: "auto",
+  [theme.breakpoints.down('sm')]: {
+    padding: "0.5rem 1rem",
+  },
 }));
 
 function NextArrow(props) {
@@ -154,7 +173,45 @@ function PrevArrow(props) {
 }
 
 export default function Home() {
+  const theme = useTheme();
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [personas, setPersonas] = useState([]);
+  const [obras, setObras] = useState([]);
+
+  useEffect(() => {
+    const fetchPersonas = async () => {
+      const querySnapshot = await getDocs(collection(db, "persona"));
+      const personasData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setPersonas(personasData);
+    };
+
+    const fetchObras = async () => {
+      const querySnapshot = await getDocs(collection(db, "obra"));
+      const obrasData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setObras(obrasData);
+    };
+
+    fetchPersonas();
+    fetchObras();
+  }, []);
+
+  const getRandomPersonas = (personas, count) => {
+    const filteredPersonas = personas.filter(persona => persona.foto && persona.foto !== 'https://res.cloudinary.com/dk0vvcpyn/image/upload/v1740952724/imagenesdefecto/znmg1esf30tgxcwbgpnl.jpg');
+    const shuffled = filteredPersonas.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
+
+  const getRandomObras = (obras, count) => {
+    const filteredObras = obras.filter(obra => obra.cartel && obra.cartel !== 'https://res.cloudinary.com/dk0vvcpyn/image/upload/v1740952724/imagenesdefecto/u92idnadh254vhm9wi84.jpg');
+    const shuffled = filteredObras.sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+  };
 
   const settings = {
     dots: false,
@@ -185,12 +242,11 @@ export default function Home() {
   };
 
   return (
-    <Container maxWidth="lg" sx={{ display: "flex", flexDirection: "column", minHeight: "100vh", paddingBottom: 0 }}>
-      <ProgressBar width={scrollProgress} />
+    <Container sx={{ display: "flex", flexDirection: "column", paddingBottom: 0 }}>
 
       {/* Hero Section */}
       <HeroSection component={motion.div} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
-        <Typography variant="h5" gutterBottom fontWeight="bold" fontSize="2.5rem">
+        <Typography variant="h5"  fontWeight="bold" fontSize="2.5rem" sx={{ textAlign: { xs: 'center', sm: 'left' }, paddingBottom: 4 }}>
           ¿Cambiamos mano a mano las artes escénicas?
         </Typography>
       </HeroSection>
@@ -213,7 +269,7 @@ export default function Home() {
             transition={{ duration: 0.8 }}
           >
             {section.title && <Typography variant="subtitle1" fontWeight="bold">{section.title}</Typography>}
-            <Typography variant="h4" gutterBottom fontWeight="bold">
+            <Typography variant="h4" fontWeight="bold">
               {section.subtitle}
             </Typography>
             <Typography>{section.text}</Typography>
@@ -221,9 +277,47 @@ export default function Home() {
         ))}
       </Slider>
 
+      {/* Personas Destacadas */}
+      <Section gutterBottom sx={{ marginBottom: 4 }}>
+        <Typography variant="h4" fontWeight="bold" textAlign="center">
+          Personas destacadas
+        </Typography>
+        <GridContainer container spacing={4} justifyContent="center">
+          {getRandomPersonas(personas, 4).map(persona => (
+            <Grid item xs={6} sm={6} md={3} key={persona.id} sx={{ marginBottom: 4, display: 'flex', justifyContent: 'center', [theme.breakpoints.down('sm')]: { width: '80%', marginBottom: 2 } }}>
+              <NavLink to={`/persona/${persona.id}`} style={{ textDecoration: 'none' }}>
+                <Personaindex
+                  nombrepersona={`${persona.Nombre} ${persona.Apellidos}`}
+                  fotito={persona.foto}
+                />
+              </NavLink>
+            </Grid>
+          ))}
+        </GridContainer>
+      </Section>
+
+      {/* Espectáculos Destacados */}
+      <Section gutterBottom sx={{ marginBottom: 5 }}>
+        <Typography variant="h4" fontWeight="bold" textAlign="center">
+          Espectáculos destacados
+        </Typography>
+        <GridContainer container spacing={4} justifyContent="center">
+            {getRandomObras(obras, 4).map(obra => (
+            <Grid item xs={6} sm={6} md={3} key={obra.id} sx={{ marginBottom: 4, display: 'flex', justifyContent: 'center', [theme.breakpoints.down('sm')]: { width: '80%', marginBottom: 2 } }}>
+              <NavLink to={`/obra/${obra.id}`} style={{ textDecoration: 'none' }}>
+                <Personaindex 
+                  nombrepersona={obra.titulo}
+                  fotito={obra.cartel}
+                />
+              </NavLink>
+            </Grid>
+          ))}
+        </GridContainer>
+      </Section>
+
       {/* Contact Section */}
       <ContactSection sx={{width: "100%"}}>
-        <Typography variant="h6" gutterBottom sx={{ color: "white" }}>
+        <Typography variant="h6"  sx={{ color: "white" }}>
           Hola, toda esta web está siendo programada por una sola persona que lo está haciendo con todo el cariño del mundo. Si hay algún error por favor ponte en contacto conmigo.
         </Typography>
         <ContactForm onSubmit={handleSubmit}>
@@ -258,12 +352,7 @@ export default function Home() {
         </ContactForm>
       </ContactSection>
 
-      {/* Footer */}
-      <Footer>
-        <Typography variant="body2">
-          &copy; 2025 DramApp. Todos los derechos reservados.
-        </Typography>
-      </Footer>
+     
     </Container>
   );
 }

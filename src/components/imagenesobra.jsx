@@ -147,6 +147,8 @@ const ImagenesObra = ({ imagenes = [] }) => {
               justifyContent: "center",
               alignItems: "center",
               position: "relative",
+              width: "100%",
+              height: "100%",
             }}
           >
             <IconButton
@@ -178,8 +180,8 @@ const ImagenesObra = ({ imagenes = [] }) => {
               src={validImages[currentIndex]}
               alt={`Ampliada ${currentIndex}`}
               style={{
-                maxHeight: "90%",
-                maxWidth: "90%",
+                maxHeight: "100%",
+                maxWidth: "100%",
                 objectFit: "contain",
               }}
             />
