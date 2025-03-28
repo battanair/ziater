@@ -15,7 +15,6 @@ import Teatro from "../pages/teatro";
 import Edit from "../components/Editiar";
 import NewAwardProfile from "../components/NewAwardProfile";
 import NewCompanyProfile from "../components/NewCompanyProfile";
-import NewPlayProfile from "../components/NewPlayProfile";
 import NewTeatroProfile from "../components/NewTeatroProfile";
 import NewEditUser from "../components/NewEditUser";
 import NewEditUser2 from "../components/NewEditUser2";
@@ -42,6 +41,7 @@ export const routeConfig = [
   { path: "/teatro/:id", page: <Teatro /> },
   { path: "/politica-de-cookies", page: <PoliticaCookies /> },
   { path: "/politica-de-privacidad", page: <PrivacyPolicy /> },
+
 
   // Solo si NO está logueado
   { path: "/login", page: <PublicRoute><Login /></PublicRoute> },

@@ -21,6 +21,8 @@ import InstagramIcon from '@mui/icons-material/Instagram';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { onAuthStateChanged } from 'firebase/auth';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
+
 
 const AntSwitch = styled(Switch)(({ theme }) => ({
   width: 28,
@@ -327,6 +329,16 @@ const Obra2 = () => {
 
   return (
     <>
+    <HelmetProvider>
+    <Helmet>
+        <title>{obraData.titulo}</title>
+        <meta name="description" content={obraData.sinopsis} />
+        <meta property="og:title" content={obraData.titulo} />
+        <meta property="og:description" content={obraData.sinopsis} />
+        <meta property="og:image" content={obraData.cartel} />
+      </Helmet>
+      </HelmetProvider>
+
       <Grid container spacing={4} sx={{ paddingTop: 4, paddingLeft: 4 }}>
 
         {/* Columna 1: Imagen */}

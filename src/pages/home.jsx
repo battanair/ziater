@@ -9,6 +9,8 @@ import { db } from '../firebaseConfig';
 import { collection, addDoc, getDocs } from "firebase/firestore";
 import Personaindex from "../components/personaindex";
 import { NavLink } from 'react-router-dom';
+import { Helmet } from "react-helmet-async";
+
 
 const HeroSection = styled(Box)(({ theme }) => ({
   textAlign: "center",
@@ -242,6 +244,11 @@ export default function Home() {
   };
 
   return (
+    <><Helmet>
+        <title>Ziater.com</title>
+        <meta name="description" content="La base de datos de artes escénicas. 11" />
+      </Helmet>
+
     <Container sx={{ display: "flex", flexDirection: "column", paddingBottom: 0 }}>
 
       {/* Hero Section */}
@@ -353,6 +360,6 @@ export default function Home() {
       </ContactSection>
 
      
-    </Container>
+    </Container></>
   );
 }

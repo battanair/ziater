@@ -11,6 +11,7 @@ import { NavLink } from "react-router-dom";
 import { Premiosobra } from "../components/premiosobra";
 import InstagramIcon from '@mui/icons-material/Instagram';
 import FavoriteIcon from '@mui/icons-material/Favorite';
+import { Helmet } from 'react-helmet-async';
 
 const Persona = () => {
     const { id } = useParams();
@@ -170,6 +171,15 @@ const Persona = () => {
 
     return (
         <>
+            <Helmet>
+                <title>{persona ? `${persona.Nombre} ${persona.Apellidos}` : 'Persona'}</title>
+                <meta name="description" content={persona ? persona.biografia : 'Información de la persona'} />
+                <meta property="og:title" content={persona ? `${persona.Nombre} ${persona.Apellidos}` : 'Persona'} />
+        <meta property="og:description" content={persona.biografia} />
+        <meta property="og:image" content={persona.foto} />
+        <meta property="og:url" content={`https://ziater.com/#/persona/${persona.id}`} />
+        <meta property="og:type" content="profile" />
+            </Helmet>
             <Grid container spacing={4} sx={{ padding: 4 }}>
                 <Grid item xs={12} md={4}>
                     <Box sx={{ textAlign: "center" }}>

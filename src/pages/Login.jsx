@@ -1,3 +1,5 @@
+/* global grecaptcha */
+
 import * as React from 'react';
 import { useState } from 'react';
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from "firebase/auth";
@@ -20,7 +22,6 @@ import ForgotPassword from '../components/ForgotPassword';
 import GoogleLogin from "../components/GoogleLogin";
 import { NavLink } from 'react-router-dom';
 import { GoogleIcon } from "../components/CustomIcons";
-
 
 const Card = styled(MuiCard)(({ theme }) => ({
   display: 'flex',
@@ -66,8 +67,7 @@ export default function SignIn(props) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -79,13 +79,20 @@ export default function SignIn(props) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    try {
-      await signInWithEmailAndPassword(auth, email, password);
-      console.log("Login successful");
-    } catch (error) {
-      console.error("Login error:", error);
-      setError("Invalid email or password");
-    }
+    grecaptcha.enterprise.ready(async () => {
+      const token = await grecaptcha.enterprise.execute('6LcpFfwqAAAAAGb3F7Sb-2msdw6jbmGXl0th3jQ1', { action: 'LOGIN' });
+      if (token) {
+        try {
+          await signInWithEmailAndPassword(auth, email, password);
+          console.log("Login successful");
+        } catch (error) {
+          console.error("Login error:", error);
+          setError("Invalid email or password");
+        }
+      } else {
+        setError("Captcha verification failed");
+      }
+    });
   };
 
   const handleGoogleLogin = async () => {

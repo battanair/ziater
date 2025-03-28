@@ -13,6 +13,7 @@ import CookieConsent from "./components/CookieConsent";
 import { CookieProvider } from "./context/CookieContext";
 import Footer from './components/Footer';
 import ReactGA from 'react-ga';
+import { Helmet, HelmetProvider } from "react-helmet-async";
 
 
 const App = () => {
@@ -104,6 +105,7 @@ const App = () => {
   }, []);
 
   return (
+    <HelmetProvider>
     <ThemeProvider theme={theme}>
       <CookieProvider>
         <AuthProvider>
@@ -132,6 +134,8 @@ const App = () => {
         </AuthProvider>
       </CookieProvider>
     </ThemeProvider>
+    </HelmetProvider>
+
   );
 };
 
