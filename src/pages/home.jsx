@@ -19,10 +19,12 @@ const HeroSection = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  height: "calc(70vh - 221px)", // Adjust for navbar height
+  height: "calc(70vh - 221px)", // Ajuste para la altura del navbar
   justifyContent: "center",
+  width: "100%", // Asegura que no exceda el ancho
   [theme.breakpoints.down('sm')]: {
-    height: "calc(70vh - 331px)", // Adjust for smaller navbar height on small screens
+    height: "calc(70vh - 331px)", // Ajuste para pantallas pequeñas
+    padding: "3rem 1rem", // Reduce el padding en móviles
   },
 }));
 
@@ -35,6 +37,7 @@ const Section = styled(Box)(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   justifyContent: "center",
+  width: "100%", // Asegura que no exceda el ancho
   [theme.breakpoints.down('sm')]: {
     padding: "3rem 1rem",
     height: "auto", // Adjust for smaller navbar height on small screens
@@ -45,9 +48,10 @@ const GridContainer = styled(Grid)(({ theme }) => ({
   maxWidth: "100%",
   margin: '0 auto',
   marginBottom: 3,
-  flexWrap: 'wrap', // Ensure items wrap on smaller screens
+  flexWrap: 'wrap', // Asegura que los elementos se ajusten en móviles
   [theme.breakpoints.down('sm')]: {
-    flexDirection: 'row', // Stack items vertically on small screens
+    flexDirection: 'row', // Apila los elementos verticalmente en móviles
+    padding: "0 1rem", // Reduce el padding en móviles
   },
 }));
 
@@ -221,8 +225,16 @@ export default function Home() {
     speed: 500,
     slidesToShow: 1,
     slidesToScroll: 1,
-    nextArrow: <NextArrow />,
-    prevArrow: <PrevArrow />,
+    adaptiveHeight: true, // Ajusta la altura automáticamente
+    responsive: [
+      {
+        breakpoint: 768, // Para pantallas pequeñas
+        settings: {
+          slidesToShow: 1,
+          slidesToScroll: 1,
+        },
+      },
+    ],
   };
 
   const handleSubmit = async (event) => {
@@ -249,7 +261,15 @@ export default function Home() {
         <meta name="description" content="La base de datos de artes escénicas. 11" />
       </Helmet>
 
-    <Container sx={{ display: "flex", flexDirection: "column", paddingBottom: 0 }}>
+    <Container 
+      sx={{ 
+        display: "flex", 
+        flexDirection: "column", 
+        paddingBottom: 0, 
+        maxWidth: "100%", 
+        overflowX: "hidden" 
+      }}
+    >
 
       {/* Hero Section */}
       <HeroSection component={motion.div} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1 }}>
@@ -291,7 +311,22 @@ export default function Home() {
         </Typography>
         <GridContainer container spacing={4} justifyContent="center">
           {getRandomPersonas(personas, 4).map(persona => (
-            <Grid item xs={6} sm={6} md={3} key={persona.id} sx={{ marginBottom: 4, display: 'flex', justifyContent: 'center', [theme.breakpoints.down('sm')]: { width: '80%', marginBottom: 2 } }}>
+            <Grid 
+              item 
+              xs={12} 
+              sm={6} 
+              md={3} 
+              key={persona.id} 
+              sx={{ 
+                marginBottom: 4, 
+                display: 'flex', 
+                justifyContent: 'center', 
+                [theme.breakpoints.down('sm')]: { 
+                  width: '100%', // Asegura que ocupe todo el ancho en móviles
+                  marginBottom: 2 
+                } 
+              }}
+            >
               <NavLink to={`/persona/${persona.id}`} style={{ textDecoration: 'none' }}>
                 <Personaindex
                   nombrepersona={`${persona.Nombre} ${persona.Apellidos}`}

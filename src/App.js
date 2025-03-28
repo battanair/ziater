@@ -106,36 +106,107 @@ const App = () => {
 
   return (
     <HelmetProvider>
-    <ThemeProvider theme={theme}>
-      <CookieProvider>
-        <AuthProvider>
-          <Router>
-            <div className="app">
-              <Box sx={{ background: 'white', paddingBottom: '0px' }}>
-                <Box sx={{ flexGrow: 1 }}>
+      <ThemeProvider theme={theme}>
+        <CookieProvider>
+          <AuthProvider>
+            <Router>
+              <div className="app" style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+                {/* Navbar ocupa el 100% del ancho */}
+                <Box sx={{ position: 'relative', zIndex: 1 }}>
                   <Navbar />
                 </Box>
-                <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
-                  <Container maxWidth="md" sx={{ background: 'white', boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', paddingLeft: 3, paddingRight: 3 }}>
-                    <Routes>
-                      {routeConfig.map(({ path, page }, index) => (
-                        <Route key={index} path={path} element={page} />
-                      ))}
-                    </Routes>
-                  </Container>
+
+                {/* Contenido principal con anuncios */}
+                <Box 
+                  sx={{ 
+                    display: 'flex', 
+                    flexDirection: 'row', 
+                    flexGrow: 1, 
+                    background: 'white', 
+                    paddingBottom: '0px', 
+                    overflowX: 'hidden' // Evita desbordamiento horizontal
+                  }}
+                >
+                  {/* Anuncio izquierdo */}
+                  <Box 
+                    sx={{ 
+                      width: { xs: '0%', md: '15%' }, // Oculta completamente en móviles
+                      display: { xs: 'none', md: 'block' }, 
+                      padding: { xs: 0, md: '10px' }, // Sin padding en móviles
+                      overflow: 'hidden' // Asegura que no causen desbordamiento
+                    }}
+                  >
+                    <div>
+                      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9551802011924727" crossorigin="anonymous"></script>
+                      <ins className="adsbygoogle"
+                        style={{ display: 'block' }}
+                        data-ad-format="autorelaxed"
+                        data-ad-client="ca-pub-9551802011924727"
+                        data-ad-slot="7712261684"></ins>
+                      <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                      </script>
+                    </div>
+                  </Box>
+
+                  {/* Contenido principal */}
+                  <Box sx={{ flexGrow: 1, width: '100%' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: '50px' }}>
+                      <Container 
+                        maxWidth="md" 
+                        sx={{ 
+                          background: 'white', 
+                          boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)', 
+                          paddingLeft: { xs: 1, md: 3 }, 
+                          paddingRight: { xs: 1, md: 3 }, 
+                          overflowX: 'hidden', // Evita desbordamiento horizontal
+                          width: '100%' // Asegura que no exceda el ancho
+                        }}
+                      >
+                        <Routes>
+                          {routeConfig.map(({ path, page }, index) => (
+                            <Route key={index} path={path} element={page} />
+                          ))}
+                        </Routes>
+                      </Container>
+                    </Box>
+                  </Box>
+
+                  {/* Anuncio derecho */}
+                  <Box 
+                    sx={{ 
+                      width: { xs: '0%', md: '15%' }, // Oculta completamente en móviles
+                      display: { xs: 'none', md: 'block' }, 
+                      padding: { xs: 0, md: '10px' }, // Sin padding en móviles
+                      overflow: 'hidden' // Asegura que no causen desbordamiento
+                    }}
+                  >
+                    <div>
+                      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9551802011924727" crossorigin="anonymous"></script>
+                      <ins className="adsbygoogle"
+                        style={{ display: 'block' }}
+                        data-ad-format="autorelaxed"
+                        data-ad-client="ca-pub-9551802011924727"
+                        data-ad-slot="7712261684"></ins>
+                      <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                      </script>
+                    </div>
+                  </Box>
                 </Box>
-                <Box sx={{ flexGrow: 1, marginTop: '50px' }}>
+
+                {/* Footer ocupa el 100% del ancho */}
+                <Box sx={{ width: '100%' }}>
                   <Footer />
                 </Box>
-              </Box>
-              <CookieConsent />
-            </div>
-          </Router>
-        </AuthProvider>
-      </CookieProvider>
-    </ThemeProvider>
-    </HelmetProvider>
 
+                <CookieConsent />
+              </div>
+            </Router>
+          </AuthProvider>
+        </CookieProvider>
+      </ThemeProvider>
+    </HelmetProvider>
   );
 };
 
