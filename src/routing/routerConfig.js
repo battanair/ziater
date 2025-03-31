@@ -53,6 +53,8 @@ export const routeConfig = [
   { path: "/edit-award/:id", page: <PrivateRoute><NewAwardProfile /></PrivateRoute> },
   { path: "/edit-company/:id", page: <PrivateRoute><NewCompanyProfile /></PrivateRoute> },
   { path: "/edit-play/:id", page: <PrivateRoute><EditPlay /></PrivateRoute> },
+  { path: "/edit-play", page: <PrivateRoute><EditPlay /></PrivateRoute> },
+
   { path: "/edit-sala/:id", page: <PrivateRoute><NewTeatroProfile /></PrivateRoute> },
   { path: "/edit-persona/:id", page: <PrivateRoute><NewEditUser /></PrivateRoute> },
   { path: "/newedituser2/:id", page: <PrivateRoute><NewEditUser2 /></PrivateRoute> },

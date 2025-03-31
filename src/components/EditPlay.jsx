@@ -188,7 +188,7 @@ function EditPlay() {
       <IconButton onClick={() => navigate(-1)} sx={{ color: 'black' }}>
         <ArrowBackIcon />
       </IconButton>
-      <h4>EDITAR OBRA</h4>
+      <h4>{id ? "EDITAR OBRA" : "AÑADIR OBRA"}</h4>
       <Box component="form" sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 5 }}>
         <TextField label="Título" value={titulo} onChange={(e) => setTitulo(e.target.value)} fullWidth error={errors.titulo} helperText={errors.titulo && "Campo requerido"} />
         <TextField label="Sinopsis" value={sinopsis} onChange={(e) => setSinopsis(e.target.value)} multiline rows={4} fullWidth error={errors.sinopsis} helperText={errors.sinopsis && "Campo requerido"} />
@@ -259,23 +259,27 @@ function EditPlay() {
         {imageError && (
           <Typography color="error" variant="body2">{imageError}</Typography>
         )}
-        <Button onClick={handleSaveObra} variant="contained" sx={{ mt: 2, bgcolor: 'black', color: 'white' }}>Guardar</Button>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
-          <Button 
-            variant="contained" 
-            sx={{ bgcolor: 'black', color: 'white', width: '48%' }}
-            onClick={() => navigate(`/editplaywork/${id}`)}
-          >
-            Editar Equipo
-          </Button>
-          <Button 
-            variant="contained" 
-            sx={{ bgcolor: 'black', color: 'white', width: '48%' }}
-            onClick={() => navigate(`/editplayawards/${id}`)}
-          >
-            Editar Premios
-          </Button>
-        </Box>
+        <Button onClick={handleSaveObra} variant="contained" sx={{ mt: 2, bgcolor: 'black', color: 'white' }}>
+          {id ? "Guardar Cambios" : "Añadir Obra"}
+        </Button>
+        {id && (
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+            <Button 
+              variant="contained" 
+              sx={{ bgcolor: 'black', color: 'white', width: '48%' }}
+              onClick={() => navigate(`/editplaywork/${id}`)}
+            >
+              Editar Equipo
+            </Button>
+            <Button 
+              variant="contained" 
+              sx={{ bgcolor: 'black', color: 'white', width: '48%' }}
+              onClick={() => navigate(`/editplayawards/${id}`)}
+            >
+              Editar Premios
+            </Button>
+          </Box>
+        )}
       </Box>
       <Snackbar open={openSnackbar} autoHideDuration={6000} onClose={() => setOpenSnackbar(false)} message="Los datos se han guardado" action={<IconButton size="small" color="inherit" onClick={() => setOpenSnackbar(false)}><CloseIcon fontSize="small" /></IconButton>} />
     </Container>

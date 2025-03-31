@@ -131,12 +131,37 @@ const EditPlayWork2 = ({ artistas = [], errors = {} }) => {
           sx={{ mb: 2 }}
           options={personas}
           getOptionLabel={(option) => (option?.Nombre ? `${option.Nombre} ${option.Apellidos}` : '')}
+          filterOptions={(options, { inputValue }) => 
+            options
+              .filter((option) => 
+                `${option.Nombre} ${option.Apellidos}`.toLowerCase().includes(inputValue.toLowerCase())
+              )
+              .slice(0, 5) // Limita a un máximo de 5 opciones
+          }
           value={personas.find((persona) => persona.id === trabajo.id_persona) || null}
           onChange={(event, newValue) => {
             if (newValue && typeof newValue === 'object') {
               handleTrabajoChange('id_persona', newValue.id); // Guarda el ID de la persona seleccionada
             }
           }}
+          renderOption={(props, option) => (
+            <Box
+              {...props}
+              sx={{ display: 'flex', alignItems: 'center', gap: 2, padding: '8px' }}
+            >
+              <img
+                src={option?.foto || '/default-avatar.png'} // Ruta de la foto o imagen por defecto
+                alt={`${option.Nombre} ${option.Apellidos}`}
+                style={{
+                  width: 40,
+                  height: 60, // Altura mayor para que sea rectangular
+                  objectFit: 'cover', // Mantiene las proporciones de la imagen
+                  borderRadius: '4px', // Bordes ligeramente redondeados
+                }}
+              />
+              <Typography>{`${option.Nombre} ${option.Apellidos}`}</Typography>
+            </Box>
+          )}
           renderInput={(params) => (
             <TextField
               {...params}
@@ -221,7 +246,7 @@ const EditPlayWork2 = ({ artistas = [], errors = {} }) => {
         fullWidth
         onClick={saveTrabajo}
         disabled={loading}
-        sx={{ mt: 2, backgroundColor: "black" }}
+        sx={{ mt: 2, backgroundColor: "black", color: "white" }} // Cambia el color del texto a blanco
       >
         {loading ? "Guardando..." : id ? "Guardar cambios" : "Añadir trabajo"}
       </Button>
