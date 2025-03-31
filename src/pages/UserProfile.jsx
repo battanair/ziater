@@ -66,9 +66,7 @@ function UserProfile() {
       });
       const data = await response.json();
       if (response.ok) {
-        setImageUrl(data.secure_url);
-        // Guardar la URL de la imagen en Firebase después de subirla a Cloudinary
-        await handleSavePersona(data.secure_url);
+        setImageUrl(data.secure_url); // Solo actualiza el estado de la imagen
       } else {
         console.error("Error al subir la imagen:", data);
         setImageError("Error al subir la imagen. Por favor, inténtalo de nuevo.");

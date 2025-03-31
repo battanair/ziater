@@ -78,21 +78,6 @@ const Edit = () => {
       </List>
       <Divider />
 
-      <Typography variant="h5" gutterBottom>Artistas</Typography>
-      <List>
-        {personas.map((persona) => (
-          <React.Fragment key={persona.id}>
-            <ListItem>
-              <ListItemText primary={`${persona.Nombre} ${persona.Apellidos}`} />
-              <IconButton onClick={() => handleEditClick(persona.id, 'persona')} sx={{ color: 'black' }}>
-                <EditIcon />
-              </IconButton>
-            </ListItem>
-            <Divider />
-          </React.Fragment>
-        ))}
-      </List>
-      <Divider />
 
       <Typography variant="h5" gutterBottom>Espacios</Typography>
       <List>
